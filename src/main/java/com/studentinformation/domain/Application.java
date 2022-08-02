@@ -33,11 +33,21 @@ public class Application extends BaseEntity{
     @Column(length = 1000)
     private String objection;
 
+
+    public void setStudent(Member student){
+        this.student=student;
+        student.getApplications().add(this);
+    }
+
+    public void setLecture(Lecture lecture){
+        this.lecture = lecture;
+        lecture.getApplications().add(this);
+    }
     public Application(Member student, Lecture lecture) {
         this.createDate = LocalDateTime.now();
         this.lastModifiedDate = LocalDateTime.now();
-        this.student = student;
-        this.lecture = lecture;
+        setStudent(student);
+        setLecture(lecture);
     }
 
     public void updateGrade(Grade grade) {
