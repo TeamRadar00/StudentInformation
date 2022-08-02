@@ -41,26 +41,30 @@ public class Lecture extends BaseEntity{
     @OneToMany(mappedBy = "lecture")
     private List<Application> applications;
 
+    public void setProfessor(Member professor){
+        this.professor = professor;
+        professor.getProfessorLectures().add(this);
+    }
+
     public Lecture(String lectureName, Member professor, String semester, Week week, OffsetTime time, int limitNum) {
         this.createDate = LocalDateTime.now();
         this.lastModifiedDate = LocalDateTime.now();
         this.lectureName = lectureName;
-        this.professor = professor;
         this.semester = semester;
         this.week = week;
         this.time = time;
         this.limitNum = limitNum;
+        setProfessor(professor);
     }
 
-    public Lecture update(Lecture newLecture){
+    public void update(Lecture newLecture){
         this.lastModifiedDate = LocalDateTime.now();
         this.lectureName = newLecture.getLectureName();
-        this.professor = newLecture.getProfessor();
         this.semester = newLecture.getSemester();
         this.week = newLecture.getWeek();
         this.time = newLecture.getTime();
         this.limitNum = newLecture.getLimitNum();
-        return this;
+        setProfessor(newLecture.getProfessor());
     }
 
     public boolean checkCurrentCountUnderLimitNum(){

@@ -32,7 +32,8 @@ public class LectureService {
     @Transactional
     public Lecture editLecture(Long oldLectureId,Lecture newLecture){
         Lecture oldLecture = lectureRepository.findById(oldLectureId).get();
-        return oldLecture.update(newLecture);
+        oldLecture.update(newLecture);
+        return oldLecture;
     }
 
     //강의 삭제
