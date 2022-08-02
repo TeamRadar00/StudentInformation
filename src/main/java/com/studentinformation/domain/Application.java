@@ -19,16 +19,19 @@ public class Application extends BaseEntity{
     @Column(name = "applicaion_id")
     private Long id;
 
-    @ManyToOne(fetch = LAZY)
+    @ManyToOne(fetch = LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "member_id")
     private Member student;
 
-    @ManyToOne(fetch = LAZY)
+    @ManyToOne(fetch = LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "lecture_id")
     private Lecture lecture;
 
     @Enumerated(EnumType.STRING)
     private Grade grade;
+
+    @Column(length = 1000)
+    private String objection;
 
     public Application(Member student, Lecture lecture) {
         this.createDate = LocalDateTime.now();
@@ -40,5 +43,21 @@ public class Application extends BaseEntity{
     public void updateGrade(Grade grade) {
         this.lastModifiedDate = LocalDateTime.now();
         this.grade = grade;
+    }
+
+    public void updateObjection(String objection){
+        this.lastModifiedDate = LocalDateTime.now();
+        this.objection = objection;
+    }
+
+    @Override
+    public String toString() {
+        return "Application{" +
+                "id=" + id +
+                ", grade=" + grade +
+                ", objection='" + objection + '\'' +
+                ", createDate=" + createDate +
+                ", lastModifiedDate=" + lastModifiedDate +
+                '}';
     }
 }

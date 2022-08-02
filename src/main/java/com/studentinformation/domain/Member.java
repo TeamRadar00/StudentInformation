@@ -1,11 +1,14 @@
 package com.studentinformation.domain;
 
+import com.studentinformation.domain.dto.MemberDTO;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -30,6 +33,11 @@ public class Member extends BaseEntity{
     @Column(name = "college_name")
     private String collegeName;
 
+    @OneToMany(mappedBy = "student")
+    private List<Application> applications;
+
+    @OneToMany(mappedBy = "professor")
+    private List<Lecture> professorLectures;
 
     public Member(String studentNum, String password, String memberName, MemberState state, String collegeName) {
         this.createDate = LocalDateTime.now();
@@ -39,5 +47,37 @@ public class Member extends BaseEntity{
         this.memberName = memberName;
         this.state = state;
         this.collegeName = collegeName;
+    }
+
+    public void update(Member member){
+        this.lastModifiedDate = LocalDateTime.now();
+        this.studentNum = member.getStudentNum();
+        this.password = member.getPassword();
+        this.memberName = member.getMemberName();
+        this.state = member.getState();
+        this.collegeName = member.getCollegeName();
+    }
+
+    public void changePassword(String newPassword){
+        this.lastModifiedDate = LocalDateTime.now();
+        this.password = newPassword;
+    }
+
+    public boolean checkFirstAccess(){
+        return createDate.equals(lastModifiedDate);
+    }
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id=" + id +
+                ", studentNum='" + studentNum + '\'' +
+                ", password='" + password + '\'' +
+                ", memberName='" + memberName + '\'' +
+                ", state=" + state +
+                ", collegeName='" + collegeName + '\'' +
+                ", createDate=" + createDate +
+                ", lastModifiedDate=" + lastModifiedDate +
+                '}';
     }
 }
