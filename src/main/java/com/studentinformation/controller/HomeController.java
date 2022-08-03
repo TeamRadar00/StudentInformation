@@ -32,9 +32,11 @@ public class HomeController {
     @GetMapping("/home")
     public String home(Model model) {
         //세션 로직 추가 (만약 로그인이 되었으면 화면에 뿌리고 안 되었으면 로그인 창으로 이동)
-        Member findMember = memberService.findByMemberNum("choi");
+        Member findMember = memberService.findByMemberNum("123");
         LoginMemberForm form = findMember.getLoginMemberForm();
         model.addAttribute("form", form);
         return "home";
     }
+
+
 }

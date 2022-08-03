@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<li class="nav-item dropdown"  th:fragment="myInfo">
+    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+        <li><a class="dropdown-item" th:href="@{../member/login}">로그인</a></li>
+        <li><a class="dropdown-item" th:href="@{../member/password}">비밀번호 변경</a></li>
+        <li><a class="dropdown-item" th:href="@{../member/register}">회원가입</a></li>
+        <li><hr class="dropdown-divider" /></li>
+        <li><a class="dropdown-item" href="#!">로그아웃</a></li>
+    </ul>
+</li>
+
+</body>
+</html>
