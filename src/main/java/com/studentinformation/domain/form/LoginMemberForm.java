@@ -1,10 +1,8 @@
-package com.studentinformation.domain.dto;
+package com.studentinformation.domain.form;
 
 import com.studentinformation.domain.MemberState;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor

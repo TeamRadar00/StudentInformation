@@ -1,7 +1,6 @@
 package com.studentinformation.domain;
 
-import com.studentinformation.domain.dto.LoginMemberForm;
-import com.studentinformation.domain.dto.MemberDTO;
+import com.studentinformation.domain.form.LoginMemberForm;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +8,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter

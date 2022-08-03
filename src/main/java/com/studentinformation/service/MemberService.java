@@ -48,8 +48,8 @@ public class MemberService {
     }
 
     //아이디 찾을 때 사용
-    public String findStudentNum(String membernum){
-        Member findMember = memberRepository.findByStudentNum(membernum)
+    public String findStudentNum(String memberName){
+        Member findMember = memberRepository.findByMemberName(memberName)
                 .orElseThrow(() -> new IllegalArgumentException("not found memberName data"));
         return findMember.getStudentNum();
     }

@@ -1,14 +1,13 @@
-package com.studentinformation.domain.dto;
+package com.studentinformation.domain.form;
 
 
 import com.studentinformation.domain.Member;
 import com.studentinformation.domain.MemberState;
 import lombok.Getter;
-import lombok.Setter;
 
 
 @Getter
-public class MemberDTO {
+public class MemberForm {
 
     private String studentNum;
     private String password;
@@ -16,7 +15,7 @@ public class MemberDTO {
     private MemberState state;
     private String collegeName;
 
-    public MemberDTO(String studentNum, String password, String memberName, MemberState state, String collegeName) {
+    public MemberForm(String studentNum, String password, String memberName, MemberState state, String collegeName) {
         this.studentNum = studentNum;
         this.password = password;
         this.memberName = memberName;
