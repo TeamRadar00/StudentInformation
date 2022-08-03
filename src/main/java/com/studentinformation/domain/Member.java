@@ -55,6 +55,7 @@ public class Member extends BaseEntity{
         this.studentNum = member.getStudentNum();
         this.password = member.getPassword();
         this.memberName = member.getMemberName();
+        this.state = member.getState();
         this.collegeName = member.getCollegeName();
     }
 
