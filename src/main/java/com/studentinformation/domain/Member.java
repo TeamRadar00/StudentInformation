@@ -1,5 +1,6 @@
 package com.studentinformation.domain;
 
+import com.studentinformation.domain.dto.LoginMemberForm;
 import com.studentinformation.domain.dto.MemberDTO;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -79,5 +80,9 @@ public class Member extends BaseEntity{
                 ", createDate=" + createDate +
                 ", lastModifiedDate=" + lastModifiedDate +
                 '}';
+    }
+
+    public LoginMemberForm getLoginMemberForm() {
+        return new LoginMemberForm(studentNum, memberName, state, collegeName);
     }
 }

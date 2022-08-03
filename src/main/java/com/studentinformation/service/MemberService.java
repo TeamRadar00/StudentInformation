@@ -48,8 +48,8 @@ public class MemberService {
     }
 
     //아이디 찾을 때 사용
-    public String findStudentNum(String memberName){
-        Member findMember = memberRepository.findByMemberName(memberName)
+    public String findStudentNum(String membernum){
+        Member findMember = memberRepository.findByStudentNum(membernum)
                 .orElseThrow(() -> new IllegalArgumentException("not found memberName data"));
         return findMember.getStudentNum();
     }
@@ -60,7 +60,7 @@ public class MemberService {
      * @param studentNum
      */
     public String findPassword(String memberName,String studentNum){
-        Member findMember = findByMemberName(studentNum);
+        Member findMember = findByMemberNum(studentNum);
         String name = findMember.getMemberName();
         if(name.equals(memberName)){
             return findMember.getPassword();
@@ -75,7 +75,7 @@ public class MemberService {
                 .orElseThrow(() -> new IllegalArgumentException("no such data"));
     }
 
-    public Member findByMemberName(String studentNum){
+    public Member findByMemberNum(String studentNum){
         Member findMember = memberRepository.findByStudentNum(studentNum)
                 .orElseThrow(() -> new IllegalArgumentException("not found studentNum data"));
         return findMember;
