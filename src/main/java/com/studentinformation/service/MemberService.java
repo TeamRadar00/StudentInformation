@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 
 
 @Slf4j
@@ -28,23 +29,31 @@ public class MemberService {
         return member;
     }
 
-    //  개인정보 갱신할때 넘겨주는 newMember 데이터는 controller에서 DTO를 entity로 변환한거임
+    /**  개인정보 갱신할때 넘겨주는 newMember 데이터는 controller에서 DTO를 entity로 변환한거임
+     * 이거 학생이 바꾸는게 아니라 Admin전용, Admin이 학생 정보 바꿀 떄(휴학, 전과) 사용
+     * @param oldMemberId
+     * @param newMember
+     */
     @Transactional
     public Member update(Long oldMemberId, Member newMember){
         Member findMember = findById(oldMemberId);
         findMember.update(newMember);
+        log.info("updateMember = {}",findMember);
         return findMember;
     }
 
     //비밀번호 변경
     @Transactional
-    public void updatePassword(Long oldMemberId,String newPassword){
+    public Member updatePassword(Long oldMemberId,String newPassword){
         Member findMember = findById(oldMemberId);
 
         if(findMember.getPassword().equals(newPassword))
             throw new DuplicateRequestException("newPassword is duplicated oldPassword");
-
-        findMember.changePassword(newPassword);
+        else{
+            log.info("changePassword = {}, oldPassword= {}",newPassword,findMember.getPassword());
+            findMember.changePassword(newPassword);
+            return findMember;
+        }
     }
 
     //아이디 찾을 때 사용
@@ -57,10 +66,10 @@ public class MemberService {
     /**
      * 비밀번호 찾을 떄 학생이름,학생번호 사용해서 찾음
      * @param memberName
-     * @param studentNum
+     * @param memberNum
      */
-    public String findPassword(String memberName,String studentNum){
-        Member findMember = findByMemberNum(studentNum);
+    public String findPassword(String memberName,String memberNum){
+        Member findMember = findByMemberNum(memberNum);
         String name = findMember.getMemberName();
         if(name.equals(memberName)){
             return findMember.getPassword();
@@ -75,11 +84,9 @@ public class MemberService {
                 .orElseThrow(() -> new IllegalArgumentException("no such data"));
     }
 
-    public Member findByMemberNum(String studentNum){
-        Member findMember = memberRepository.findByStudentNum(studentNum)
+    public Member findByMemberNum(String memberNum){
+        return memberRepository.findByStudentNum(memberNum)
                 .orElseThrow(() -> new IllegalArgumentException("not found studentNum data"));
-        return findMember;
     }
-
 
 }

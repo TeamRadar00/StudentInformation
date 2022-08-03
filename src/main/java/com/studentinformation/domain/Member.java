@@ -2,6 +2,7 @@ package com.studentinformation.domain;
 
 import com.studentinformation.domain.form.LoginMemberForm;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -48,12 +49,12 @@ public class Member extends BaseEntity{
         this.collegeName = collegeName;
     }
 
+
     public void update(Member member){
         this.lastModifiedDate = LocalDateTime.now();
         this.studentNum = member.getStudentNum();
         this.password = member.getPassword();
         this.memberName = member.getMemberName();
-        this.state = member.getState();
         this.collegeName = member.getCollegeName();
     }
 

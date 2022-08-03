@@ -43,6 +43,7 @@ public class Application extends BaseEntity{
         this.lecture = lecture;
         lecture.getApplications().add(this);
     }
+
     public Application(Member student, Lecture lecture) {
         this.createDate = LocalDateTime.now();
         this.lastModifiedDate = LocalDateTime.now();
