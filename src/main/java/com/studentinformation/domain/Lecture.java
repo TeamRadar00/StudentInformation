@@ -1,18 +1,22 @@
 package com.studentinformation.domain;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.repository.Temporal;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.OffsetTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static javax.persistence.FetchType.*;
 
 @Entity
 @Getter
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lecture extends BaseEntity{
 
@@ -54,6 +58,7 @@ public class Lecture extends BaseEntity{
         this.time = time;
         this.limitNum = limitNum;
         setProfessor(professor);
+        this.applications = new ArrayList<>();
     }
 
     public void update(Lecture newLecture){

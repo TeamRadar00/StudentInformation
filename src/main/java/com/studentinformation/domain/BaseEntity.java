@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 public abstract class BaseEntity {
 
-    @Column(name = "create_date")
+    @Column(name = "create_date", updatable = false)
     protected LocalDateTime createDate;
 
     @Column(name = "last_modified_date")

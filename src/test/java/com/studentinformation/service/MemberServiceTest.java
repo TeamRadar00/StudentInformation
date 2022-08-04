@@ -9,12 +9,15 @@ import org.aspectj.lang.reflect.CatchClauseSignature;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
 
 /**
  * @author sim
@@ -28,8 +31,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class MemberServiceTest {
 
-    @Autowired
-    private MemberService memberService;
+    @Autowired private MemberService memberService;
+    @Autowired private EntityManager em;
+
+    @AfterEach
+    void clearCash() {
+        em.flush();
+        em.clear();
+    }
 
     @Test
     public void 멤버추가테스트() throws Exception {
@@ -50,9 +59,12 @@ public class MemberServiceTest {
                                 test.getState(),test.getCollegeName());
         //when
         memberService.update(test.getId(), changeMember);
-        //then
+        em.flush();
+        em.clear();
 
-        Assertions.assertThat("change").isEqualTo(test.getPassword());
+        Member changedMember = memberService.findById(test.getId());
+        //then
+        Assertions.assertThat("change").isEqualTo(changedMember.getPassword());
     }
 
     @Test
@@ -66,6 +78,7 @@ public class MemberServiceTest {
     }
 
     @Test
+    @DisplayName("비밀번호가 중복됐을 경우 예외처리")
     public void 비밀번호변경_예외처리() throws Exception {
         //given
         Member test = makeTestMember();
@@ -88,6 +101,7 @@ public class MemberServiceTest {
         Assertions.assertThat(studentNum).isEqualTo(test.getStudentNum());
     }
     @Test
+    @DisplayName("학번에 해당하는 맴버가 없을 경우 예외처리")
     public void 아이디찾기_예외처리() throws Exception {
         Assertions.assertThatThrownBy(
                 ()->memberService.findStudentNum("123"))
@@ -106,6 +120,8 @@ public class MemberServiceTest {
     }
 
     @Test
+    @DisplayName("1. 학번에 해당하는 맴버는 있으나, 학생 이름이 DB와 입력값이 다를 경우" +
+            "2. 학번에 해당하는 맴버 자체가 없을 경우")
     public void 비밀번호찾기_예외처리() throws Exception {
         //given
         Member test = makeTestMember();
@@ -114,6 +130,11 @@ public class MemberServiceTest {
                 ()->memberService.findPassword("not_match_id",test.getStudentNum()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("not match memberName with studentNum data");
+
+        Assertions.assertThatThrownBy(
+                        ()->memberService.findPassword("not_exist_name", "not_exist_num"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("not found studentNum data");
     }
 
 

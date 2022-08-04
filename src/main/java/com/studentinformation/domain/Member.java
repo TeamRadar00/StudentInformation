@@ -8,10 +8,12 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity{
 
@@ -47,6 +49,8 @@ public class Member extends BaseEntity{
         this.memberName = memberName;
         this.state = state;
         this.collegeName = collegeName;
+        this.applications = new ArrayList<>();
+        this.professorLectures = new ArrayList<>();
     }
 
 

@@ -1,6 +1,7 @@
 package com.studentinformation.domain;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Application extends BaseEntity{
 
