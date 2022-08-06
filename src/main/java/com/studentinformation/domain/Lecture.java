@@ -74,4 +74,19 @@ public class Lecture extends BaseEntity{
     public boolean checkCurrentCountUnderLimitNum(){
         return applications.size()<limitNum;
     }
+
+    @Override
+    public String toString() {
+        return "Lecture{" +
+                "id=" + id +
+                ", lectureName='" + lectureName + '\'' +
+                ", professor=" + professor.getMemberName() +
+                ", semester='" + semester + '\'' +
+                ", week=" + week +
+                ", time=" + time +
+                ", limitNum=" + limitNum +
+                ", createDate=" + createDate +
+                ", lastModifiedDate=" + lastModifiedDate +
+                '}';
+    }
 }
