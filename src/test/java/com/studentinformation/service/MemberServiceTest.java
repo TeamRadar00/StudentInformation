@@ -32,13 +32,6 @@ import javax.persistence.EntityManager;
 public class MemberServiceTest {
 
     @Autowired private MemberService memberService;
-    @Autowired private EntityManager em;
-
-    @AfterEach
-    void clearCash() {
-        em.flush();
-        em.clear();
-    }
 
     @Test
     public void 멤버추가테스트() throws Exception {
@@ -59,8 +52,6 @@ public class MemberServiceTest {
                                 test.getState(),test.getCollegeName());
         //when
         memberService.update(test.getId(), changeMember);
-        em.flush();
-        em.clear();
 
         Member changedMember = memberService.findById(test.getId());
         //then
