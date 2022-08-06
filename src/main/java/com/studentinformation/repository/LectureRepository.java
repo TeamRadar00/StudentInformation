@@ -1,13 +1,14 @@
 package com.studentinformation.repository;
 
 import com.studentinformation.domain.Lecture;
+import com.studentinformation.domain.Member;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
 public interface LectureRepository extends JpaRepository<Lecture, Long> {
 
-    List<Lecture> findByLectureName(String lectureName);
-
-    List<Lecture> findBySemester(String semester);
+    Page<Lecture> findBySemester(String semester, Pageable pageable);
 }
