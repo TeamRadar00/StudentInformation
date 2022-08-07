@@ -1,23 +1,14 @@
 package com.studentinformation.service;
 
 
-import com.studentinformation.domain.Member;
-import com.studentinformation.domain.MemberState;
-import com.studentinformation.repository.MemberRepository;
+import com.studentinformation.domain.*;
 import com.sun.jdi.request.DuplicateRequestException;
-import org.aspectj.lang.reflect.CatchClauseSignature;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 
 /**
  * @author sim
