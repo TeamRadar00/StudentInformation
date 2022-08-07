@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -74,8 +75,7 @@ public class ApplicationService {
         Lecture lecture = lectureRepository.findById(lectureId).get();
         List<Application> applications = lecture.getApplications();
         List<Application> objectionsList = applications.stream()
-                .filter(Predicate.not(app -> app.getObjection()==null))
-                .filter(Predicate.not(app -> app.getObjection().isBlank()))
+                .filter(application -> StringUtils.hasText(application.getObjection()))
                 .collect(Collectors.toList());
 
         int start = (int) pageable.getOffset();
