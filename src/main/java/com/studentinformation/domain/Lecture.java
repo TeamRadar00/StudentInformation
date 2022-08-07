@@ -72,7 +72,7 @@ public class Lecture extends BaseEntity{
     }
 
     public boolean checkCurrentCountUnderLimitNum(){
-        return applications.size()<limitNum;
+        return applications.size()-1<limitNum;
     }
 
     @Override

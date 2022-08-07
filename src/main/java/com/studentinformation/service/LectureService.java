@@ -34,7 +34,11 @@ public class LectureService {
         return lectureRepository.save(lecture);
     }
 
-    //강의 수정
+    /**
+     * 강의 수정
+     * @param oldLectureId
+     * @param newLecture
+     */
     @Transactional
     public Lecture editLecture(Long oldLectureId,Lecture newLecture){
         Lecture oldLecture = lectureRepository.findById(oldLectureId).get();
