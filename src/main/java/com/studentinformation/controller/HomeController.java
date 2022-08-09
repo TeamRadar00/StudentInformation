@@ -3,6 +3,7 @@ package com.studentinformation.controller;
 import com.studentinformation.domain.Member;
 import com.studentinformation.domain.MemberState;
 import com.studentinformation.domain.form.LoginMemberForm;
+import com.studentinformation.domain.form.MemberForm;
 import com.studentinformation.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,7 @@ public class HomeController {
     public String home(Model model) {
         //세션 로직 추가 (만약 로그인이 되었으면 화면에 뿌리고 안 되었으면 로그인 창으로 이동)
         Member findMember = memberService.findByMemberNum("123");
-        LoginMemberForm form = findMember.getLoginMemberForm();
+        MemberForm form = findMember.getMemberForm();
         model.addAttribute("form", form);
         return "home";
     }
