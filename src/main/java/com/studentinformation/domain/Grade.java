@@ -2,6 +2,7 @@ package com.studentinformation.domain;
 
 import lombok.Getter;
 
+@Getter
 public enum Grade {
 
     P("P", 0f), NP("NP", 0f),

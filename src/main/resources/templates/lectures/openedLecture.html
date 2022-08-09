@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html th:replace="~{layout :: layout(~{::main})}" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+<main>
+    <div class="col-xl-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-bar me-1"></i>
+                개설 강의 조회
+            </div>
+            <div class="card-body">
+                <form th:object="${searchLectureForm}" method="post">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3 mb-md-0">
+                                <input class="form-control" th:field="*{year}" type="text" placeholder="year"/>
+                                <label for="year">****년도</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <select th:field="*{semester}" class="form-select">
+                                <option th:each="semester : ${semesters}" th:value="${semester.key}"
+                                        th:text="${semester.value}">@학기</option>
+                            </select>
+                        </div>
+                    </div>
+                    <select th:field="*{selectOne}" class="form-select mb-3">
+                        <option th:each="one : ${selectOne}" th:value="${one.key}"
+                                th:text="${one.value}">교수님 or 강의이름</option>
+                    </select>
+                    <div class="form-floating mb-3">
+                        <input class="form-control" th:field="*{content}" type="text" placeholder="content"/>
+                        <label for="content">내용</label>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
+                        <button type="submit" class="btn btn-primary">조회</button>
+                    </div>
+                </form>
+                <table class="table" >
+                    <thead>
+                    <tr align="center">
+                        <th>강의이름</th>
+                        <th>교수님</th>
+                        <th>요일</th>
+                        <th>시작 시간</th>
+                        <th>강의 시간</th>
+                        <th>수강 가능 인원</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="lecture : ${lectureList}" align="center">
+                        <td th:text="${lecture.lectureName}"></td>
+                        <td th:text="${lecture.professor.memberName}"></td>
+                        <td th:text="${lecture.week.name}"></td>
+                        <td th:text="|${lecture.time.getHour()}:${lecture.time.getMinute()}|"></td>
+                        <td th:text="|${#strings.substring(lecture.time.getOffset(),1,3)}시간|"></td>
+                        <td th:text="|${lecture.limitNum}명|"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+
+</html>

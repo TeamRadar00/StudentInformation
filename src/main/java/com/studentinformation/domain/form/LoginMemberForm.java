@@ -1,5 +1,6 @@
 package com.studentinformation.domain.form;
 
+import com.studentinformation.domain.Member;
 import com.studentinformation.domain.MemberState;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +10,6 @@ import lombok.Getter;
 public class LoginMemberForm {
 
     private String studentNum;
-    private String memberName;
-    private MemberState state;
-    private String collegeName;
+    private String password;
 
 }

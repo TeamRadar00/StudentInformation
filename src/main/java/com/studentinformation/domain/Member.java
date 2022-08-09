@@ -1,6 +1,7 @@
 package com.studentinformation.domain;
 
 import com.studentinformation.domain.form.LoginMemberForm;
+import com.studentinformation.domain.form.MemberForm;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -86,7 +87,7 @@ public class Member extends BaseEntity{
                 '}';
     }
 
-    public LoginMemberForm getLoginMemberForm() {
-        return new LoginMemberForm(studentNum, memberName, state, collegeName);
+    public MemberForm getMemberForm() {
+        return new MemberForm(studentNum, memberName, state, collegeName);
     }
 }
