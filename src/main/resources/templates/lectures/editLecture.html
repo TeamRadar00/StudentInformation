@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html th:replace="~{layout :: layout(~{::main})}" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+<main>
+    <div class="col-xl-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-bar me-1"></i>
+                강의 개설/수정
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <form th:object="${editLecture}" method="post">
+                        <div class="form-floating mb-3">
+                            <input class="form-control" th:field="*{lectureName}" type="text" placeholder="lectureName"/>
+                            <label for="lectureName">강의 이름</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input class="form-control" th:field="*{semester}" type="text" placeholder="20**/*"/>
+                            <label for="lectureName">학기</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input class="form-control" th:field="*{time}" type="time" placeholder="time"/>
+                            <label for="time">강의 시간</label>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
+                            <button type="submit" class="btn btn-primary">회원가입</button>
+                        </div>
+                    </form>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+
+</html>
