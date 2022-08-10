@@ -9,7 +9,12 @@
                 <i class="fas fa-chart-bar me-1"></i>
                 강의 개설/수정
             </div>
-            <div class="card-body"><canvas width="50" height="200"></canvas></div>
+            <div class="card-body">
+                <table th:replace="~{fragment/lectureTable :: lectureTable(true)}"></table>
+                <form method="post">
+
+                </form>
+            </div>
         </div>
     </div>
 </main>
