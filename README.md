@@ -39,7 +39,6 @@
 	ㄴ 셀렉트 박스(교수님 강의)
 	ㄴ 특정 강의 수강중인 학생들 리스트+성적 입력 셀렉트 박스
 - [ ] 졸업학점조회(학생)
-- [ ] 
 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
 SpringBoot 2.7.2
@@ -47,6 +46,216 @@ SpringBoot 2.7.2
 Lombok, Thymeleaf, Spring Web, Spring Data JPA, Validation, MySQL Driver
 
 
+<h3>User CRUD</h3>
+<table>
+<th>URL</th><th>요청</th><th>설명</th>
+
+<tr>
+<td>/members/login</td>
+<td>GET</td>
+<td>로그인 창 가져오기</td>
+</tr>
+
+<tr>
+<td>/members/login</td>
+<td>POST</td>
+<td>로그인 창에서 로그인 버튼 누를 경우</td>
+</tr>
+
+<tr>
+<td>/members/find-member</td>
+<td>GET</td>
+<td>아이디, 비밀번호 찾기 창 가져오기</td>
+</tr>
+
+<tr>
+<td>/members/find-id</td>
+<td>POST</td>
+<td>아이디, 비밀번호 찾기 창에서 아이디 찾기 버튼 누를 경우</td>
+</tr>
+
+<tr>
+<td>/members/find-password</td>
+<td>POST</td>
+<td>아이디, 비밀번호 찾기 창에서 비밀번호 찾기 버튼 누를 경우</td>
+</tr>
+
+<tr>
+<td>/members/logout</td>
+<td>GET</td>
+<td>myInfo에서 로그아웃 버튼을 누를 경우</td>
+</tr>
+
+<tr>
+<td>/members/password</td>
+<td>GET</td>
+<td>비밀번호 변경 창 가져오기</td>
+</tr>
+
+<tr>
+<td>/members/password</td>
+<td>POST</td>
+<td>비밀번호 변경 창에서 변경 버튼을 누를 경우</td>
+</tr>
+</table>
+
+<h3>Admin CRUD</h3>
+<table>
+<th>URL</th><th>요청</th><th>설명</th>
+
+<tr>
+<td>/admin</td>
+<td>GET</td>
+<td>어드민 전용 창 가져오기</td>
+</tr>
+
+<tr>
+<td>/admin</td>
+<td>POST</td>
+<td>어드민 창에서 id에 해당하는 학생 정보 변경</td>
+</tr>
+
+<tr>
+<td>/admin/register</td>
+<td>POST</td>
+<td>어드민 창에서 회원가입 버튼을 누를 경우</td>
+</tr>
+</table>
+
+<h3>Lecture CRUD</h3>
+<table>
+<th>URL</th><th>요청</th><th>설명</th>
+
+<tr>
+<td>/lectures</td>
+<td>GET</td>
+<td>강의 개설 및 수정 창 가져오기(교수님 전용)</td>
+</tr>
+
+<tr>
+<td>/lectures/new</td>
+<td>POST</td>
+<td>강의 개설</td>
+</tr>
+
+<tr>
+<td>/lectures/{id}/edit</td>
+<td>POST</td>
+<td>강의 수정</td>
+</tr>
+
+<tr>
+<td>/lectures/{id}/delete</td>
+<td>POST</td>
+<td>강의 삭제</td>
+</tr>
+
+<tr>
+<td>/lectures/my</td>
+<td>GET</td>
+<td>내 강의 창 가져오기</td>
+</tr>
+
+<tr>
+<td>/lectures/opened</td>
+<td>GET</td>
+<td>개설 강의 창 가져오기</td>
+</tr>
+
+<tr>
+<td>/lectures/opened</td>
+<td>POST</td>
+<td>개설 강의 검색</td>
+</tr>
+</table>
+
+<h3>Application CRUD</h3>
+<table>
+<th>URL</th><th>요청</th><th>설명</th>
+
+<tr>
+<td>/applications</td>
+<td>GET</td>
+<td>수강신청 창 가져오기</td>
+</tr>
+
+<tr>
+<td>/applications</td>
+<td>POST</td>
+<td>선택한 강의 수강신청</td>
+</tr>
+</table>
+
+<h3>Grade CRUD</h3>
+<table>
+<th>URL</th><th>요청</th><th>설명</th>
+
+<tr>
+<td>/grades</td>
+<td>GET</td>
+<td>성적 입력/수정 창 가져오기(교수님 전용)</td>
+</tr>
+
+<tr>
+<td>/grades</td>
+<td>POST</td>
+<td>자신이 개설한 강의 선택 시 학생들 리스트 반환</td>
+</tr>
+
+<tr>
+<td>/grades/{id}</td>
+<td>GET</td>
+<td>학생들 리스트가 추가된 성적 입력/수정 창 가져오기</td>
+</tr>
+
+<tr>
+<td>/grades/{id}</td>
+<td>POST</td>
+<td>학생들 성적 입력/수정 내용 저장</td>
+</tr>
+
+<tr>
+<td>/grades/my</td>
+<td>GET</td>
+<td>수강성적 조회 창 가져오기(학생 전용)</td>
+</tr>
+
+<tr>
+<td>/grades/objection</td>
+<td>GET</td>
+<td>성적 이의신청 창 가져오기(학생 전용)</td>
+</tr>
+
+<tr>
+<td>/grades/objection</td>
+<td>POST</td>
+<td>이의신청 전송</td>
+</tr>
+
+<tr>
+<td>/grades/objection-list</td>
+<td>GET</td>
+<td>성적 이의신청 목록 창 가져오기(교수님 전용)</td>
+</tr>
+
+<tr>
+<td>/grades/objection-list</td>
+<td>POST</td>
+<td>자신이 개설한 강의를 선택하면 해당 강의 이의신청 목록 띄우기</td>
+</tr>
+
+<tr>
+<td>/grades/objection-list/{id}</td>
+<td>GET</td>
+<td>선택한 이의신청 창 가져오기(교수님 전용)</td>
+</tr>
+
+<tr>
+<td>/grades/objection-list/{id}</td>
+<td>POST</td>
+<td>이의신청 결과 반환(승인여부, 성적)</td>
+</tr>
+</table>
 
 
 
