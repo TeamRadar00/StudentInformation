@@ -62,6 +62,8 @@ public class LectureController {
         //lectureService.search(form)로 폼을 넘길까 아님 여기서 폼을 까내서 안에 로직에 따라 findByProfessorName이나
         //findByLectureName을 호출할까?
 
+        //
+
         addTestLectureList(model, "lectureList");
         log.info("SearchLectureForm = {}", form);
         return "lectures/openedLecture";

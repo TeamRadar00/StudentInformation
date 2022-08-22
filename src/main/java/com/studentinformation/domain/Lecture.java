@@ -44,6 +44,9 @@ public class Lecture extends BaseEntity{
     @OneToMany(mappedBy = "lecture")
     private List<Application> applications;
 
+    @OneToMany(mappedBy = "lecture")
+    private List<Grade> grades;
+
     public void setProfessor(Member professor){
         this.professor = professor;
         professor.getProfessorLectures().add(this);
@@ -59,6 +62,7 @@ public class Lecture extends BaseEntity{
         this.limitNum = limitNum;
         setProfessor(professor);
         this.applications = new ArrayList<>();
+        this.grades = new ArrayList<>();
     }
 
     public void update(Lecture newLecture){
