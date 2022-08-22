@@ -39,6 +39,9 @@ public class Member extends BaseEntity{
     @OneToMany(mappedBy = "student")
     private List<Application> applications;
 
+    @OneToMany(mappedBy = "student")
+    private List<Grade> grades;
+
     @OneToMany(mappedBy = "professor")
     private List<Lecture> professorLectures;
 
@@ -51,6 +54,7 @@ public class Member extends BaseEntity{
         this.state = state;
         this.collegeName = collegeName;
         this.applications = new ArrayList<>();
+        this.grades = new ArrayList<>();
         this.professorLectures = new ArrayList<>();
     }
 

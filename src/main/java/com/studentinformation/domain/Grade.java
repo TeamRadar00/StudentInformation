@@ -1,23 +1,68 @@
 package com.studentinformation.domain;
 
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
+
+import java.time.LocalDateTime;
+
+import static javax.persistence.FetchType.LAZY;
+
+@Entity
 @Getter
-public enum Grade {
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Grade extends BaseEntity{
 
-    P("P", 0f), NP("NP", 0f),
-    A_PLUS("A+", 4.5f), A_ZERO("A0", 4f),
-    B_PLUS("B+", 3.5f), B_ZERO("B0", 3f),
-    C_PLUS("C+", 2.5f), C_ZERO("C0", 2f),
-    D_PLUS("D+", 1.5f), D_ZERO("D0", 1f),
-    F("F", 0f);
+    @Id@GeneratedValue
+    @Column(name = "grade_id")
+    private Long id;
+
+    @ManyToOne(fetch = LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "member_id")
+    private Member student;
+
+    @ManyToOne(fetch = LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "lecture_id")
+    private Lecture lecture;
 
 
-    private final String name;
-    private final float score;
+    @Enumerated(EnumType.STRING)
+    private Score score;
 
-    Grade(String name, float score) {
-        this.name = name;
+    @Column(length = 1000)
+    private String objection;
+
+    public void setStudent(Member student){
+        this.student = student;
+        student.getGrades().add(this);
+    }
+
+    public void setLecture(Lecture lecture){
+        this.lecture = lecture;
+        lecture.getGrades().add(this);
+    }
+
+    public Grade(Member student, Lecture lecture) {
+        this.createDate = LocalDateTime.now();
+        this.lastModifiedDate = LocalDateTime.now();
+        setStudent(student);
+        setLecture(lecture);
+    }
+
+    public void updateGrade(Score score) {
+        this.lastModifiedDate = LocalDateTime.now();
         this.score = score;
     }
+
+    public void updateObjection(String objection){
+        this.lastModifiedDate = LocalDateTime.now();
+        this.objection = objection;
+    }
+
+
+
 }
