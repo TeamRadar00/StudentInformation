@@ -29,13 +29,6 @@ public class Application extends BaseEntity{
     @JoinColumn(name = "lecture_id")
     private Lecture lecture;
 
-    @Enumerated(EnumType.STRING)
-    private Grade grade;
-
-    @Column(length = 1000)
-    private String objection;
-
-
     public void setStudent(Member student){
         this.student=student;
         student.getApplications().add(this);
@@ -46,6 +39,7 @@ public class Application extends BaseEntity{
         lecture.getApplications().add(this);
     }
 
+
     public Application(Member student, Lecture lecture) {
         this.createDate = LocalDateTime.now();
         this.lastModifiedDate = LocalDateTime.now();
@@ -53,22 +47,11 @@ public class Application extends BaseEntity{
         setLecture(lecture);
     }
 
-    public void updateGrade(Grade grade) {
-        this.lastModifiedDate = LocalDateTime.now();
-        this.grade = grade;
-    }
-
-    public void updateObjection(String objection){
-        this.lastModifiedDate = LocalDateTime.now();
-        this.objection = objection;
-    }
 
     @Override
     public String toString() {
         return "Application{" +
                 "id=" + id +
-                ", grade=" + grade +
-                ", objection='" + objection + '\'' +
                 ", createDate=" + createDate +
                 ", lastModifiedDate=" + lastModifiedDate +
                 '}';
