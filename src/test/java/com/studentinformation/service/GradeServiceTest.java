@@ -1,7 +1,6 @@
 package com.studentinformation.service;
 
 import com.studentinformation.domain.*;
-import com.studentinformation.repository.GradeRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -92,6 +91,19 @@ public class GradeServiceTest {
         for (Grade grade : allExistObjection) {
             System.out.println("grade = " + grade);
         }
+    }
+
+    @Test
+    void EmptyGrade생성() throws Exception {
+        //given
+        Member member = new Member("test","test","test", MemberState.inSchool,"test");
+        Lecture lecture = new Lecture("test",member,"test", Week.MONDAY, OffsetTime.now(),100);
+
+        //when
+        Grade emptyGrade = gradeService.createEmptyGrade(member,lecture);
+
+        //then
+        assertThat(emptyGrade.getScore()).isEqualTo(Score.IN);
     }
 
     private Grade makeTestGrade(){

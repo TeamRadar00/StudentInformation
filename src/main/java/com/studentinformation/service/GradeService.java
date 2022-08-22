@@ -1,9 +1,9 @@
 package com.studentinformation.service;
 
 
-import com.studentinformation.domain.Application;
 import com.studentinformation.domain.Grade;
 import com.studentinformation.domain.Lecture;
+import com.studentinformation.domain.Member;
 import com.studentinformation.domain.Score;
 import com.studentinformation.repository.GradeRepository;
 import com.studentinformation.repository.LectureRepository;
@@ -29,9 +29,14 @@ public class GradeService {
     private final LectureRepository lectureRepository;
 
     @Transactional
+    public Grade createEmptyGrade(Member student, Lecture lecture) {
+        Grade emptyGrade = Grade.createEmptyGrade(student, lecture);
+        return gradeRepository.save(emptyGrade);
+    }
+
+    @Transactional
     public Grade saveGrade(Grade grade){
-        gradeRepository.save(grade);
-        return grade;
+        return gradeRepository.save(grade);
     }
 
     /**

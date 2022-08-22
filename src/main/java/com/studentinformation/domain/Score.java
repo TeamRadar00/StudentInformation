@@ -10,7 +10,7 @@ public enum Score {
     B_PLUS("B+", 3.5f), B_ZERO("B0", 3f),
     C_PLUS("C+", 2.5f), C_ZERO("C0", 2f),
     D_PLUS("D+", 1.5f), D_ZERO("D0", 1f),
-    F("F", 0f);
+    F("F", 0f), IN("IN", 0f);
 
 
     private final String name;
