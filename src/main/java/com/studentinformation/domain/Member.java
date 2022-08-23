@@ -46,8 +46,7 @@ public class Member extends BaseEntity{
     private List<Lecture> professorLectures;
 
     public Member(String studentNum, String password, String memberName, MemberState state, String collegeName) {
-        this.createDate = LocalDateTime.now();
-        this.lastModifiedDate = LocalDateTime.now();
+        this.createDate = this.lastModifiedDate =LocalDateTime.now();
         this.studentNum = studentNum;
         this.password = password;
         this.memberName = memberName;

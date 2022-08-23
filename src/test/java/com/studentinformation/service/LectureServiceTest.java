@@ -59,25 +59,33 @@ public class LectureServiceTest {
         int startPage = 0;
         int pageContentCount = 10;
         int totalLecture = 105;
+        String testProfessorName = "test";
+        String testSemester = "202202";
 
 
-        Member professor = new Member("test","test","test", MemberState.professor,"test");
+        Member professor = new Member("test","test",testProfessorName, MemberState.professor,"test");
 
         for(int i=0;i<totalLecture;i++){
-            Lecture testLecture = new Lecture("test"+i,professor,"202202", Week.SATURDAY, OffsetTime.now(),100);
+            Lecture testLecture;
+            if(i%2==0){
+                testLecture = new Lecture("test" + i, professor, "202202", Week.SATURDAY, OffsetTime.now(), 100);
+            }else{
+                testLecture = new Lecture("test" + i, professor, "202201", Week.SATURDAY, OffsetTime.now(), 100);
+            }
             lectureService.makeLecture(testLecture);
         }
 
         Pageable pageable = PageRequest.of(startPage,pageContentCount, Sort.by("id"));
         //when
 
-        Page<Lecture> test = lectureService.findByProfessorName("te", pageable);
+        Page<Lecture> test = lectureService.findByProfessorName(testProfessorName,testSemester,pageable);
 
         //then
-        assertThat(test.getTotalElements()).isEqualTo(totalLecture);
-        assertThat(test.getTotalPages()).isEqualTo(Math.round((float) totalLecture/pageContentCount));
-        assertThat(test.getNumber()).isEqualTo(startPage);
-        assertThat(test.getNumberOfElements()).isEqualTo(pageContentCount);
+        for (Lecture lecture : test) {
+            assertThat(lecture.getProfessor().getMemberName()).isEqualTo(testProfessorName);
+            assertThat(lecture.getSemester()).isEqualTo(testSemester);
+        }
+        assertThat(test.getTotalElements()).isEqualTo(Math.round((float) totalLecture/2));
     }
 
     @Test
@@ -86,52 +94,32 @@ public class LectureServiceTest {
         int startPage = 0;
         int pageContentCount = 10;
         int totalLecture = 105;
+        String testLectureName = "test";
+        String testSemester = "202202";
 
-
-        Member professor = new Member("test","test","test", MemberState.professor,"test");
+        Member professor = new Member("test","test",testLectureName, MemberState.professor,"test");
 
         for(int i=0;i<totalLecture;i++){
-            Lecture testLecture = new Lecture("test"+i,professor,"202202", Week.SATURDAY, OffsetTime.now(),100);
+            Lecture testLecture;
+            if(i%2==0){
+                testLecture = new Lecture("test" + i, professor, "202202", Week.SATURDAY, OffsetTime.now(), 100);
+            }else{
+                testLecture = new Lecture("test" + i, professor, "202201", Week.SATURDAY, OffsetTime.now(), 100);
+            }
             lectureService.makeLecture(testLecture);
         }
 
         Pageable pageable = PageRequest.of(startPage,pageContentCount, Sort.by("id"));
         //when
 
-        Page<Lecture> test = lectureService.findByLectureName("test1", pageable);
+        Page<Lecture> test = lectureService.findByLectureName(testLectureName, testSemester,pageable);
 
         //then
-//        assertThat(test.getTotalElements()).isEqualTo(totalLecture);
-//        assertThat(test.getTotalPages()).isEqualTo(Math.round((float) totalLecture/pageContentCount));
-        assertThat(test.getNumber()).isEqualTo(startPage);
-        assertThat(test.getNumberOfElements()).isEqualTo(pageContentCount);
-    }
-
-    @Test
-    public void 학기로강의검색() throws Exception {
-        //given
-        int startPage = 0;
-        int pageContentCount = 10;
-        int totalLecture = 105;
-
-
-        Member professor = new Member("test","test","test", MemberState.professor,"test");
-
-        for(int i=0;i<totalLecture;i++){
-            Lecture testLecture = new Lecture("test"+i,professor,"202201", Week.SATURDAY, OffsetTime.now(),100);
-            lectureService.makeLecture(testLecture);
+        for (Lecture lecture : test) {
+            assertThat(lecture.getProfessor().getMemberName()).isEqualTo(testLectureName);
+            assertThat(lecture.getSemester()).isEqualTo(testSemester);
         }
-
-        Pageable pageable = PageRequest.of(startPage,pageContentCount, Sort.by("id"));
-        //when
-
-        Page<Lecture> test = lectureService.findBySemester("202201", pageable);
-
-        //then
-        assertThat(test.getTotalElements()).isEqualTo(totalLecture);
-        assertThat(test.getTotalPages()).isEqualTo(Math.round((float) totalLecture/pageContentCount));
-        assertThat(test.getNumber()).isEqualTo(startPage);
-        assertThat(test.getNumberOfElements()).isEqualTo(pageContentCount);
+        assertThat(test.getTotalElements()).isEqualTo(Math.round((float) totalLecture/2));
     }
 
     private Lecture makeTestLecture(){
@@ -140,6 +128,5 @@ public class LectureServiceTest {
         return lectureService.makeLecture(lecture);
 
     }
-
 
 }

@@ -47,8 +47,7 @@ public class Grade extends BaseEntity{
     }
 
     public Grade(Member student, Lecture lecture) {
-        this.createDate = LocalDateTime.now();
-        this.lastModifiedDate = LocalDateTime.now();
+        this.createDate = this.lastModifiedDate =LocalDateTime.now();
         setStudent(student);
         setLecture(lecture);
     }
