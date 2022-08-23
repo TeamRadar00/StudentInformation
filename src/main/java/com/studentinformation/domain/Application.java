@@ -41,8 +41,7 @@ public class Application extends BaseEntity{
 
 
     public Application(Member student, Lecture lecture) {
-        this.createDate = LocalDateTime.now();
-        this.lastModifiedDate = LocalDateTime.now();
+        this.createDate = this.lastModifiedDate =LocalDateTime.now();
         setStudent(student);
         setLecture(lecture);
     }

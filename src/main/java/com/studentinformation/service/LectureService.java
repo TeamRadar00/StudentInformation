@@ -1,16 +1,12 @@
 package com.studentinformation.service;
 
 
-import com.studentinformation.domain.Lecture;
-import com.studentinformation.domain.Member;
-import com.studentinformation.domain.MemberState;
+import com.studentinformation.domain.*;
 import com.studentinformation.repository.LectureRepository;
 import com.studentinformation.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,19 +58,20 @@ public class LectureService {
      * @param pageable
      * 나중에 쿼리로 최적화 해야할듯
      */
-    public Page<Lecture> findByProfessorName(String professorName, Pageable pageable){
+    public Page<Lecture> findByProfessorName(String professorName, String semester, Pageable pageable){
         List<Member> findAllProfessor = memberRepository.findByState(MemberState.professor);
         List<Member> findProfessors = findAllProfessor.stream()
                 .filter(professor -> professor.getMemberName().contains(professorName))
                 .collect(Collectors.toList());
 
-        log.info("find professor contain argument, professors={}",findProfessors.stream()
-                .map(Member::getMemberName)
-                .collect(Collectors.toList()));
+//        log.info("find professor contain argument, professors={}",findProfessors.stream()
+//                .map(Member::getMemberName)
+//                .collect(Collectors.toList()));
 
         List<Lecture> findLectures = findProfessors.stream()
                 .map(Member::getProfessorLectures)
                 .flatMap(Collection::stream)
+                .filter(lecture -> lecture.getSemester().contains(semester))
                 .collect(Collectors.toList());
         log.info("findLecturesSize = {}",findLectures.size());
 
@@ -90,9 +87,10 @@ public class LectureService {
      * @param pageable
      * 나중에 쿼리로 최적화 해야할듯
      */
-    public Page<Lecture> findByLectureName(String lectureName,Pageable pageable){
+    public Page<Lecture> findByLectureName(String lectureName,String semester,Pageable pageable){
         List<Lecture> findLectures = lectureRepository.findAll().stream()
                 .filter(lecture -> lecture.getLectureName().contains(lectureName))
+                .filter(lecture -> lecture.getSemester().equals(semester))
                 .collect(Collectors.toList());
 
         log.info("find lectures contain with String, Lectures = {}",findLectures.stream().
@@ -107,10 +105,5 @@ public class LectureService {
     public Lecture findByLectureId(Long lectureId){
         return lectureRepository.findById(lectureId).orElse(null);
     }
-
-    public Page<Lecture> findBySemester(String semester,Pageable pageable){
-        return lectureRepository.findBySemester(semester,pageable);
-    }
-
 
 }

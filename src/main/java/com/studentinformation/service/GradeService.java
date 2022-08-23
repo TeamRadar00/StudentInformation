@@ -1,17 +1,11 @@
 package com.studentinformation.service;
 
 
-import com.studentinformation.domain.Grade;
-import com.studentinformation.domain.Lecture;
-import com.studentinformation.domain.Member;
-import com.studentinformation.domain.Score;
-import com.studentinformation.repository.GradeRepository;
-import com.studentinformation.repository.LectureRepository;
+import com.studentinformation.domain.*;
+import com.studentinformation.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;

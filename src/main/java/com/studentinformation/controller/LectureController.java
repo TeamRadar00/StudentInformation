@@ -31,7 +31,9 @@ public class LectureController {
 
     @ModelAttribute("selectOne")
     public Map<String, String> selectOne() {
-        return Map.of("professor", "교수님 성함으로 검색", "lecture", "강의이름으로 검색");
+        return Map.of("professor", "교수님 성함으로 검색",
+                "lectureName", "강의이름으로 검색",
+                "lectureId","강의번호로 검색");
     }
 
     private void addTestLectureList(Model model, String name) {

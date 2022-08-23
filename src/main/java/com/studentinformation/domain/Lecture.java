@@ -31,7 +31,7 @@ public class Lecture extends BaseEntity{
     @JoinColumn(name = "member_id")
     private Member professor;
 
-    private String semester; //년도 + 학기 : 2022/1(22년 1학기), 2022/2(22년 2학기)
+    private String semester; //년도 + 학기 : 202201(22년 1학기), 202202(22년 2학기)
 
     @Enumerated(EnumType.STRING)
     private Week week;
@@ -53,8 +53,7 @@ public class Lecture extends BaseEntity{
     }
 
     public Lecture(String lectureName, Member professor, String semester, Week week, OffsetTime time, int limitNum) {
-        this.createDate = LocalDateTime.now();
-        this.lastModifiedDate = LocalDateTime.now();
+        this.createDate = this.lastModifiedDate =LocalDateTime.now();
         this.lectureName = lectureName;
         this.semester = semester;
         this.week = week;
