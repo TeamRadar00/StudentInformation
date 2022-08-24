@@ -38,8 +38,7 @@ class LectureRepositoryTest {
         Member member = new Member("123", "password", "choi", MemberState.inSchool, "공대");
         memberRepository.save(member);
 
-        OffsetTime lectureTime = OffsetTime.of(LocalTime.now(), ZoneOffset.ofHours(2));
-        Lecture lecture = new Lecture("C기초", member, "2022_2", Week.MONDAY, lectureTime, 20);
+        Lecture lecture = new Lecture("C기초", member, "2022_2", "",  20);
 
         lectureRepository.save(lecture);
         em.flush();

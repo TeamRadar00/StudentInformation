@@ -61,7 +61,7 @@ public class GradeServiceTest {
         int totalApplication = 100;
 
         Member professor = new Member("test","test","test", MemberState.professor,"test");
-        Lecture lecture = new Lecture("test",professor,"test", Week.MONDAY, OffsetTime.now(),100);
+        Lecture lecture = new Lecture("test",professor,"test", "",100);
 
         for(int i=0;i<totalApplication;i++){
             Member member = new Member("test"+i,"test"+i,"test"+i,MemberState.inSchool,"test"+i);
@@ -94,7 +94,7 @@ public class GradeServiceTest {
     void EmptyGrade생성() throws Exception {
         //given
         Member member = new Member("test","test","test", MemberState.inSchool,"test");
-        Lecture lecture = new Lecture("test",member,"test", Week.MONDAY, OffsetTime.now(),100);
+        Lecture lecture = new Lecture("test",member,"test", "",100);
 
         //when
         Grade emptyGrade = gradeService.createEmptyGrade(member,lecture);
@@ -106,7 +106,7 @@ public class GradeServiceTest {
     private Grade makeTestGrade(){
         Member testMember = new Member("test","test","test", MemberState.inSchool,"test");
         Member professor = new Member("test","test","test", MemberState.professor,"test");
-        Lecture testLecture = new Lecture("test",professor,"test", Week.MONDAY, OffsetTime.now(),2);
+        Lecture testLecture = new Lecture("test",professor,"test",  "",2);
 
         return new Grade(testMember,testLecture);
     }

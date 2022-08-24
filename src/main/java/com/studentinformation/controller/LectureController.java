@@ -1,5 +1,7 @@
 package com.studentinformation.controller;
 
+import com.studentinformation.domain.Lecture;
+import com.studentinformation.domain.Member;
 import com.studentinformation.domain.Week;
 import com.studentinformation.domain.form.LectureForm;
 import com.studentinformation.domain.form.MemberForm;
@@ -10,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalTime;
@@ -37,14 +40,17 @@ public class LectureController {
     }
 
     private void addTestLectureList(Model model, String name) {
-        MemberForm professor = MemberForm.createMemberForm(memberService.findByMemberNum("123"));
-        model.addAttribute(name, List.of(new LectureForm(1L,"c언어", professor,
-                "2022/2", Week.MONDAY, OffsetTime.of(LocalTime.now(), ZoneOffset.ofHours(2)), 20)));
+        Member professor = memberService.findByMemberNum("123");
+        Lecture lecture = new Lecture("c언어", professor, "2022/2",
+                "/12:00~12:50//13:00~13:50///", 20);
+        model.addAttribute(name, List.of(LectureForm.createLectureFrom(lecture)));
     }
     private void addTestLecture(Model model, String name) {
-        MemberForm professor = MemberForm.createMemberForm(memberService.findByMemberNum("123"));
-        model.addAttribute(name, new LectureForm(1L,"c언어", professor,
-                "2022/2", Week.MONDAY, OffsetTime.of(LocalTime.now(), ZoneOffset.ofHours(2)), 20));
+        Member professor = memberService.findByMemberNum("123");
+        Lecture lecture = new Lecture("c언어", professor, "2022/2",
+                " /12:00~12:50/ /13:00~13:50/ / / ", 20);
+        model.addAttribute(name, LectureForm.createLectureFrom(lecture));
+        model.addAttribute("week", Week.values());
     }
 
     @GetMapping("/lectures/my")
@@ -64,8 +70,6 @@ public class LectureController {
         //lectureService.search(form)로 폼을 넘길까 아님 여기서 폼을 까내서 안에 로직에 따라 findByProfessorName이나
         //findByLectureName을 호출할까?
 
-        //
-
         addTestLectureList(model, "lectureList");
         log.info("SearchLectureForm = {}", form);
         return "lectures/openedLecture";
@@ -82,6 +86,15 @@ public class LectureController {
     public String getEditLecture(@PathVariable long lectureId, Model model) {
 //        model.addAttribute("editLecture", LectureForm.createLectureForm(lectureService.findByLectureId(lectureId)));
         addTestLecture(model, "editLecture");
+        return "lectures/editLecture";
+    }
+
+    @PostMapping("/lectures/{lectureId}/edit")
+    public String editLecture(@PathVariable long lectureId, @ModelAttribute("editLecture") LectureForm lectureForm, BindingResult bindingResult) {
+        log.info("BindingResult = {}", bindingResult);
+        log.info("lectureForm = {}",lectureForm);
+//        model.addAttribute("editLecture", LectureForm.createLectureForm(lectureService.findByLectureId(lectureId)));
+//        addTestLecture(model, "editLecture");
         return "lectures/editLecture";
     }
 

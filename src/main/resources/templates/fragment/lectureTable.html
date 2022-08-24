@@ -16,7 +16,8 @@
     <tbody>
     <tr th:each="lecture : ${lectureList}" align="center">
         <td><div th:text="${lecture.lectureName}"
-                 th:onclick="${isEditable}?|location.href='@{lectures/{id}/edit(id=${lecture.id})}'| : ''"></div>
+                 th:onclick="${isEditable}?| location.href='@{lectures/{id}/edit(id=${lecture.id})}'| : ''"
+                 th:style="${isEditable}?'color:blue':''"></div>
         </td>
         <td th:text="${lecture.professor.memberName}"></td>
         <td th:text="${lecture.week.name}"></td>
