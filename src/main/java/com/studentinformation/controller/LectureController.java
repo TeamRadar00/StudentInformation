@@ -4,7 +4,6 @@ import com.studentinformation.domain.Lecture;
 import com.studentinformation.domain.Member;
 import com.studentinformation.domain.Week;
 import com.studentinformation.domain.form.LectureForm;
-import com.studentinformation.domain.form.MemberForm;
 import com.studentinformation.domain.form.SearchLectureForm;
 import com.studentinformation.service.LectureService;
 import com.studentinformation.service.MemberService;
@@ -12,12 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalTime;
-import java.time.OffsetTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 
@@ -39,17 +34,23 @@ public class LectureController {
                 "lectureId","강의번호로 검색");
     }
 
+    @ModelAttribute("week")
+    public Week[] week() {
+        return Week.values();
+    }
+
     private void addTestLectureList(Model model, String name) {
         Member professor = memberService.findByMemberNum("123");
         Lecture lecture = new Lecture("c언어", professor, "2022/2",
-                "/12:00~12:50//13:00~13:50///", 20);
-        model.addAttribute(name, List.of(LectureForm.createLectureFrom(lecture)));
+                "~/12:00~12:50/~/13:00~13:50/~/~/~/", 20);
+        lecture = lectureService.makeLecture(lecture);
+        model.addAttribute(name, List.of(LectureForm.of(lecture)));
     }
     private void addTestLecture(Model model, String name) {
         Member professor = memberService.findByMemberNum("123");
         Lecture lecture = new Lecture("c언어", professor, "2022/2",
-                " /12:00~12:50/ /13:00~13:50/ / / ", 20);
-        model.addAttribute(name, LectureForm.createLectureFrom(lecture));
+                "~/12:00~12:50/~/13:00~13:50/~/~/~/", 20);
+        model.addAttribute(name, LectureForm.of(lecture));
         model.addAttribute("week", Week.values());
     }
 
@@ -90,18 +91,16 @@ public class LectureController {
     }
 
     @PostMapping("/lectures/{lectureId}/edit")
-    public String editLecture(@PathVariable long lectureId, @ModelAttribute("editLecture") LectureForm lectureForm, BindingResult bindingResult) {
-        log.info("BindingResult = {}", bindingResult);
-        log.info("lectureForm = {}",lectureForm);
-//        model.addAttribute("editLecture", LectureForm.createLectureForm(lectureService.findByLectureId(lectureId)));
-//        addTestLecture(model, "editLecture");
+    public String editLecture(@PathVariable long lectureId, @ModelAttribute("editLecture") LectureForm lectureForm, Model model) {
+//        for (LectureForm.LectureTime lectureTime : lectureForm.getLectureTimeList()) {
+//            log.info("lectureTime = {}",lectureTime);
+//        }
+//        Member professor = lectureService.findByLectureId(lectureId).getProfessor();
+//        lectureService.editLecture(lectureId, lectureForm.convertEntity(professor));
+        model.addAttribute("week", Week.values());
         return "lectures/editLecture";
     }
 
-    @GetMapping("/lecture/applicationPage")
-    public String goApplicationPage() {
-        return "lecture/applicationPage";
-    }
 
 
 }

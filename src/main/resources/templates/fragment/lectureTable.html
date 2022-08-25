@@ -9,20 +9,34 @@
         <th>교수님</th>
         <th>요일</th>
         <th>시작 시간</th>
-        <th>강의 시간</th>
+        <th>종료 시간</th>
         <th>수강 가능 인원</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="lecture : ${lectureList}" align="center">
         <td><div th:text="${lecture.lectureName}"
-                 th:onclick="${isEditable}?| location.href='@{lectures/{id}/edit(id=${lecture.id})}'| : ''"
+                 th:onclick="${isEditable}? |location.href='@{lectures/{id}/edit(id=${lecture.id})}'| : ''"
                  th:style="${isEditable}?'color:blue':''"></div>
         </td>
         <td th:text="${lecture.professor.memberName}"></td>
-        <td th:text="${lecture.week.name}"></td>
-        <td th:text="|${lecture.time.getHour()}:${lecture.time.getMinute()}|"></td>
-        <td th:text="|${#strings.substring(lecture.time.getOffset(),1,3)}시간|"></td>
+        <td th:text="${lecture.semester}"></td>
+        <td>
+            <th:block th:each="day,dayStat : ${week}">
+                <span th:if="${not #strings.isEmpty(lecture.lectureTimeList[__${dayStat.index}__].startTime)}"
+                    th:text="${day.name}"></span>
+                <span th:text="${lecture.lectureTimeList[__${dayStat.index}__].startTime}?: _"></span>
+                <br th:if="${not #strings.isEmpty(lecture.lectureTimeList[__${dayStat.index}__].startTime)}">
+            </th:block>
+        </td>
+        <td>
+            <th:block th:each="day,dayStat : ${week}">
+                <span th:if="${not #strings.isEmpty(lecture.lectureTimeList[__${dayStat.index}__].endTime)}"
+                      th:text="${day.name}"></span>
+                <span th:text="${lecture.lectureTimeList[__${dayStat.index}__].endTime}?: _"></span>
+                <br th:if="${not #strings.isEmpty(lecture.lectureTimeList[__${dayStat.index}__].endTime)}">
+            </th:block>
+        </td>
         <td th:text="|${lecture.limitNum}명|"></td>
     </tr>
     </tbody>

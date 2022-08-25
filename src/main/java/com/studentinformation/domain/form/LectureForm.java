@@ -1,6 +1,7 @@
 package com.studentinformation.domain.form;
 
 import com.studentinformation.domain.Lecture;
+import com.studentinformation.domain.Member;
 import com.studentinformation.domain.Week;
 import lombok.*;
 
@@ -19,11 +20,8 @@ public class LectureForm {
     private List<LectureTime> lectureTimeList;
     private int limitNum;
 
-    public static LectureForm createLectureFrom(Lecture lecture) {
+    public static LectureForm of(Lecture lecture) {
         List<LectureTime> lectureTimeList = new Vector<>();
-//        lectureTimeMap.keySet().forEach(a -> a.na);
-//        Set<Map.Entry<Week, LectureTime>> entries = lectureTimeMap.entrySet();
-//        entries.forEach(t -> t.set);
         String[] timeArr = lecture.getTime().split("/");
         Week[] week = Week.values();
         for (int i = 0; i < week.length; i++) {
@@ -35,6 +33,13 @@ public class LectureForm {
                 lectureTimeList ,lecture.getLimitNum());
     }
 
+    public Lecture convertEntity(Member professor) {
+        StringBuilder sb = new StringBuilder();
+        lectureTimeList.stream().forEach(time -> sb.append(time).append("/"));
+        String time = sb.toString();
+        return new Lecture(lectureName, professor, semester, time, limitNum);
+    }
+
     @AllArgsConstructor
     @Getter @Setter
     public static class LectureTime {
@@ -42,5 +47,10 @@ public class LectureForm {
         private String endTime;
 
         public LectureTime() {this.startTime = ""; this.endTime = "";}
+
+        @Override
+        public String toString() {
+            return startTime + "~" + endTime;
+        }
     }
 }

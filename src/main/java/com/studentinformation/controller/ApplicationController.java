@@ -13,29 +13,10 @@ public class ApplicationController {
 
     private final ApplicationService applicationService;
 
-    @GetMapping("/grade/myGrade")
-    public String goMyLecture() {
-        return "grade/myGrade";
-    }
 
-    @GetMapping("/grade/objection")
-    public String goObjection() {
-        return "grade/objection";
-    }
-
-    @GetMapping("/grade/objectionList")
-    public String goObjectionList() {
-        return "grade/objectionList";
-    }
-
-    @GetMapping("/grade/giveGrade")
-    public String goGiveGrade() {
-        return "grade/giveGrade";
-    }
-
-    @GetMapping("/grade/graduateGrade")
-    public String goGraduateGrade() {
-        return "grade/graduateGrade";
+    @GetMapping("/applications")
+    public String goApplicationPage() {
+        return "applications/application";
     }
 
 }
