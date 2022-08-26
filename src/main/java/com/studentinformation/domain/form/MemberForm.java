@@ -21,7 +21,7 @@ public class MemberForm {
     // 이부분 널값으로 넣어도 되는지는 지켜봐야될 듯
     public Member toEntity(){ return new Member(studentNum,null,memberName,state,collegeName); }
 
-    public static MemberForm createMemberForm(Member member){
+    public static MemberForm of(Member member){
         return new MemberForm(member.getStudentNum(), member.getMemberName(), member.getState(), member.getCollegeName());
     }
 

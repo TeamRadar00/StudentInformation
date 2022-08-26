@@ -35,7 +35,7 @@ public class ApplicationServiceTest {
         //given
         Member testMember = new Member("test","test","test", MemberState.inSchool,"test");
         Member professor = new Member("test","test","test", MemberState.professor,"test");
-        Lecture testLecture = new Lecture("test",professor,"test", Week.MONDAY, OffsetTime.now(),0);
+        Lecture testLecture = new Lecture("test",professor,"test", "",0);
 
         Application application = new Application(testMember, testLecture);
         //when
@@ -63,7 +63,7 @@ public class ApplicationServiceTest {
     private Application makeTestApplication(){
         Member testMember = new Member("test","test","test", MemberState.inSchool,"test");
         Member professor = new Member("test","test","test", MemberState.professor,"test");
-        Lecture testLecture = new Lecture("test",professor,"test", Week.MONDAY, OffsetTime.now(),2);
+        Lecture testLecture = new Lecture("test",professor,"test", "",2);
 
         return new Application(testMember,testLecture);
     }

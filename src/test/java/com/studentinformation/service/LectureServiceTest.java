@@ -22,7 +22,7 @@ public class LectureServiceTest {
     public void 강의생성() throws Exception {
         //given
         Member member = new Member("test","test","test",MemberState.professor,"test");
-        Lecture lecture = new Lecture("test",member,"test",Week.MONDAY,OffsetTime.now(),100);
+        Lecture lecture = new Lecture("test",member,"test", "",100);
         Lecture test = lectureService.makeLecture(lecture);
         //when
         //then
@@ -34,7 +34,7 @@ public class LectureServiceTest {
     public void 강의수정() throws Exception {
         //given
         Lecture oldLecture = makeTestLecture();
-        Lecture newLecture = new Lecture("change",oldLecture.getProfessor(),"change",Week.MONDAY,OffsetTime.now(),100);
+        Lecture newLecture = new Lecture("change",oldLecture.getProfessor(),"change","",100);
         //when
         lectureService.editLecture(oldLecture.getId(),newLecture);
         //then
@@ -68,9 +68,9 @@ public class LectureServiceTest {
         for(int i=0;i<totalLecture;i++){
             Lecture testLecture;
             if(i%2==0){
-                testLecture = new Lecture("test" + i, professor, "202202", Week.SATURDAY, OffsetTime.now(), 100);
+                testLecture = new Lecture("test" + i, professor, "202202","", 100);
             }else{
-                testLecture = new Lecture("test" + i, professor, "202201", Week.SATURDAY, OffsetTime.now(), 100);
+                testLecture = new Lecture("test" + i, professor, "202201", "", 100);
             }
             lectureService.makeLecture(testLecture);
         }
@@ -102,9 +102,9 @@ public class LectureServiceTest {
         for(int i=0;i<totalLecture;i++){
             Lecture testLecture;
             if(i%2==0){
-                testLecture = new Lecture("test" + i, professor, "202202", Week.SATURDAY, OffsetTime.now(), 100);
+                testLecture = new Lecture("test" + i, professor, "202202", "", 100);
             }else{
-                testLecture = new Lecture("test" + i, professor, "202201", Week.SATURDAY, OffsetTime.now(), 100);
+                testLecture = new Lecture("test" + i, professor, "202201", "", 100);
             }
             lectureService.makeLecture(testLecture);
         }
@@ -124,7 +124,7 @@ public class LectureServiceTest {
 
     private Lecture makeTestLecture(){
         Member member = new Member("test","test","test",MemberState.professor,"test");
-        Lecture lecture = new Lecture("test",member,"test",Week.MONDAY,OffsetTime.now(),100);
+        Lecture lecture = new Lecture("test",member,"test","",100);
         return lectureService.makeLecture(lecture);
 
     }

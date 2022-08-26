@@ -2,26 +2,48 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 
-<table class="table table-bordered table-light" th:fragment="lectureTable (isEditable)">
+<table class="table table-bordered table-light" th:fragment="lectureTable (param1)">
     <thead>
     <tr align="center">
         <th>강의이름</th>
         <th>교수님</th>
         <th>요일</th>
         <th>시작 시간</th>
-        <th>강의 시간</th>
+        <th>종료 시간</th>
         <th>수강 가능 인원</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="lecture : ${lectureList}" align="center">
-        <td><div th:text="${lecture.lectureName}"
-                 th:onclick="${isEditable}?|location.href='@{lectures/{id}/edit(id=${lecture.id})}'| : ''"></div>
+        <td th:switch="${param1}">
+            <div th:case="'show'" th:text="${lecture.lectureName}"></div>
+            <div th:case="'edit'"
+                 th:text="${lecture.lectureName}"
+                 th:onclick="|location.href='@{lectures/{id}/edit(id=${lecture.id})}'|"
+                 th:style="'color:blue;font-weight:bold;cursor: pointer;'"></div>
+            <div th:case="'application'" th:text="${lecture.lectureName}"></div>
+            <button th:if="${#strings.equals(param1,'application')}" type="button"
+                    th:onclick="|location.href='@{/applications/{id}/new(id=${lecture.id})}'|"
+                    class="btn btn-primary">신청</button>
         </td>
         <td th:text="${lecture.professor.memberName}"></td>
-        <td th:text="${lecture.week.name}"></td>
-        <td th:text="|${lecture.time.getHour()}:${lecture.time.getMinute()}|"></td>
-        <td th:text="|${#strings.substring(lecture.time.getOffset(),1,3)}시간|"></td>
+        <td th:text="${lecture.semester}"></td>
+        <td>
+            <th:block th:each="day,dayStat : ${week}">
+                <span th:if="${not #strings.isEmpty(lecture.lectureTimeList[__${dayStat.index}__].startTime)}"
+                    th:text="${day.name}"></span>
+                <span th:text="${lecture.lectureTimeList[__${dayStat.index}__].startTime}?: _"></span>
+                <br th:if="${not #strings.isEmpty(lecture.lectureTimeList[__${dayStat.index}__].startTime)}">
+            </th:block>
+        </td>
+        <td>
+            <th:block th:each="day,dayStat : ${week}">
+                <span th:if="${not #strings.isEmpty(lecture.lectureTimeList[__${dayStat.index}__].endTime)}"
+                      th:text="${day.name}"></span>
+                <span th:text="${lecture.lectureTimeList[__${dayStat.index}__].endTime}?: _"></span>
+                <br th:if="${not #strings.isEmpty(lecture.lectureTimeList[__${dayStat.index}__].endTime)}">
+            </th:block>
+        </td>
         <td th:text="|${lecture.limitNum}명|"></td>
     </tr>
     </tbody>

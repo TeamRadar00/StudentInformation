@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static javax.persistence.FetchType.*;
 
@@ -33,10 +34,8 @@ public class Lecture extends BaseEntity{
 
     private String semester; //년도 + 학기 : 202201(22년 1학기), 202202(22년 2학기)
 
-    @Enumerated(EnumType.STRING)
-    private Week week;
-
-    private OffsetTime time;
+    // ex) ///12:00~12:50/12:00~12:50//
+    private String time; // 각 요일마다 슬래시로 구분(총 6개 필요). 슬래시 사이에 값이 있다면 해당 시간이 수업시간(시작시간~종료시간).
 
     @Column(name = "limit_num")
     private int limitNum;
@@ -52,11 +51,10 @@ public class Lecture extends BaseEntity{
         professor.getProfessorLectures().add(this);
     }
 
-    public Lecture(String lectureName, Member professor, String semester, Week week, OffsetTime time, int limitNum) {
+    public Lecture(String lectureName, Member professor, String semester, String time, int limitNum) {
         this.createDate = this.lastModifiedDate =LocalDateTime.now();
         this.lectureName = lectureName;
         this.semester = semester;
-        this.week = week;
         this.time = time;
         this.limitNum = limitNum;
         setProfessor(professor);
@@ -68,7 +66,6 @@ public class Lecture extends BaseEntity{
         this.lastModifiedDate = LocalDateTime.now();
         this.lectureName = newLecture.getLectureName();
         this.semester = newLecture.getSemester();
-        this.week = newLecture.getWeek();
         this.time = newLecture.getTime();
         this.limitNum = newLecture.getLimitNum();
         setProfessor(newLecture.getProfessor());
@@ -85,7 +82,6 @@ public class Lecture extends BaseEntity{
                 ", lectureName='" + lectureName + '\'' +
                 ", professor=" + professor.getMemberName() +
                 ", semester='" + semester + '\'' +
-                ", week=" + week +
                 ", time=" + time +
                 ", limitNum=" + limitNum +
                 ", createDate=" + createDate +
