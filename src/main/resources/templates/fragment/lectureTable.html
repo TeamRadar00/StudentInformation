@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 
-<table class="table table-bordered table-light" th:fragment="lectureTable (isEditable)">
+<table class="table table-bordered table-light" th:fragment="lectureTable (param1)">
     <thead>
     <tr align="center">
         <th>강의이름</th>
@@ -15,9 +15,16 @@
     </thead>
     <tbody>
     <tr th:each="lecture : ${lectureList}" align="center">
-        <td><div th:text="${lecture.lectureName}"
-                 th:onclick="${isEditable}? |location.href='@{lectures/{id}/edit(id=${lecture.id})}'| : ''"
-                 th:style="${isEditable}?'color:blue':''"></div>
+        <td th:switch="${param1}">
+            <div th:case="'show'" th:text="${lecture.lectureName}"></div>
+            <div th:case="'edit'"
+                 th:text="${lecture.lectureName}"
+                 th:onclick="|location.href='@{lectures/{id}/edit(id=${lecture.id})}'|"
+                 th:style="'color:blue;font-weight:bold;cursor: pointer;'"></div>
+            <div th:case="'application'" th:text="${lecture.lectureName}"></div>
+            <button th:if="${#strings.equals(param1,'application')}" type="button"
+                    th:onclick="|location.href='@{/applications/{id}/new(id=${lecture.id})}'|"
+                    class="btn btn-primary">신청</button>
         </td>
         <td th:text="${lecture.professor.memberName}"></td>
         <td th:text="${lecture.semester}"></td>

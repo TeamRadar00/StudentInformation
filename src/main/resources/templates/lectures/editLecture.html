@@ -10,35 +10,33 @@
                 강의 개설/수정
             </div>
             <div class="card-body">
-                <form method="post">
-                    <form th:object="${editLecture}" method="post">
-                        <div class="form-floating mb-3">
-                            <input class="form-control" th:field="*{lectureName}" type="text" placeholder="lectureName"/>
-                            <label th:for="*{lectureName}">강의 이름</label>
+                <form th:object="${editLecture}" method="post">
+                    <div class="form-floating mb-3">
+                        <input class="form-control" th:field="*{lectureName}" type="text" placeholder="lectureName"/>
+                        <label th:for="*{lectureName}">강의 이름</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input class="form-control" th:field="*{semester}" type="text" placeholder="20**/*"/>
+                        <label th:for="*{semester}">학기</label>
+                    </div>
+                    <div  th:each="day,dayStat : ${week}" class="form-row">
+                        <div  class="form-group col-md-2">
+                            <input class="form-control" type="text" th:value="${day.name}" readonly>
                         </div>
-                        <div class="form-floating mb-3">
-                            <input class="form-control" th:field="*{semester}" type="text" placeholder="20**/*"/>
-                            <label th:for="*{semester}">학기</label>
+                        <div class="form-group col-md-3">
+                            <input class="form-control" th:field="*{lectureTimeList[__${dayStat.index}__].startTime}" type="time" placeholder="startTime"/>
                         </div>
-                        <div  th:each="day,dayStat : ${week}" class="form-row">
-                            <div  class="form-group col-md-2">
-                                <input class="form-control" type="text" th:value="${day.name}" readonly>
-                            </div>
-                            <div class="form-group col-md-3">
-                                <input class="form-control" th:field="*{lectureTimeList[__${dayStat.index}__].startTime}" type="time" placeholder="startTime"/>
-                            </div>
-                            <div class="form-group col-md-3">
-                                <input class="form-control" th:field="*{lectureTimeList[__${dayStat.index}__].endTime}" type="time" placeholder="endTime"/>
-                            </div>
+                        <div class="form-group col-md-3">
+                            <input class="form-control" th:field="*{lectureTimeList[__${dayStat.index}__].endTime}" type="time" placeholder="endTime"/>
                         </div>
-                        <div class="form-floating mb-3">
-                            <input class="form-control" th:field="*{limitNum}" type="text" placeholder="숫자로 입력해주세요."/>
-                            <label th:for="*{limitNum}">최대 정원</label>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
-                            <button type="submit" class="btn btn-primary">회원가입</button>
-                        </div>
-                    </form>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input class="form-control" th:field="*{limitNum}" type="text" placeholder="숫자로 입력해주세요."/>
+                        <label th:for="*{limitNum}">최대 정원</label>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
+                        <button type="submit" class="btn btn-primary">강의 수정</button>
+                    </div>
                 </form>
             </div>
         </div>

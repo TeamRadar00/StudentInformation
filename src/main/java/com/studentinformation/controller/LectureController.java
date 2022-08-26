@@ -41,17 +41,19 @@ public class LectureController {
 
     private void addTestLectureList(Model model, String name) {
         Member professor = memberService.findByMemberNum("123");
-        Lecture lecture = new Lecture("c언어", professor, "2022/2",
+        Lecture lecture1 = new Lecture("c언어", professor, "2022/2",
                 "~/12:00~12:50/~/13:00~13:50/~/~/~/", 20);
-        lecture = lectureService.makeLecture(lecture);
-        model.addAttribute(name, List.of(LectureForm.of(lecture)));
+        Lecture lecture2 = new Lecture("운영체제", professor, "2022/2",
+                "14:00~14:50/~/12:00~12:50/~/~/~/~/", 25);
+        lecture1 = lectureService.makeLecture(lecture1);
+        lecture2 = lectureService.makeLecture(lecture2);
+        model.addAttribute(name, List.of(LectureForm.of(lecture1),LectureForm.of(lecture2)));
     }
     private void addTestLecture(Model model, String name) {
         Member professor = memberService.findByMemberNum("123");
         Lecture lecture = new Lecture("c언어", professor, "2022/2",
                 "~/12:00~12:50/~/13:00~13:50/~/~/~/", 20);
         model.addAttribute(name, LectureForm.of(lecture));
-        model.addAttribute("week", Week.values());
     }
 
     @GetMapping("/lectures/my")
@@ -80,7 +82,16 @@ public class LectureController {
     public String goCRUDLecture(Model model) {
         //세션 넣으면 파라미터에 @Login Member professor 넣고 해당 교수에 따라 개설된 강의 보여주기
         addTestLectureList(model,"lectureList");
+        model.addAttribute("createLecture", new LectureForm());
         return "lectures/CRUDLecture";
+    }
+
+    @PostMapping("/lectures/new")
+    public String createLecture(@ModelAttribute LectureForm lectureForm) {
+//        Member professor = memberService.findById()
+//        lectureService.makeLecture(lectureForm.convertEntity(professor));
+        log.info("lectureForm = {}", lectureForm);
+        return "redirect:/lectures";
     }
 
     @GetMapping("/lectures/{lectureId}/edit")
@@ -98,7 +109,7 @@ public class LectureController {
 //        Member professor = lectureService.findByLectureId(lectureId).getProfessor();
 //        lectureService.editLecture(lectureId, lectureForm.convertEntity(professor));
         model.addAttribute("week", Week.values());
-        return "lectures/editLecture";
+        return "redirect:/lectures";
     }
 
 

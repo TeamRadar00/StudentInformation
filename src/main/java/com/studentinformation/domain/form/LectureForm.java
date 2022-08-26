@@ -10,6 +10,7 @@ import java.util.*;
 @Setter
 @Getter
 @ToString
+@NoArgsConstructor
 @AllArgsConstructor
 public class LectureForm {
 
@@ -29,7 +30,7 @@ public class LectureForm {
             if(token.length<2) lectureTimeList.add(new LectureTime());
             else lectureTimeList.add(new LectureTime(token[0], token[1]));
         }
-        return new LectureForm(lecture.getId(), lecture.getLectureName(), MemberForm.createMemberForm(lecture.getProfessor()), lecture.getSemester(),
+        return new LectureForm(lecture.getId(), lecture.getLectureName(), MemberForm.of(lecture.getProfessor()), lecture.getSemester(),
                 lectureTimeList ,lecture.getLimitNum());
     }
 
