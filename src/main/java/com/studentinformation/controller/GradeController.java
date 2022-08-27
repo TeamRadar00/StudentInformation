@@ -41,7 +41,7 @@ public class GradeController {
         MemberForm form = MemberForm.of(member);
 
         model.addAttribute("student",form);
-        model.addAttribute("total", new TotalGradeForm(member));
+        model.addAttribute("total", TotalGradeForm.of(member));
         model.addAttribute("gradeList",member.getGrades());
         return "grade/myGrade";
     }
