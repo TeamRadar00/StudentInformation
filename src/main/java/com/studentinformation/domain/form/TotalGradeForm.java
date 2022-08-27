@@ -16,16 +16,17 @@ public class TotalGradeForm {
     private double totalGrade;
     private double averageGrade;
 
-    public TotalGradeForm(Member member){
-        totalCredit = member.getGrades().stream()
+    public static TotalGradeForm of(Member member){
+        int totalCredit = member.getGrades().stream()
                 .mapToInt(grade -> grade.getLecture().getLectureCredit())
                 .sum();
 
-        totalGrade = member.getGrades().stream()
+        double totalGrade = member.getGrades().stream()
                 .mapToDouble(grade -> (grade.getScore().getScore() * grade.getLecture().getLectureCredit()))
                 .sum();
 
-        averageGrade = totalGrade/member.getGrades().size();
+        double averageGrade = totalGrade/member.getGrades().size();
+        return new TotalGradeForm(totalCredit,totalGrade,averageGrade);
     }
 
 
