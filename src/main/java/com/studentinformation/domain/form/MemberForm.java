@@ -17,12 +17,14 @@ public class MemberForm {
     private String memberName;
     private MemberState state;
     private String collegeName;
+    private int schoolYear;
 
     // 이부분 널값으로 넣어도 되는지는 지켜봐야될 듯
     public Member toEntity(){ return new Member(studentNum,null,memberName,state,collegeName); }
 
     public static MemberForm of(Member member){
-        return new MemberForm(member.getStudentNum(), member.getMemberName(), member.getState(), member.getCollegeName());
+        return new MemberForm(member.getStudentNum(), member.getMemberName(),
+                member.getState(), member.getCollegeName(),member.calculateSchoolYear());
     }
 
     // admin이 회원가입했을 때 초기 비밀번호는 학번과 동일하다

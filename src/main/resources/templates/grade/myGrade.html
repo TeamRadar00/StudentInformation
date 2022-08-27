@@ -9,7 +9,67 @@
                 <i class="fas fa-chart-bar me-1"></i>
                 수강 성적 조회
             </div>
-            <div class="card-body"><canvas width="50" height="200"></canvas></div>
+            <div class="card-body">
+                <table class="table table-bordered table-light" th:object="${student}">
+                    <thead>
+                    <tr align="center">
+                        <th>학번</th>
+                        <th>이름</th>
+                        <th>학과</th>
+                        <th>학적상태</th>
+                        <th>학년</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr align="center">
+                        <td th:text="*{studentNum}"></td>
+                        <td th:text="*{memberName}"></td>
+                        <td th:text="*{collegeName}"></td>
+                        <td th:text="*{state.getDescription()}"></td>
+                        <td th:text="*{schoolYear}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-light" th:object="${total}">
+                    <thead>
+                    <tr align="center">
+                        <th>총 신청학점</th>
+                        <th>총점</th>
+                        <th>평균평점(확인용)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr align="center">
+                        <td th:text="*{totalCredit}"></td>
+                        <td th:text="*{totalGrade}"></td>
+                        <td th:text="*{averageGrade}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-light">
+                    <thead>
+                    <tr align="center">
+                        <th>교과코드</th>
+                        <th>교과목명</th>
+                        <th>학점</th>
+                        <th>성적</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="grade : ${gradeList}" align="center">
+                        <th th:text="${grade.lecture.id}"></th>
+                        <th th:text="${grade.lecture.lectureName}"></th>
+                        <th th:text="${grade.lecture.lectureCredit}"></th>
+                        <th th:text="${grade.score.getName()}"></th>
+                    </tr>
+                    </tbody>
+
+                </table>
+            </div>
         </div>
     </div>
 </main>

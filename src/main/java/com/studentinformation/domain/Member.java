@@ -8,9 +8,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Entity
 @Getter
@@ -36,6 +39,9 @@ public class Member extends BaseEntity{
     @Column(name = "college_name")
     private String collegeName;
 
+    @Column(name = "outSchool_count")
+    private int outSchoolCount;
+
     @OneToMany(mappedBy = "student")
     private List<Application> applications;
 
@@ -52,6 +58,7 @@ public class Member extends BaseEntity{
         this.memberName = memberName;
         this.state = state;
         this.collegeName = collegeName;
+        this.outSchoolCount = 0;
         this.applications = new ArrayList<>();
         this.grades = new ArrayList<>();
         this.professorLectures = new ArrayList<>();
@@ -76,6 +83,24 @@ public class Member extends BaseEntity{
         return createDate.equals(lastModifiedDate);
     }
 
+    public void increaseOutSchoolCount(){
+        outSchoolCount++;
+    }
+
+    public void changeCreateDate(){
+        this.createDate = LocalDateTime.of(2019,1,1,0,0,0);
+    }
+
+    public int calculateSchoolYear(){
+        LocalDate createDate = LocalDate.from(this.createDate);
+        Period period = Period.between(createDate,LocalDate.now());
+
+        int years = period.getYears();
+        int months = period.getMonths() / 6;
+        int schoolYear = (years*2+months-outSchoolCount)/2+1;
+        return schoolYear;
+    }
+
     @Override
     public String toString() {
         return "Member{" +
@@ -84,6 +109,7 @@ public class Member extends BaseEntity{
                 ", password='" + password + '\'' +
                 ", memberName='" + memberName + '\'' +
                 ", state=" + state +
+                ", outSchoolCount=" + outSchoolCount +
                 ", collegeName='" + collegeName + '\'' +
                 ", createDate=" + createDate +
                 ", lastModifiedDate=" + lastModifiedDate +
@@ -91,6 +117,6 @@ public class Member extends BaseEntity{
     }
 
     public MemberForm getMemberForm() {
-        return new MemberForm(studentNum, memberName, state, collegeName);
+        return new MemberForm(studentNum, memberName, state, collegeName,calculateSchoolYear());
     }
 }

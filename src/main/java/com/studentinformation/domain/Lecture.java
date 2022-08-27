@@ -10,6 +10,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.OffsetTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +38,8 @@ public class Lecture extends BaseEntity{
     // ex) ///12:00~12:50/12:00~12:50//
     private String time; // 각 요일마다 슬래시로 구분(총 6개 필요). 슬래시 사이에 값이 있다면 해당 시간이 수업시간(시작시간~종료시간).
 
+    private int lectureCredit;
+
     @Column(name = "limit_num")
     private int limitNum;
 
@@ -57,6 +60,7 @@ public class Lecture extends BaseEntity{
         this.semester = semester;
         this.time = time;
         this.limitNum = limitNum;
+        calculateLectureCredit();
         setProfessor(professor);
         this.applications = new ArrayList<>();
         this.grades = new ArrayList<>();
@@ -68,11 +72,26 @@ public class Lecture extends BaseEntity{
         this.semester = newLecture.getSemester();
         this.time = newLecture.getTime();
         this.limitNum = newLecture.getLimitNum();
+        calculateLectureCredit();
         setProfessor(newLecture.getProfessor());
     }
 
     public boolean checkCurrentCountUnderLimitNum(){
         return applications.size()-1<limitNum;
+    }
+
+    private void calculateLectureCredit(){
+        String[] split = time.split("/");
+        int credit = 0;
+        for (String s : split) {
+            if(s.length()>=2){
+                String[] token = s.split("~");
+                String[] startTime = token[0].split(":");
+                String[] endTime = token[1].split(":");
+                credit =  credit + Integer.parseInt(endTime[0]) - Integer.parseInt(startTime[0])+1;
+            }
+        }
+        this.lectureCredit = credit;
     }
 
     @Override
