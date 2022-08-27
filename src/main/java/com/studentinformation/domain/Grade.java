@@ -36,6 +36,7 @@ public class Grade extends BaseEntity{
     @Column(length = 1000)
     private String objection;
 
+
     public void setStudent(Member student){
         this.student = student;
         student.getGrades().add(this);
