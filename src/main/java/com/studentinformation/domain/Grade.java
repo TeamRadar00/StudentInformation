@@ -69,4 +69,15 @@ public class Grade extends BaseEntity{
         return emptyGrade;
     }
 
+
+    @Override
+    public String toString() {
+        return "Grade{" +
+                "id=" + id +
+                ", score=" + score +
+                ", objection='" + objection + '\'' +
+                ", createDate=" + createDate +
+                ", lastModifiedDate=" + lastModifiedDate +
+                '}';
+    }
 }

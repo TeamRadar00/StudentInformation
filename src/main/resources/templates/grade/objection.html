@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html th:replace="~{layout :: layout(~{::main})}" xmlns:th="http://www.thymeleaf.org">
 
+
 <body>
 <main>
     <div class="col-xl-6">
@@ -9,8 +10,27 @@
                 <i class="fas fa-chart-bar me-1"></i>
                 성적 이의 신청
             </div>
-            <div class="card-body"><canvas width="50" height="200"></canvas></div>
+            <div class="card-body">
+                <form method="post">
+                    <div class="btn-group w-100">
+                        <select class="form-select w-75" th:name="gradeId">
+                            <option th:each="grade : ${gradeList}" th:value="${grade.id}"
+                                    th:utext="${grade.lecture.lectureName}">
+                            </option>
+                        </select>
+                        <button type="submit" class="btn btn-primary" th:onclick="|location.href='@{/grade/objection}'|"
+                                th:text="신청하기"></button>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text">이의 신청<br>(1000자 이내)</span>
+                        <textarea style="resize: none" rows="10" th:name="gradeObjection"
+                                  class="form-control" aria-label="With textarea"></textarea>
+                    </div>
+
+                </form>
+            </div>
         </div>
+
     </div>
 </main>
 </body>

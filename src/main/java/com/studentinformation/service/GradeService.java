@@ -33,6 +33,11 @@ public class GradeService {
         return gradeRepository.save(grade);
     }
 
+
+    public Grade findGradeById(Long gradeId){
+        return gradeRepository.findById(gradeId).get();
+    }
+
     /**
      * 성적 입력/수정 가능
      */
