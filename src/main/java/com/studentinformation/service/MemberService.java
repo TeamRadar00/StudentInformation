@@ -82,6 +82,12 @@ public class MemberService {
         }
     }
 
+    public Member login(String studentNum, String password) {
+        return memberRepository.findByStudentNum(studentNum)
+                .filter(member -> member.getPassword().equals(password))
+                .orElse(null);
+    }
+
 
     public Member findById(Long id){
         return memberRepository.findById(id)
@@ -92,7 +98,5 @@ public class MemberService {
         return memberRepository.findByStudentNum(memberNum)
                 .orElseThrow(() -> new IllegalArgumentException("not found studentNum data"));
     }
-
-
 
 }
