@@ -12,10 +12,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
+import java.security.PrivateKey;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -31,13 +33,7 @@ public class GradeController {
      */
     @GetMapping("/grade/myGrade")
     public String goMyLecture(Model model) {
-        Member member = createMember();
-        for(int i=0;i<6;i++){
-            Member professor = new Member("test" + i, "test" + i, "professor" + i, MemberState.professor, "test");
-            Lecture lecture = new Lecture("test" + i, professor, "202202", "~/12:00~13:50/~/13:00~14:50/~/~/~/", 20);
-            Grade emptyGrade = Grade.createEmptyGrade(member, lecture);
-            gradeService.saveGrade(emptyGrade);
-        }
+        Member member = memberService.findByMemberNum("test");
         MemberForm form = MemberForm.of(member);
 
         model.addAttribute("student",form);
@@ -46,16 +42,21 @@ public class GradeController {
         return "grade/myGrade";
     }
 
-    private Member createMember() {
-        Member member = new Member("test","test","test", MemberState.inSchool,"test");
-        member.changeCreateDate();
-        memberService.addMember(member);
-        return member;
-    }
-
     @GetMapping("/grade/objection")
-    public String goObjection() {
+    public String goObjection(Model model) {
+        Member test = memberService.findByMemberNum("test");
+        List<Grade> grades = test.getGrades();
+        model.addAttribute("gradeList",grades);
+
         return "grade/objection";
+    }
+    @PostMapping("/grade/objection")
+    public String submitObjection(@RequestParam(value = "gradeId")Long id,
+                                  @RequestParam(value = "gradeObjection") String objection) {
+        Grade grade = gradeService.findGradeById(id);
+        grade.updateObjection(objection);
+        log.info("update grade objection = {}",grade);
+        return "redirect:/grade/objection";
     }
 
     @GetMapping("/grade/objectionList")
@@ -72,4 +73,5 @@ public class GradeController {
     public String goGraduateGrade() {
         return "grade/graduateGrade";
     }
+
 }
