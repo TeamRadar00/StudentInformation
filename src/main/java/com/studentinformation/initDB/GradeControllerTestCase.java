@@ -27,7 +27,8 @@ public class GradeControllerTestCase {
     @EventListener(ApplicationReadyEvent.class)
     @Transactional
     public void createGradeTestCase(){
-        Member member = createMember();
+        Member member = createMemberTest1();
+        createMemberTest2();
         for(int i=0;i<6;i++){
             Member professor = new Member("test" + i, "test" + i, "professor" + i, MemberState.professor, "test");
             Lecture lecture = new Lecture("test" + i, professor, "202202", "~/12:00~13:50/~/13:00~14:50/~/~/~/", 20);
@@ -37,8 +38,14 @@ public class GradeControllerTestCase {
     }
 
 
-    private Member createMember() {
+    private Member createMemberTest1() {
         Member member = new Member("test","test","test", MemberState.inSchool,"test");
+        member.changeCreateDate();
+        memberService.addMember(member);
+        return member;
+    }
+    private Member createMemberTest2() {
+        Member member = new Member("tes","tes","test", MemberState.inSchool,"test");
         member.changeCreateDate();
         memberService.addMember(member);
         return member;
