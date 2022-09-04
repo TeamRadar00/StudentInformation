@@ -54,7 +54,10 @@ public class GradeService {
     @Transactional
     public Grade editGradeOfObjection(Long gradeId, String objection){
         Grade grade = gradeRepository.findById(gradeId).get();//확실하게 존재함
-        grade.updateObjection(objection);
+        if(StringUtils.hasText(objection)) {
+            grade.updateObjection(objection);
+            log.info("update grade objection = {}",grade);
+        }
         return grade;
     }
 

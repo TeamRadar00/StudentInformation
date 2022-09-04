@@ -4,13 +4,13 @@
 <body>
 <main>
     <div class="col-xl-6">
-        <div class="card mb-4">
+        <div class="card mb-4" th:object="${myGrade}">
             <div class="card-header">
                 <i class="fas fa-chart-bar me-1"></i>
                 수강 성적 조회
             </div>
             <div class="card-body">
-                <table class="table table-bordered table-light" th:object="${student}">
+                <table class="table table-bordered table-light">
                     <thead>
                     <tr align="center">
                         <th>학번</th>
@@ -22,17 +22,17 @@
                     </thead>
                     <tbody>
                     <tr align="center">
-                        <td th:text="*{studentNum}"></td>
-                        <td th:text="*{memberName}"></td>
-                        <td th:text="*{collegeName}"></td>
-                        <td th:text="*{state.getDescription()}"></td>
-                        <td th:text="*{schoolYear}"></td>
+                        <td th:text="*{memberForm.studentNum}"></td>
+                        <td th:text="*{memberForm.memberName}"></td>
+                        <td th:text="*{memberForm.collegeName}"></td>
+                        <td th:text="*{memberForm.state.getDescription()}"></td>
+                        <td th:text="*{memberForm.schoolYear}"></td>
                     </tr>
                     </tbody>
                 </table>
             </div>
             <div class="card-body">
-                <table class="table table-bordered table-light" th:object="${total}">
+                <table class="table table-bordered table-light">
                     <thead>
                     <tr align="center">
                         <th>총 신청학점</th>
@@ -42,9 +42,9 @@
                     </thead>
                     <tbody>
                     <tr align="center">
-                        <td th:text="*{totalCredit}"></td>
-                        <td th:text="*{totalGrade}"></td>
-                        <td th:text="*{averageGrade}"></td>
+                        <td th:text="*{totalGradeForm.totalCredit}"></td>
+                        <td th:text="*{totalGradeForm.totalGrade}"></td>
+                        <td th:text="*{totalGradeForm.averageGrade}"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -60,14 +60,13 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="grade : ${gradeList}" align="center">
+                    <tr th:each="grade : *{grades}" align="center">
                         <th th:text="${grade.lecture.id}"></th>
                         <th th:text="${grade.lecture.lectureName}"></th>
                         <th th:text="${grade.lecture.lectureCredit}"></th>
                         <th th:text="${grade.score.getName()}"></th>
                     </tr>
                     </tbody>
-
                 </table>
             </div>
         </div>
