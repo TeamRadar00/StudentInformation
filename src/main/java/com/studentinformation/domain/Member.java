@@ -116,6 +116,7 @@ public class Member extends BaseEntity{
                 '}';
     }
 
+//    엔티티가 DTO를 만드는건 view에 의존적으로 되니 지우는거 어떰?
     public MemberForm getMemberForm() {
         return new MemberForm(studentNum, memberName, state, collegeName,calculateSchoolYear());
     }

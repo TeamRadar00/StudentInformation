@@ -36,9 +36,9 @@ public class MemberController {
     public String login(@ModelAttribute LoginMemberForm form, BindingResult bindingResult,
                         @RequestParam(defaultValue = "/")String redirectURL,
                         HttpServletRequest request) {
-        if (bindingResult.hasErrors()) {
-            return "login/loginForm";
-        }
+//        if (bindingResult.hasErrors()) {
+//            return "members/login";
+//        }
 
         Member loginMember = memberService.login(form.getStudentNum(), form.getPassword());
 
