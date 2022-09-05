@@ -13,4 +13,7 @@ public class ChangePasswordForm {
     private String newPassword;
     private String confirmPassword;
 
+    public boolean isPasswordEqual() {
+        return newPassword.equals(confirmPassword);
+    }
 }

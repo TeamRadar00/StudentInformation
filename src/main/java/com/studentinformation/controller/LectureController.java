@@ -5,7 +5,6 @@ import com.studentinformation.domain.Member;
 import com.studentinformation.domain.Week;
 import com.studentinformation.domain.form.LectureForm;
 import com.studentinformation.domain.form.SearchLectureForm;
-import com.studentinformation.repository.ApplicationRepository;
 import com.studentinformation.repository.LectureRepository;
 import com.studentinformation.service.LectureService;
 import com.studentinformation.service.MemberService;
@@ -63,7 +62,7 @@ public class LectureController {
 
     @GetMapping("/lectures/my")
     public String goMyLecture(@Login Member member, Model model) {
-        List<Lecture> list = lectureRepository.findLecturesByStudentName(member.getMemberName());
+        List<Lecture> list = lectureRepository.findLecturesByStudentId(member.getId());
         List<LectureForm> forms = list.stream().map(LectureForm::of).collect(Collectors.toList());
         model.addAttribute("lectureList", forms);
 
@@ -71,7 +70,10 @@ public class LectureController {
     }
 
     @GetMapping("/lectures/opened")
-    public String goOpenedLecture(@ModelAttribute SearchLectureForm form) { return "lectures/openedLecture"; }
+    public String goOpenedLecture(@ModelAttribute SearchLectureForm form) {
+
+        return "lectures/openedLecture";
+    }
 
     @PostMapping("/lectures/opened")
     public String searchLecture(@ModelAttribute SearchLectureForm form , Model model) {

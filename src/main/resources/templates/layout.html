@@ -7,6 +7,13 @@
         <title>Dashboard - SB Admin</title>
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
         <link href="/css/styles.css" rel="stylesheet" />
+
+<!--        RedirectAttributes의 addFlashAttribute로 msg값을 보내면 경고문을 보내며 컨트롤러에서 지정한 redirect한다.
+            layout을 적용한 페이지는 전부 해당한다.-->
+        <script th:if="not ${#strings.isEmpty(msg)}">
+            alert('[[${msg}]]');
+        </script>
+
         <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
     </head>
     <body class="sb-nav-fixed">

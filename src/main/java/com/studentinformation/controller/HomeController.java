@@ -23,7 +23,7 @@ public class HomeController {
 
     @PostConstruct
     public void addTestEntity() {
-        memberService.addMember(new Member("123", "password", "choi", MemberState.inSchool, "공대"));
+        memberService.addMember(new Member("123", "password", "choi", MemberState.admin, "공대"));
     }
 
     @GetMapping("/")
