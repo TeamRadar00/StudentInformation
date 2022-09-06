@@ -7,9 +7,9 @@
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
         <li><a class="dropdown-item" th:href="@{/members/login}">로그인</a></li>
         <li><a class="dropdown-item" th:href="@{/members/password}">비밀번호 변경</a></li>
-        <li><a class="dropdown-item" th:href="@{/members/admin}">admin</a></li>
+        <li><a class="dropdown-item" th:href="@{/admin}">admin</a></li>
         <li><hr class="dropdown-divider" /></li>
-        <li><a class="dropdown-item" href="#!">로그아웃</a></li>
+        <li><a class="dropdown-item" th:href="@{/members/logout}">로그아웃</a></li>
     </ul>
 </li>
 

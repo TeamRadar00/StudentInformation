@@ -5,8 +5,10 @@ import com.studentinformation.domain.Member;
 import com.studentinformation.domain.Week;
 import com.studentinformation.domain.form.LectureForm;
 import com.studentinformation.domain.form.SearchLectureForm;
+import com.studentinformation.repository.LectureRepository;
 import com.studentinformation.service.LectureService;
 import com.studentinformation.service.MemberService;
+import com.studentinformation.web.argumentResolver.Login;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -23,6 +26,7 @@ public class LectureController {
 
     private final MemberService memberService; //테스트용. 나중에 뺄거임
     private final LectureService lectureService;
+    private final LectureRepository lectureRepository;  //https://www.inflearn.com/questions/15024 단순 엔티티 참고는 넣을까..?
 
     @ModelAttribute("semesters")
     public Map<String, String> semester() { return Map.of("1","1학기","2","2학기"); }
@@ -57,16 +61,19 @@ public class LectureController {
     }
 
     @GetMapping("/lectures/my")
-    public String goMyLecture(Model model) {
-        //List<Lecture> list = lectureService.findByStudentName("choi")로 자신의 lectureList를 받고
-        //list.stream().map(LectureForm::createLectureForm).collect(Collectors.toList())로 변환 어떰?
+    public String goMyLecture(@Login Member member, Model model) {
+        List<Lecture> list = lectureRepository.findLecturesByStudentId(member.getId());
+        List<LectureForm> forms = list.stream().map(LectureForm::of).collect(Collectors.toList());
+        model.addAttribute("lectureList", forms);
 
-        addTestLectureList(model, "lectureList");
         return "lectures/myLecture";
     }
 
     @GetMapping("/lectures/opened")
-    public String goOpenedLecture(@ModelAttribute SearchLectureForm form) { return "lectures/openedLecture"; }
+    public String goOpenedLecture(@ModelAttribute SearchLectureForm form) {
+
+        return "lectures/openedLecture";
+    }
 
     @PostMapping("/lectures/opened")
     public String searchLecture(@ModelAttribute SearchLectureForm form , Model model) {

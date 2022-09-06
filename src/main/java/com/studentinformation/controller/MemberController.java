@@ -6,15 +6,18 @@ import com.studentinformation.domain.form.ChangePasswordForm;
 import com.studentinformation.domain.form.LoginMemberForm;
 import com.studentinformation.domain.form.MemberForm;
 import com.studentinformation.service.MemberService;
+import com.studentinformation.web.argumentResolver.Login;
 import com.studentinformation.web.session.SessionConst;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -36,9 +39,9 @@ public class MemberController {
     public String login(@ModelAttribute LoginMemberForm form, BindingResult bindingResult,
                         @RequestParam(defaultValue = "/")String redirectURL,
                         HttpServletRequest request) {
-        if (bindingResult.hasErrors()) {
-            return "login/loginForm";
-        }
+//        if (bindingResult.hasErrors()) {
+//            return "members/login";
+//        }
 
         Member loginMember = memberService.login(form.getStudentNum(), form.getPassword());
 
@@ -49,7 +52,6 @@ public class MemberController {
 
         HttpSession session = request.getSession();
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
-        log.info("MemberForm = {}", form);
         return "redirect:" + redirectURL;
     }
 
@@ -58,9 +60,17 @@ public class MemberController {
         return "members/password";
     }
 
+    //validation 추가해야됨
     @PostMapping("/members/password")
-    public String changePassword(@ModelAttribute ChangePasswordForm form) {
-        log.info("ChangePasswordForm = {}", form);
+    public String changePassword(@Login Member member, @ModelAttribute ChangePasswordForm form, RedirectAttributes ra) {
+        if (form.isPasswordEqual()) {
+            if (memberService.findPassword(member.getMemberName(), member.getStudentNum()).equals(form.getPrePassword())) {
+                memberService.updatePassword(member.getId(), form.getNewPassword());
+                ra.addFlashAttribute("msg", "비밀번호 변경이 완료됐습니다!");
+                log.info("----changePassword----{}--------",member);
+                return "redirect:/home";
+            }
+        }
         return "members/password";
     }
 
@@ -71,25 +81,45 @@ public class MemberController {
 
     @PostMapping("/members/find-id")
     public String findId(@ModelAttribute MemberForm form) {
-        log.info("MemberForm = {}", form);
+        String studentNum = memberService.findStudentNum(form.getMemberName());
+        if(StringUtils.hasText(studentNum)){
+            form.updateMessage("학번: " + studentNum);
+        }
         return "members/findMember";
     }
 
     @PostMapping("/members/find-password")
     public String findPassword(@ModelAttribute MemberForm form) {
-        log.info("MemberForm = {}", form);
+        String password = memberService.findPassword(form.getMemberName(), form.getStudentNum());
+        if(StringUtils.hasText(password)){
+            form.updateMessage("비밀번호: "+ password);
+        }
         return "members/findMember";
     }
 
     // admin 따로 뺄지 말진 잘 모르겠음
     @GetMapping("/admin")
-    public String goRegister(@ModelAttribute MemberForm form) {
-        return "members/admin";
+    public String goRegister(@Login Member member, @ModelAttribute MemberForm form, RedirectAttributes ra) {
+        if (member.getState().equals(MemberState.admin)) {
+            return "members/admin";
+        }else{
+            ra.addFlashAttribute("msg", "권한이 없습니다!");
+            return "redirect:/home";
+        }
     }
 
     @PostMapping("/admin")
-    public String register(@ModelAttribute MemberForm form) {
-        log.info("MemberForm = {}", form);
-        return "members/admin";
+    public String register(@ModelAttribute MemberForm form, RedirectAttributes ra) {
+        ra.addFlashAttribute("msg", "회원가입이 완료됐습니다!");
+        memberService.addMember(form.registerMember());
+        return "redirect:/members/login";
+    }
+
+    @GetMapping("/members/logout")
+    public String logout(HttpServletRequest request, RedirectAttributes ra) {
+        HttpSession session = request.getSession();
+        session.removeAttribute(SessionConst.LOGIN_MEMBER);
+        ra.addFlashAttribute("msg", "로그아웃 되었습니다!");
+        return "redirect:/home";
     }
 }
