@@ -3,6 +3,8 @@ package com.studentinformation.domain.form;
 import com.studentinformation.domain.Lecture;
 import com.studentinformation.domain.Member;
 import com.studentinformation.domain.Week;
+import com.studentinformation.repository.LectureRepository;
+import com.studentinformation.service.LectureService;
 import lombok.*;
 
 import java.util.*;
@@ -34,11 +36,12 @@ public class LectureForm {
                 lectureTimeList ,lecture.getLimitNum());
     }
 
-    public Lecture convertEntity(Member professor) {
+    public Lecture convertEntity(Member member) {
         StringBuilder sb = new StringBuilder();
         lectureTimeList.stream().forEach(time -> sb.append(time).append("/"));
         String time = sb.toString();
-        return new Lecture(lectureName, professor, semester, time, limitNum);
+
+        return new Lecture(lectureName, member, semester, time, limitNum);
     }
 
     @AllArgsConstructor
