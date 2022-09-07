@@ -27,7 +27,7 @@ public class TotalGradeForm {
                 .mapToDouble(grade -> (grade.getScore().getScore() * grade.getLecture().getLectureCredit()))
                 .sum();
 
-        double averageGrade = totalGrade/grades.size();
+        double averageGrade = totalGrade/totalCredit;
         return new TotalGradeForm(totalCredit,totalGrade,averageGrade);
     }
 

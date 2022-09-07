@@ -2,6 +2,9 @@ package com.studentinformation.domain;
 
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 public enum Score {
 
@@ -19,5 +22,15 @@ public enum Score {
     Score(String name, float score) {
         this.name = name;
         this.score = score;
+    }
+
+    public static List<Score> of(String source){
+        String[] split = source.split(",");
+        List<Score> scoreList = new ArrayList<>();
+        for (String s : split) {
+            Score score = Score.valueOf(s);
+            scoreList.add(score);
+        }
+        return scoreList;
     }
 }

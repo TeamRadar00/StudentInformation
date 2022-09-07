@@ -9,7 +9,46 @@
                 <i class="fas fa-chart-bar me-1"></i>
                 성적 입력/수정
             </div>
-            <div class="card-body"><canvas width="50" height="200"></canvas></div>
+            <div class="card-body">
+                <form method="get">
+                    <div class="btn-group w-100">
+                        <select class="form-select w-75" th:name="lectureId">
+                            <option th:each="lecture : ${lectureList}" th:value="${lecture.id}"
+                                    th:utext="${lecture.lectureName}">
+                            </option>
+                        </select>
+                        <button type="submit" class="btn btn-primary" th:text="선택하기"></button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <table class="table table-bordered table-light">
+                        <thead>
+                        <tr align="center">
+                            <th>학번</th>
+                            <th>이름</th>
+                            <th>성적</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="student : *{studentList}" align="center">
+                            <th th:text="${student.studentNum}" ></th>
+                            <th th:text="${student.memberName}"></th>
+                            <th>
+                                <select class="form-select"  th:name="gradeScore">
+                                    <option th:each="score : ${T(com.studentinformation.domain.Score).values()}"
+                                            th:value="${score}"
+                                            th:utext="${score.name}">
+                                    </option>
+                                </select>
+                            </th>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <button type="submit" class="btn btn-primary" th:text="입력"></button>
+                </form>
+            </div>
         </div>
     </div>
 </main>
