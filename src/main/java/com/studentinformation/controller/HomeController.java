@@ -34,10 +34,6 @@ public class HomeController {
     @GetMapping("/home")
     public String home(@Login Member loginMember, Model model) {
 
-        if(loginMember == null) {
-            return "members/login";
-        }
-
         MemberForm form = MemberForm.of(loginMember);
         model.addAttribute("form", form);
         return "home";
