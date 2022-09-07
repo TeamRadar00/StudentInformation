@@ -13,6 +13,7 @@ import com.studentinformation.web.argumentResolver.Login;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -83,18 +84,17 @@ public class LectureController {
     public String searchLecture(@ModelAttribute SearchLectureForm form , Model model) {
         //lectureService.search(form)로 폼을 넘길까 아님 여기서 폼을 까내서 안에 로직에 따라 findByProfessorName이나
         //findByLectureName을 호출할까?
-//        Page<Lecture> findLectures = null;
-//
-//        if (form.getSelectOne().equals("professor")) {
-//            findLectures = lectureService.findByProfessorName(form.getContent(),
-//                    form.getYear() + "0" + form.getSemester(), Pageable.ofSize(10));
-//        } else if (form.getSelectOne().equals("lectureName")) {
-//            findLectures = lectureService.findByLectureName(form.getContent(), form.getYear() + "0" + form.getSemester(),
-//                    Pageable.unpaged());
-//        }
-//        List<LectureForm> lectureFormList = findLectures.stream().map(LectureForm::of).collect(Collectors.toList());
-//        model.addAttribute("lectureList", lectureFormList);
-//        addTestLectureList(model, "lectureList");
+        Page<Lecture> findLectures = null;
+
+        if (form.getSelectOne().equals("professor")) {
+            findLectures = lectureService.findByProfessorName(form.getContent(),
+                    form.getYear() + "0" + form.getSemester(), PageRequest.of(0,10));
+        } else if (form.getSelectOne().equals("lectureName")) {
+            findLectures = lectureService.findByLectureName(form.getContent(),
+                    form.getYear() + "0" + form.getSemester(), PageRequest.of(0,10));
+        }
+        Page<LectureForm> lectureFormList = findLectures.map(LectureForm::of);
+        model.addAttribute("lectureList", lectureFormList);
         return "lectures/openedLecture";
     }
 
