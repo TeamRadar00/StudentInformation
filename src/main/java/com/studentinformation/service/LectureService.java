@@ -77,7 +77,7 @@ public class LectureService {
 
         int start = (int)pageable.getOffset();
         int end = Math.min(start + pageable.getPageSize(), findLectures.size());
-        return new PageImpl<>(findLectures.subList(0,end),pageable,findLectures.size());
+        return new PageImpl<>(findLectures.subList(start,end),pageable,findLectures.size());
     }
 
 

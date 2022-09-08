@@ -1,28 +1,19 @@
 package com.studentinformation.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.studentinformation.domain.*;
 import com.studentinformation.domain.form.*;
 import com.studentinformation.service.GradeService;
 import com.studentinformation.service.LectureService;
 import com.studentinformation.service.MemberService;
 import com.studentinformation.web.session.SessionConst;
-import com.sun.net.httpserver.HttpServer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.SessionIdGenerator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.net.http.HttpRequest;
-import java.security.PrivateKey;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,13 +26,18 @@ public class GradeController {
     private final MemberService memberService;
     private final LectureService lectureService;
 
+
     /**
      * model.addAttribute 여러번 사용하지말고 form으로 변환해서 한번에 보내기
+     * 서비스에 session 걷어내기
      */
     @GetMapping("/grade/myGrade")
     public String goMyGrade(Model model,HttpServletRequest request) {
         HttpSession session = request.getSession();
-        Member member = memberService.getMemberFromSession(session);
+        Member sessionAttributeMember = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
+
+        Long memberId = sessionAttributeMember.getId();
+        Member member = memberService.findById(memberId);
         model.addAttribute("myGrade", GoMyGradeForm.of(member));
         return "grade/myGrade";
     }
@@ -49,7 +45,10 @@ public class GradeController {
     @GetMapping("/grade/objection")
     public String goObjection(Model model, HttpServletRequest request) {
         HttpSession session = request.getSession();
-        Member member = memberService.getMemberFromSession(session);
+        Member sessionAttributeMember = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
+
+        Long memberId = sessionAttributeMember.getId();
+        Member member = memberService.findById(memberId);
         model.addAttribute("gradeList",member.getGrades());
         return "grade/objection";
     }
@@ -70,35 +69,33 @@ public class GradeController {
     public String goGiveGrade(Model model,HttpServletRequest request,
                               @RequestParam(value = "lectureId",required = false) Long lectureId) {
         HttpSession session = request.getSession();
-        Member professor = memberService.getMemberFromSession(session);
+        Member sessionAttributeMember = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
+
+        Long memberId = sessionAttributeMember.getId();
+        Member professor = memberService.findById(memberId);
+        GradeGoGIveGradeForm form;
         if(lectureId != null){
             Lecture lecture = lectureService.findByLectureId(lectureId);
-            List<Member> student = lecture.getGrades().stream()
-                            .map(Grade::getStudent)
-                            .collect(Collectors.toList());
-            session.setAttribute(SessionConst.Grade_List,lecture.getGrades());
-            model.addAttribute("studentList",student);
+
+            form = GradeGoGIveGradeForm.makeFormWithLectureId(professor, lecture);
+        }else{
+            form = GradeGoGIveGradeForm.makeForm(professor);
         }
-        model.addAttribute("lectureList",professor.getProfessorLectures());
+        model.addAttribute("GradeGoGiveGradeForm",form);
         return "grade/giveGrade";
     }
 
     @PostMapping("/grade/giveGrade")
-    public String submitGiveGrade(HttpServletRequest request,
-                                  @RequestParam("gradeScore") List<Score> scoreList) {
-        HttpSession session = request.getSession();
-        List<Grade> gradeList = (List<Grade>) session.getAttribute(SessionConst.Grade_List);
-        session.removeAttribute(SessionConst.Grade_List);
-        for(int i = 0 ; i < gradeList.size(); i++){
-            Grade grade = gradeList.get(i);
-            gradeService.editGradeOfScore(grade.getId(),scoreList.get(i));
+    public String submitGiveGrade(@RequestParam(value = "gradeScore",required = false) List<Score> scoreList,
+                                  @RequestParam(value = "lectureId",required = false) Long lectureId){
+        if(lectureId != null) {
+            gradeService.editGradeListOfScore(lectureId, scoreList);
         }
-        return "grade/giveGrade";
+        return "redirect:/grade/giveGrade";
     }
 
     @GetMapping("/grade/graduateGrade")
     public String goGraduateGrade() {
         return "grade/graduateGrade";
     }
-
 }

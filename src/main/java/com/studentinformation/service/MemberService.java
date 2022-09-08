@@ -1,18 +1,14 @@
 package com.studentinformation.service;
 
 
-import com.studentinformation.domain.Grade;
 import com.studentinformation.domain.Member;
 import com.studentinformation.repository.MemberRepository;
-import com.studentinformation.web.session.SessionConst;
 import com.sun.jdi.request.DuplicateRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpSession;
-import java.util.List;
 
 
 @Slf4j
@@ -98,12 +94,4 @@ public class MemberService {
                 .orElseThrow(() -> new IllegalArgumentException("not found studentNum data"));
     }
 
-
-    /**
-     * LazyInitializationException 때문에 만들었음
-     */
-    public Member getMemberFromSession(HttpSession session){
-        Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
-        return memberRepository.findById(member.getId()).get();
-    }
 }
