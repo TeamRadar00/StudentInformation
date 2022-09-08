@@ -5,6 +5,7 @@ import com.studentinformation.domain.*;
 import com.studentinformation.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +47,20 @@ public class GradeService {
         Grade grade = gradeRepository.findById(gradeId).get();//확실하게 존재함
         grade.updateGrade(score);
         return grade;
+    }
+
+    /**
+     * Grade 리스트, Score 리스트 하나하나 매칭해서 성적 입력
+     */
+    @Transactional
+    public void editGradeListOfScore(Long lectureId, List<Score> scores){
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new IllegalArgumentException("not exits lectureId"));
+        List<Grade> grades = lecture.getGrades();
+        for(int i = 0 ; i < grades.size(); i++){
+            Grade grade = grades.get(i);
+            editGradeOfScore(grade.getId(),scores.get(i));
+        }
     }
 
     /**
