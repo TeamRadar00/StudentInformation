@@ -1,4 +1,4 @@
-package com.studentinformation.converter;
+package com.studentinformation.web.converter;
 
 
 import com.studentinformation.domain.Score;

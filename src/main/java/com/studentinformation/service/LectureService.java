@@ -64,20 +64,16 @@ public class LectureService {
                 .filter(professor -> professor.getMemberName().contains(professorName))
                 .collect(Collectors.toList());
 
-//        log.info("find professor contain argument, professors={}",findProfessors.stream()
-//                .map(Member::getMemberName)
-//                .collect(Collectors.toList()));
-
         List<Lecture> findLectures = findProfessors.stream()
                 .map(Member::getProfessorLectures)
                 .flatMap(Collection::stream)
                 .filter(lecture -> lecture.getSemester().contains(semester))
                 .collect(Collectors.toList());
-        log.info("findLecturesSize = {}",findLectures.size());
+
 
         int start = (int)pageable.getOffset();
         int end = Math.min(start + pageable.getPageSize(), findLectures.size());
-        return new PageImpl<>(findLectures.subList(0,end),pageable,findLectures.size());
+        return new PageImpl<>(findLectures.subList(start,end),pageable,findLectures.size());
     }
 
 

@@ -13,14 +13,13 @@ import com.studentinformation.web.argumentResolver.Login;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,9 +29,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class LectureController {
 
-    private final MemberService memberService; //테스트용. 나중에 뺄거임
+    private final MemberService memberService;
     private final LectureService lectureService;
-    private final LectureRepository lectureRepository;  //https://www.inflearn.com/questions/15024 단순 엔티티 참고는 넣을까..?
+    private final LectureRepository lectureRepository;
 
     @ModelAttribute("semesters")
     public Map<String, String> semester() { return Map.of("1","1학기","2","2학기"); }
@@ -48,16 +47,6 @@ public class LectureController {
         return Week.values();
     }
 
-    private void addTestLectureList(Model model, String name) {
-        Member professor = memberService.findByMemberNum("123");
-        Lecture lecture1 = new Lecture("c언어", professor, "2022/2",
-                "~/12:00~12:50/~/13:00~13:50/~/~/~/", 20);
-        Lecture lecture2 = new Lecture("운영체제", professor, "2022/2",
-                "14:00~14:50/~/12:00~12:50/~/~/~/~/", 25);
-        lecture1 = lectureService.makeLecture(lecture1);
-        lecture2 = lectureService.makeLecture(lecture2);
-        model.addAttribute(name, List.of(LectureForm.of(lecture1),LectureForm.of(lecture2)));
-    }
 
     @GetMapping("/lectures/my")
     public String goMyLecture(@Login Member member, Model model, RedirectAttributes ra) {
@@ -76,26 +65,27 @@ public class LectureController {
 
     @GetMapping("/lectures/opened")
     public String goOpenedLecture(@ModelAttribute SearchLectureForm form) {
-
         return "lectures/openedLecture";
     }
 
     @PostMapping("/lectures/opened")
-    public String searchLecture(@ModelAttribute SearchLectureForm form , Model model) {
-        //lectureService.search(form)로 폼을 넘길까 아님 여기서 폼을 까내서 안에 로직에 따라 findByProfessorName이나
-        //findByLectureName을 호출할까?
-        Page<Lecture> findLectures = null;
+    public String searchLecture(@ModelAttribute SearchLectureForm form , Model model, Pageable pageable) {
+        Page<Lecture> findLectures = getLectures(form, pageable);
 
-        if (form.getSelectOne().equals("professor")) {
-            findLectures = lectureService.findByProfessorName(form.getContent(),
-                    form.getYear() + "0" + form.getSemester(), PageRequest.of(0,10));
-        } else if (form.getSelectOne().equals("lectureName")) {
-            findLectures = lectureService.findByLectureName(form.getContent(),
-                    form.getYear() + "0" + form.getSemester(), PageRequest.of(0,10));
-        }
         Page<LectureForm> lectureFormList = findLectures.map(LectureForm::of);
         model.addAttribute("lectureList", lectureFormList);
         return "lectures/openedLecture";
+    }
+
+    private Page<Lecture> getLectures(SearchLectureForm form, Pageable pageable) {
+        if (form.getSelectOne().equals("professor")) {
+            return lectureService.findByProfessorName(form.getContent(),
+                    form.getYear() + "0" + form.getSemester(), pageable);
+        } else if (form.getSelectOne().equals("lectureName")) {
+            return lectureService.findByLectureName(form.getContent(),
+                    form.getYear() + "0" + form.getSemester(), pageable);
+        }
+        return null;
     }
 
     @GetMapping("/lectures")

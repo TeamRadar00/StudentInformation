@@ -1,4 +1,4 @@
-package com.studentinformation.initDB;
+package com.studentinformation.web.initDB;
 
 
 import com.studentinformation.domain.*;
