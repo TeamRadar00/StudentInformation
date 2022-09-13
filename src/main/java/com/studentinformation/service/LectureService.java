@@ -10,7 +10,6 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,21 +58,22 @@ public class LectureService {
      * 나중에 쿼리로 최적화 해야할듯
      */
     public Page<Lecture> findByProfessorName(String professorName, String semester, Pageable pageable){
-        List<Member> findAllProfessor = memberRepository.findByState(MemberState.professor);
-        List<Member> findProfessors = findAllProfessor.stream()
-                .filter(professor -> professor.getMemberName().contains(professorName))
-                .collect(Collectors.toList());
-
-        List<Lecture> findLectures = findProfessors.stream()
-                .map(Member::getProfessorLectures)
-                .flatMap(Collection::stream)
-                .filter(lecture -> lecture.getSemester().contains(semester))
-                .collect(Collectors.toList());
-
-
-        int start = (int)pageable.getOffset();
-        int end = Math.min(start + pageable.getPageSize(), findLectures.size());
-        return new PageImpl<>(findLectures.subList(start,end),pageable,findLectures.size());
+//        List<Member> findAllProfessor = memberRepository.findByState(MemberState.professor);
+//        List<Member> findProfessors = findAllProfessor.stream()
+//                .filter(professor -> professor.getMemberName().contains(professorName))
+//                .collect(Collectors.toList());
+//
+//        List<Lecture> findLectures = findProfessors.stream()
+//                .map(Member::getProfessorLectures)
+//                .flatMap(Collection::stream)
+//                .filter(lecture -> lecture.getSemester().contains(semester))
+//                .collect(Collectors.toList());
+//
+//
+//        int start = (int)pageable.getOffset();
+//        int end = Math.min(start + pageable.getPageSize(), findLectures.size());
+//        return new PageImpl<>(findLectures.subList(start,end),pageable,findLectures.size());
+        return lectureRepository.findAllByProfessorName(MemberState.professor, professorName, semester, pageable);
     }
 
 
@@ -84,17 +84,18 @@ public class LectureService {
      * 나중에 쿼리로 최적화 해야할듯
      */
     public Page<Lecture> findByLectureName(String lectureName,String semester,Pageable pageable){
-        List<Lecture> findLectures = lectureRepository.findAll().stream()
-                .filter(lecture -> lecture.getLectureName().contains(lectureName))
-                .filter(lecture -> lecture.getSemester().equals(semester))
-                .collect(Collectors.toList());
-
-        log.info("find lectures contain with String, Lectures = {}",findLectures.stream().
-                map(Lecture::getLectureName).collect(Collectors.toList()));
-
-        int start = (int)pageable.getOffset();
-        int end = Math.min(start + pageable.getPageSize(), findLectures.size());
-        return new PageImpl<>(findLectures.subList(start,end),pageable,findLectures.size());
+//        List<Lecture> findLectures = lectureRepository.findAll().stream()
+//                .filter(lecture -> lecture.getLectureName().contains(lectureName))
+//                .filter(lecture -> lecture.getSemester().equals(semester))
+//                .collect(Collectors.toList());
+//
+//        log.info("find lectures contain with String, Lectures = {}",findLectures.stream().
+//                map(Lecture::getLectureName).collect(Collectors.toList()));
+//
+//        int start = (int)pageable.getOffset();
+//        int end = Math.min(start + pageable.getPageSize(), findLectures.size());
+//        return new PageImpl<>(findLectures.subList(start,end),pageable,findLectures.size());
+        return lectureRepository.findAllByLectureName(MemberState.professor, lectureName, semester, pageable);
     }
 
     //강의 id는 단 하나여서 Lecture 하나만 반환
