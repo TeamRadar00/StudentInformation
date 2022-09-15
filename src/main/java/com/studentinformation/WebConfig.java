@@ -1,8 +1,7 @@
 package com.studentinformation;
 
-import com.studentinformation.converter.ScoreRequestConverter;
+import com.studentinformation.web.converter.ScoreRequestConverter;
 import com.studentinformation.web.Interceptor.LoginCheckInterceptor;
-import com.studentinformation.web.Interceptor.LoginInterceptor;
 import com.studentinformation.web.argumentResolver.LoginMemberArgumentResolver;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
