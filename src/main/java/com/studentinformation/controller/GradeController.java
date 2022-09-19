@@ -8,6 +8,8 @@ import com.studentinformation.service.MemberService;
 import com.studentinformation.web.session.SessionConst;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -60,8 +61,55 @@ public class GradeController {
         return "redirect:/grade/objection";
     }
 
+    @GetMapping("/grade/readObjection/{gradeId}")
+    public String readObjection(@PathVariable("gradeId")Long id,Model model){
+        Grade grade = gradeService.findGradeById(id);
+        model.addAttribute("grade",grade);
+        return "grade/readObjection";
+    }
+
+    @PostMapping("/grade/readObjection/{gradeId}")
+    public String editScoreThroughObjectionList(@PathVariable("gradeId")Long id,
+                                                @RequestParam("gradeScore") Score score){
+        log.info("score={}",score);
+        gradeService.editGradeOfScore(id,score);
+        return "redirect:/grade/objectionList";
+    }
+
     @GetMapping("/grade/objectionList")
-    public String goObjectionList() {
+    public String goObjectionList(Model model,HttpServletRequest request,
+                                  @RequestParam(required = false,value = "lectureId") Long id) {
+
+        HttpSession session = request.getSession();
+        Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
+        Member professor = memberService.findById(member.getId());
+        model.addAttribute("lectureList",professor.getProfessorLectures());
+        if(id != null){
+            return "redirect:/grade/objectionList/"+id;
+        }
+        return "grade/objectionList";
+    }
+
+    @GetMapping("/grade/objectionList/{lectureId}")
+    public String getObjectionList(@PathVariable("lectureId")Long selectLectureId,
+                                   @RequestParam(value = "gradeId",required = false) Long gradeId,
+                                   @RequestParam(value = "lectureId",required = false) Long newLectureId,
+                                   Pageable pageable,
+                                   Model model,HttpServletRequest request){
+        if(gradeId != null){
+            return "redirect:/grade/readObjection/"+gradeId;
+        }
+        if(newLectureId !=null){
+            return "redirect:/grade/objectionList/"+ newLectureId;
+        }
+        HttpSession session = request.getSession();
+        Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
+        Member professor = memberService.findById(member.getId());
+        Page<Grade> allExistObjection = gradeService.findAllExistObjection(selectLectureId, pageable);
+        Lecture selectLecture = lectureService.findByLectureId(selectLectureId);
+        model.addAttribute("selectLecture",selectLecture);
+        model.addAttribute("gradeList", allExistObjection);
+        model.addAttribute("lectureList",professor.getProfessorLectures());
         return "grade/objectionList";
     }
 

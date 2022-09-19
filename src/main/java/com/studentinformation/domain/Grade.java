@@ -36,6 +36,7 @@ public class Grade extends BaseEntity{
     @Column(length = 1000)
     private String objection;
 
+    private boolean objectionCheck;
 
     public void setStudent(Member student){
         this.student = student;
@@ -51,6 +52,7 @@ public class Grade extends BaseEntity{
         this.createDate = this.lastModifiedDate =LocalDateTime.now();
         setStudent(student);
         setLecture(lecture);
+        objectionCheck=false;
     }
 
     public void updateGrade(Score score) {

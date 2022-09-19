@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html th:replace="~{layout :: layout(~{::main})}" xmlns:th="http://www.thymeleaf.org">
+<body>
+<main>
+    <div class="col-xl-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-bar me-1"></i>
+                성적 이의 확인
+            </div>
+            <table class="table table-bordered table-light">
+                <thead>
+                <tr align="center">
+                    <th>학번</th>
+                    <th>이름</th>
+                    <th>성적</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr align="center">
+                    <th th:text="${grade.student.studentNum}" ></th>
+                    <th th:text="${grade.student.memberName}"></th>
+                    <th th:text="${grade.score.name}"></th>
+                </tr>
+                </tbody>
+            </table>
+            <div class="input-group">
+                <span class="input-group-text">이의 신청 내용</span>
+                <textarea style="resize: none" rows="10" th:name="gradeObjection" th:text="${grade.objection}"
+                          disabled="disabled"
+                          class="form-control" aria-label="With textarea"></textarea>
+            </div>
+            <form method="post">
+                <div class="btn-group w-100">
+                    <select class="form-select"  th:name="gradeScore">
+                        <option th:if = "${grade.score != T(com.studentinformation.domain.Score).IN}"
+                                selected="selected" th:value="${grade.score}" th:utext="${grade.score.name}"></option>
+                        <option th:each="score : ${T(com.studentinformation.domain.Score).values()}"
+                                th:value="${score}"
+                                th:utext="${score.name}">
+                        </option>
+                    </select>
+                    <button type="submit" class="btn btn-primary w-25" th:text="수정"></button>
+                    <button type="button" class="btn btn-primary w-25"
+                            th:onclick="|location.href='@{/grade/gradeList(gradeId=${grade.id})}'|"
+                            th:text="취소"></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>
