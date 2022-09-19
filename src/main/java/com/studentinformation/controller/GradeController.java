@@ -56,8 +56,9 @@ public class GradeController {
 
     @PostMapping("/grade/objection")
     public String submitObjection(@ModelAttribute SubmitObjectionForm form) {
-        Grade grade = gradeService.findGradeById(form.getGradeId());
-        grade.updateObjection(form.getGradeObjection());
+//        Grade grade = gradeService.findGradeById(form.getGradeId());
+//        grade.updateObjection(form.getGradeObjection());
+        gradeService.editGradeOfObjection(form.getGradeId(),form.getGradeObjection());
         return "redirect:/grade/objection";
     }
 
@@ -83,13 +84,16 @@ public class GradeController {
         HttpSession session = request.getSession();
         Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
         Member professor = memberService.findById(member.getId());
-        model.addAttribute("lectureList",professor.getProfessorLectures());
+        model.addAttribute("getObjectionListForm",GradeGetObjectionListForm.of(professor));
         if(id != null){
             return "redirect:/grade/objectionList/"+id;
         }
         return "grade/objectionList";
     }
 
+    /**
+     * 나중에 기능들 분리할 수 있으면 분리할 예정
+     */
     @GetMapping("/grade/objectionList/{lectureId}")
     public String getObjectionList(@PathVariable("lectureId")Long selectLectureId,
                                    @RequestParam(value = "gradeId",required = false) Long gradeId,
@@ -104,12 +108,9 @@ public class GradeController {
         }
         HttpSession session = request.getSession();
         Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
-        Member professor = memberService.findById(member.getId());
         Page<Grade> allExistObjection = gradeService.findAllExistObjection(selectLectureId, pageable);
         Lecture selectLecture = lectureService.findByLectureId(selectLectureId);
-        model.addAttribute("selectLecture",selectLecture);
-        model.addAttribute("gradeList", allExistObjection);
-        model.addAttribute("lectureList",professor.getProfessorLectures());
+        model.addAttribute("getObjectionListForm",GradeGetObjectionListForm.of(selectLecture,allExistObjection));
         return "grade/objectionList";
     }
 
