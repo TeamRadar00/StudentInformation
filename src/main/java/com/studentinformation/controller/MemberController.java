@@ -90,10 +90,18 @@ public class MemberController {
     }
 
     @PostMapping("/members/find-id")
-    public String findId(@ModelAttribute MemberForm form) {
-        String studentNum = memberService.findStudentNum(form.getMemberName());
-        if(StringUtils.hasText(studentNum)){
+    public String findId(@ModelAttribute MemberForm form, BindingResult bindingResult) {
+        if (!StringUtils.hasText(form.getMemberName())) {
+            bindingResult.rejectValue("memberName","NotBlack");
+            return "members/findMember";
+        }
+
+
+        try {
+            String studentNum = memberService.findStudentNum(form.getMemberName());
             form.updateMessage("학번: " + studentNum);
+        } catch (IllegalArgumentException e) {
+            bindingResult.reject("notExistMemberName","존재하지 않는 이름입니다.");
         }
         return "members/findMember";
     }

@@ -1,20 +1,21 @@
 package com.studentinformation.controller;
 
 import com.studentinformation.domain.Member;
+import com.studentinformation.repository.MemberRepository;
 import com.studentinformation.web.session.SessionConst;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.HandlerResultMatchers;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import javax.annotation.PostConstruct;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -23,14 +24,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class MemberControllerTest {
 
-    @Autowired
-    WebApplicationContext wac;
+    @Autowired WebApplicationContext wac;
+    @Autowired MemberRepository memberRepository;
+    private MockMvc mock;
+    private static Member emptyMember;
 
-    MockMvc mock;
+    @BeforeAll
+    static void createEmptyMember() {
+        emptyMember = new Member("memberTest", "memberTest", "memberTest", null, null);
+    }
 
     @BeforeEach
     void getMockObject() {
         mock = MockMvcBuilders.webAppContextSetup(wac).build();
+        memberRepository.save(emptyMember); //id값이 생성되지 않기에 generatedValue로 만들어지도록 db에 저장함
     }
 
     @Test
@@ -99,7 +106,7 @@ public class MemberControllerTest {
                 .param("newPassword","qwe")
                 .param("confirmPassword","qwe");
         passwordCorrect.session(createLoginSession())
-                .param("prePassword","test")
+                .param("prePassword","memberTest")
                 .param("newPassword","qwe")
                 .param("confirmPassword","qwe");
 
@@ -111,15 +118,29 @@ public class MemberControllerTest {
                 .andExpect(handler().methodName("changePassword"))
                 .andExpect(view().name("members/password"));
 
-//        이거 테스트 돌리면 진짜 비번이 업뎃되는데 어카지
-//        mock.perform(passwordCorrect)
-//                .andExpect(handler().handlerType(MemberController.class))
-//                .andExpect(handler().methodName("changePassword"))
-//                .andExpect(redirectedUrl("/home"));
+        mock.perform(passwordCorrect)
+                .andExpect(handler().handlerType(MemberController.class))
+                .andExpect(handler().methodName("changePassword"))
+                .andExpect(redirectedUrl("/home"));
     }
 
+    @Test
+    void goFindPassword_test() throws Exception {
+        //given
+        String url = "/members/find-member";
+        MockHttpServletRequestBuilder existSession = get(url);
+        //when
+        existSession.session(createLoginSession());
+        //then
+        mock.perform(existSession)
+                .andExpect(handler().handlerType(MemberController.class))
+                .andExpect(handler().methodName("goFindPassword"))
+                .andExpect(model().attributeExists("memberForm"));
+    }
+
+
+
     private MockHttpSession createLoginSession() {
-        Member emptyMember = new Member("test", "test", "test", null, null);
         MockHttpSession session = new MockHttpSession();
         session.setAttribute(SessionConst.LOGIN_MEMBER, emptyMember);
         return session;
@@ -129,4 +150,5 @@ public class MemberControllerTest {
         mock.perform(noSession)
                 .andExpect(redirectedUrl("/members/login?redirectURL="+url));
     }
+
 }

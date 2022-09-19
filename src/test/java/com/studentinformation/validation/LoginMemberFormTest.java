@@ -34,7 +34,6 @@ public class LoginMemberFormTest {
         factory.close();
     }
 
-    @DisplayName("빈문자열 전송 시 에러 발생")
     @Test
     void 학번과비밀번호_Black() throws Exception {
         //given

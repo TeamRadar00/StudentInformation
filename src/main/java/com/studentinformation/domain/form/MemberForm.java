@@ -13,6 +13,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class MemberForm {
 
+
     private String studentNum;
     private String memberName;
     private MemberState state;
