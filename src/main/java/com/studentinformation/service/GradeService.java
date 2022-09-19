@@ -84,12 +84,14 @@ public class GradeService {
         Lecture lecture = lectureRepository.findById(lectureId).get();
         List<Grade> grades = lecture.getGrades();
         List<Grade> objectionsList = grades.stream()
-                .filter(grade -> StringUtils.hasText(grade.getObjection())) // null, 공백이면 false
+                .filter(grade -> StringUtils.hasText(grade.getObjection()))// null, 공백이면 false
+                .filter(grade -> !grade.isObjectionCheck())
                 .collect(Collectors.toList());
+        int page = (pageable.getPageNumber() == 0) ? 0 : (pageable.getPageNumber() - 1);
+        pageable = PageRequest.of(page, 10); // <- Sort 추가
 
         int start = (int) pageable.getOffset();
         int end = Math.min(start+pageable.getPageSize(),objectionsList.size());
         return new PageImpl<>(objectionsList.subList(start,end),pageable,objectionsList.size());
     }
-
 }

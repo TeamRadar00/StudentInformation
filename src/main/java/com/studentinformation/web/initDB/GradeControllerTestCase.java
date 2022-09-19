@@ -2,6 +2,7 @@ package com.studentinformation.web.initDB;
 
 
 import com.studentinformation.domain.*;
+import com.studentinformation.repository.MemberRepository;
 import com.studentinformation.service.ApplicationService;
 import com.studentinformation.service.GradeService;
 import com.studentinformation.service.MemberService;
@@ -42,14 +43,38 @@ public class GradeControllerTestCase {
     @Transactional
     public void createTestCaseForProfessor(){
         Member professor = createMemberTest2();
-        Lecture lecture = new Lecture("test", professor, "202202", "~/12:00~13:50/~/13:00~14:50/~/~/~/", 20);
-        for(int i=10;i<15;i++){
+        Lecture lecture1 = new Lecture("test1", professor, "202202", "~/12:00~13:50/~/13:00~14:50/~/~/~/", 200);
+        Lecture lecture2 = new Lecture("test2", professor, "202202", "~/12:00~13:50/~/13:00~14:50/~/~/~/", 200);
+        Lecture lecture3 = new Lecture("test3", professor, "202202", "~/12:00~13:50/~/13:00~14:50/~/~/~/", 200);
+        for(int i=20;i<50;i++){
             Member student = new Member("test" + i, "test" + i, "student" + i, MemberState.inSchool, "test");
 
-            applicationService.saveApplication(new Application(student, lecture));
+            applicationService.saveApplication(new Application(student, lecture1));
 
-            Grade emptyGrade = Grade.createEmptyGrade(student, lecture);
+            Grade emptyGrade = Grade.createEmptyGrade(student, lecture1);
             gradeService.saveGrade(emptyGrade);
+
+            emptyGrade.updateObjection("test");
+        }
+        for(int i=50;i<70;i++){
+            Member student = new Member("test" + i, "test" + i, "student" + i, MemberState.inSchool, "test");
+
+            applicationService.saveApplication(new Application(student, lecture2));
+
+            Grade emptyGrade = Grade.createEmptyGrade(student, lecture2);
+            gradeService.saveGrade(emptyGrade);
+
+            emptyGrade.updateObjection("test");
+        }
+        for(int i=70;i<80;i++){
+            Member student = new Member("test" + i, "test" + i, "student" + i, MemberState.inSchool, "test");
+
+            applicationService.saveApplication(new Application(student, lecture3));
+
+            Grade emptyGrade = Grade.createEmptyGrade(student, lecture3);
+            gradeService.saveGrade(emptyGrade);
+
+            emptyGrade.updateObjection("test");
         }
     }
 

@@ -12,12 +12,10 @@ import java.util.List;
 
 @Getter
 @Setter
-@AllArgsConstructor
 public class GradeGoGIveGradeForm {
 
     private List<Lecture> lectureList;
     private List<Grade> gradeList;
-    private Long lectureId;
 
 
 
