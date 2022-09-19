@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,12 +37,13 @@ public class MemberController {
     public String goLogin(@ModelAttribute LoginMemberForm form) { return "members/login"; }
 
     @PostMapping("/members/login")
-    public String login(@ModelAttribute LoginMemberForm form, BindingResult bindingResult,
+    public String login(@Validated @ModelAttribute LoginMemberForm form, BindingResult bindingResult,
                         @RequestParam(defaultValue = "/")String redirectURL,
                         HttpServletRequest request) {
-//        if (bindingResult.hasErrors()) {
-//            return "members/login";
-//        }
+
+        if (bindingResult.hasErrors()) {
+            return "members/login";
+        }
 
         Member loginMember = memberService.login(form.getStudentNum(), form.getPassword());
 
@@ -62,16 +64,24 @@ public class MemberController {
 
     //validation 추가해야됨
     @PostMapping("/members/password")
-    public String changePassword(@Login Member member, @ModelAttribute ChangePasswordForm form, RedirectAttributes ra) {
-        if (form.isPasswordEqual()) {
-            if (memberService.findPassword(member.getMemberName(), member.getStudentNum()).equals(form.getPrePassword())) {
-                memberService.updatePassword(member.getId(), form.getNewPassword());
-                ra.addFlashAttribute("msg", "비밀번호 변경이 완료됐습니다!");
-                log.info("----changePassword----{}--------",member);
-                return "redirect:/home";
-            }
+    public String changePassword(@Login Member member, @Validated @ModelAttribute ChangePasswordForm form,
+                                 BindingResult bindingResult, RedirectAttributes ra) {
+        if (bindingResult.hasErrors()) {
+            return "members/password";
         }
-        return "members/password";
+        if (!form.isPasswordEqual()) {
+            bindingResult.reject("incorrectPassword", "두 비밀번호가 서로 다릅니다.");
+            return "members/password";
+        }
+
+        if (memberService.findPassword(member.getMemberName(), member.getStudentNum()).equals(form.getPrePassword())) {
+            memberService.updatePassword(member.getId(), form.getNewPassword());
+            ra.addFlashAttribute("msg", "비밀번호 변경이 완료됐습니다!");
+            return "redirect:/home";
+        } else {
+            bindingResult.rejectValue("prePassword","passwordError","현재 비밀번호가 틀렸습니다.");
+            return "members/password";
+        }
     }
 
     @GetMapping("/members/find-member")
@@ -80,10 +90,18 @@ public class MemberController {
     }
 
     @PostMapping("/members/find-id")
-    public String findId(@ModelAttribute MemberForm form) {
-        String studentNum = memberService.findStudentNum(form.getMemberName());
-        if(StringUtils.hasText(studentNum)){
+    public String findId(@ModelAttribute MemberForm form, BindingResult bindingResult) {
+        if (!StringUtils.hasText(form.getMemberName())) {
+            bindingResult.rejectValue("memberName","NotBlack");
+            return "members/findMember";
+        }
+
+
+        try {
+            String studentNum = memberService.findStudentNum(form.getMemberName());
             form.updateMessage("학번: " + studentNum);
+        } catch (IllegalArgumentException e) {
+            bindingResult.reject("notExistMemberName","존재하지 않는 이름입니다.");
         }
         return "members/findMember";
     }

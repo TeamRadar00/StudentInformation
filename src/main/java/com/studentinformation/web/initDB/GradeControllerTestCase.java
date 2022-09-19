@@ -85,7 +85,7 @@ public class GradeControllerTestCase {
         return member;
     }
     private Member createMemberTest2() {
-        Member member = new Member("professor","test","test", MemberState.professor,"test");
+        Member member = new Member("professor","professor","professor", MemberState.professor,"test");
         member.changeCreateDate();
         memberService.addMember(member);
         return member;
