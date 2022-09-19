@@ -1,15 +1,81 @@
 <!DOCTYPE html>
 <html th:replace="~{layout :: layout(~{::main})}" xmlns:th="http://www.thymeleaf.org">
-
 <body>
-<main>
+<main th:object="${getObjectionListForm}">
     <div class="col-xl-6">
         <div class="card mb-4">
             <div class="card-header">
                 <i class="fas fa-chart-bar me-1"></i>
                 수강 이의 신청 목록
             </div>
-            <div class="card-body"><canvas width="50" height="200"></canvas></div>
+            <div class="card-body" >
+                <form method="get">
+                    <div class="btn-group w-100">
+                        <select class="form-select w-75" th:name = "lectureId">
+                            <option th:if="${getObjectionListForm.selectLecture != null}" selected="selected"
+                                    th:value="*{selectLecture.id}" th:utext="*{selectLecture.lectureName}">
+                            </option>
+                            <option th:each="lecture : *{lectureList}"
+                                    th:unless="${lecture == getObjectionListForm.selectLecture}"
+                                    th:value="${lecture.id}"
+                                    th:utext="${lecture.lectureName}">
+                            </option >
+                        </select>
+                        <button type="submit" class="btn btn-primary" th:text="확인"></button>
+                    </div>
+                </form>
+                    <form method="get">
+                    <div th:if="${getObjectionListForm.gradeList!=null and !getObjectionListForm.gradeList.isEmpty()}">
+                    <table class="table table-bordered table-light">
+                        <thead>
+                        <tr align="center">
+                            <th>학번</th>
+                            <th>이름</th>
+                            <th>성적</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="grade : *{gradeList}" align="center">
+                            <th th:text="${grade.student.studentNum}" ></th>
+                            <th th:text="${grade.student.memberName}"></th>
+                            <th th:text="${grade.score.name}"></th>
+                            <th>
+                                <button type="button" th:text="확인" class="btn btn-primary"
+                                        th:onclick="|location.href='@{__${#httpServletRequest.requestURI}__(gradeId=${grade.id})}'|">
+                                </button>
+                            </th>
+                        </tr>
+                        </tbody>
+                    </table>
+                        <ul class="pagination justify-content-center"
+                            th:with="start=${T(java.lang.Math).floor(getObjectionListForm.gradeList.getNumber()/10)*10 + 1},
+                            last=(${start + 9 < getObjectionListForm.gradeList.totalPages ? start + 9 : getObjectionListForm.gradeList.totalPages})">
+                            <li th:if="${getObjectionListForm.gradeList.first == false}">
+                                <button type="button" th:class="page-link"
+                                        th:onclick="|location.href='@{__${#httpServletRequest.requestURI}__(page=*{gradeList.number})}'|"
+                                        aria-label="Previous">
+                                    <span aria-hidden="true">&lt;</span>
+                                </button>
+                            </li>
+
+                            <li th:each="page: ${#numbers.sequence(start, last)}" th:class="${page == getObjectionListForm.gradeList.number + 1} ? 'active'">
+                                <button type="button" th:class="page-link" th:text="${page}"
+                                        th:onclick="|location.href='@{__${#httpServletRequest.requestURI}__(page=${page})}'|"></button>
+                            </li>
+
+                            <li th:if="${getObjectionListForm.gradeList.last == false}">
+                                <button type="button" th:class="page-link"
+                                        th:onclick="|location.href='@{__${#httpServletRequest.requestURI}__(page=*{gradeList.number + 2})}'|"
+                                        aria-label="Next">
+                                    <span aria-hidden="true">&gt;</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+
+                </form>
+            </div>
         </div>
     </div>
 </main>
