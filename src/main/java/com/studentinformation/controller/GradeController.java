@@ -56,12 +56,14 @@ public class GradeController {
 
     @PostMapping("/grade/objection")
     public String submitObjection(@ModelAttribute SubmitObjectionForm form) {
-//        Grade grade = gradeService.findGradeById(form.getGradeId());
-//        grade.updateObjection(form.getGradeObjection());
         gradeService.editGradeOfObjection(form.getGradeId(),form.getGradeObjection());
         return "redirect:/grade/objection";
     }
 
+    /**
+     * 접근하는 gradeId가 objection이 없으면 돌아가기
+     * gradeId로 접속하는 멤버가 grade를 가지고있는 교수여야함
+     */
     @GetMapping("/grade/readObjection/{gradeId}")
     public String readObjection(@PathVariable("gradeId")Long id,Model model){
         Grade grade = gradeService.findGradeById(id);
@@ -84,7 +86,7 @@ public class GradeController {
         HttpSession session = request.getSession();
         Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
         Member professor = memberService.findById(member.getId());
-        model.addAttribute("getObjectionListForm",GradeGetObjectionListForm.of(professor));
+        model.addAttribute("getObjectionListForm", GradeObjectionListForm.of(professor));
         if(id != null){
             return "redirect:/grade/objectionList/"+id;
         }
@@ -110,7 +112,7 @@ public class GradeController {
         Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
         Page<Grade> allExistObjection = gradeService.findAllExistObjection(selectLectureId, pageable);
         Lecture selectLecture = lectureService.findByLectureId(selectLectureId);
-        model.addAttribute("getObjectionListForm",GradeGetObjectionListForm.of(selectLecture,allExistObjection));
+        model.addAttribute("getObjectionListForm", GradeObjectionListForm.of(selectLecture,allExistObjection));
         return "grade/objectionList";
     }
 

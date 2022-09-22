@@ -14,17 +14,17 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-public class GradeGetObjectionListForm {
+public class GradeObjectionListForm {
 
     private Lecture selectLecture;
     private Page<Grade> gradeList;
     private List<Lecture> lectureList;
 
-    public static GradeGetObjectionListForm of(Lecture lecture,Page<Grade> gradeList){
-        return new GradeGetObjectionListForm(lecture,gradeList,lecture.getProfessor().getProfessorLectures());
+    public static GradeObjectionListForm of(Lecture lecture, Page<Grade> gradeList){
+        return new GradeObjectionListForm(lecture,gradeList,lecture.getProfessor().getProfessorLectures());
     }
 
-    public static GradeGetObjectionListForm of(Member professor){
-        return new GradeGetObjectionListForm(null,null,professor.getProfessorLectures());
+    public static GradeObjectionListForm of(Member professor){
+        return new GradeObjectionListForm(null,null,professor.getProfessorLectures());
     }
 }
