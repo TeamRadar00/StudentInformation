@@ -78,6 +78,12 @@ public class GradeControllerTestCase {
         }
     }
 
+    @EventListener(ApplicationReadyEvent.class)
+    @Transactional
+    public void createTestCaseForAdmin(){
+        memberService.addMember(new Member("admin", "admin", "admin", MemberState.admin, "admin"));
+    }
+
     private Member createMemberTest1() {
         Member member = new Member("test","test","test", MemberState.inSchool,"test");
         member.changeCreateDate();

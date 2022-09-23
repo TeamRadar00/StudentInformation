@@ -3,7 +3,7 @@ package com.studentinformation.controller;
 import com.studentinformation.domain.Lecture;
 import com.studentinformation.domain.Member;
 import com.studentinformation.domain.Week;
-import com.studentinformation.domain.form.LectureForm;
+import com.studentinformation.web.form.lecture.LectureForm;
 import com.studentinformation.service.ApplicationService;
 import com.studentinformation.service.LectureService;
 import com.studentinformation.service.MemberService;
@@ -14,7 +14,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 

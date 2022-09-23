@@ -4,8 +4,8 @@ import com.studentinformation.domain.Lecture;
 import com.studentinformation.domain.Member;
 import com.studentinformation.domain.MemberState;
 import com.studentinformation.domain.Week;
-import com.studentinformation.domain.form.LectureForm;
-import com.studentinformation.domain.form.SearchLectureForm;
+import com.studentinformation.web.form.lecture.LectureForm;
+import com.studentinformation.web.form.lecture.SearchLectureForm;
 import com.studentinformation.repository.LectureRepository;
 import com.studentinformation.service.LectureService;
 import com.studentinformation.service.MemberService;
@@ -19,7 +19,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

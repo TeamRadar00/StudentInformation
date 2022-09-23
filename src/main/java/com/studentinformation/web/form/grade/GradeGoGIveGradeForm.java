@@ -1,9 +1,8 @@
-package com.studentinformation.domain.form;
+package com.studentinformation.web.form.grade;
 
 import com.studentinformation.domain.Grade;
 import com.studentinformation.domain.Lecture;
 import com.studentinformation.domain.Member;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 

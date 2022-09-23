@@ -1,10 +1,9 @@
-package com.studentinformation.domain.form;
+package com.studentinformation.web.form.lecture;
 
 import com.studentinformation.domain.Lecture;
 import com.studentinformation.domain.Member;
 import com.studentinformation.domain.Week;
-import com.studentinformation.repository.LectureRepository;
-import com.studentinformation.service.LectureService;
+import com.studentinformation.web.form.member.MemberForm;
 import lombok.*;
 
 import java.util.*;

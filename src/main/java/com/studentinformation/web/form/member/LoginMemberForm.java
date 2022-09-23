@@ -1,13 +1,9 @@
-package com.studentinformation.domain.form;
+package com.studentinformation.web.form.member;
 
-import com.studentinformation.domain.Member;
-import com.studentinformation.domain.MemberState;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 @Getter
 @AllArgsConstructor

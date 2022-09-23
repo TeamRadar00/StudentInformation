@@ -1,9 +1,8 @@
-package com.studentinformation.validation;
+package com.studentinformation.validation.member;
 
-import com.studentinformation.domain.form.LoginMemberForm;
+import com.studentinformation.web.form.member.LoginMemberForm;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import javax.validation.ConstraintViolation;

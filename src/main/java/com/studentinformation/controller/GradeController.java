@@ -1,10 +1,13 @@
 package com.studentinformation.controller;
 
 import com.studentinformation.domain.*;
-import com.studentinformation.domain.form.*;
 import com.studentinformation.service.GradeService;
 import com.studentinformation.service.LectureService;
 import com.studentinformation.service.MemberService;
+import com.studentinformation.web.form.grade.GoMyGradeForm;
+import com.studentinformation.web.form.grade.GradeGetObjectionListForm;
+import com.studentinformation.web.form.grade.GradeGoGIveGradeForm;
+import com.studentinformation.web.form.grade.SubmitObjectionForm;
 import com.studentinformation.web.session.SessionConst;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -84,7 +87,7 @@ public class GradeController {
         HttpSession session = request.getSession();
         Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
         Member professor = memberService.findById(member.getId());
-        model.addAttribute("getObjectionListForm",GradeGetObjectionListForm.of(professor));
+        model.addAttribute("getObjectionListForm", GradeGetObjectionListForm.of(professor));
         if(id != null){
             return "redirect:/grade/objectionList/"+id;
         }
