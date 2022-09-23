@@ -26,14 +26,9 @@ public class GradeController {
     private final MemberService memberService;
     private final LectureService lectureService;
 
-
-    /**
-     * model.addAttribute 여러번 사용하지말고 form으로 변환해서 한번에 보내기
-     * 서비스에 session 걷어내기
-     */
     @GetMapping("/grade/myGrade")
     public String goMyGrade(Model model, @Login Member student) {
-        if(student.getState() != MemberState.inSchool ||student.getState() != MemberState.outSchool){
+        if(student.getState() != MemberState.inSchool && student.getState() != MemberState.outSchool){
             // 접근 할 수 없음
             return "redirect:/home";
         }
@@ -44,7 +39,7 @@ public class GradeController {
 
     @GetMapping("/grade/objection")
     public String goObjection(Model model, @Login Member student) {
-        if(student.getState() != MemberState.inSchool ||student.getState() != MemberState.outSchool){
+        if(student.getState() != MemberState.inSchool && student.getState() != MemberState.outSchool){
             // 접근 할 수 없음
             return "redirect:/home";
         }
@@ -56,7 +51,7 @@ public class GradeController {
 
     @PostMapping("/grade/objection")
     public String submitObjection(@ModelAttribute SubmitObjectionForm form, @Login Member student) {
-        if(student.getState() != MemberState.inSchool ||student.getState() != MemberState.outSchool){
+        if(student.getState() != MemberState.inSchool && student.getState() != MemberState.outSchool){
             // 접근 할 수 없음
             return "redirect:/home";
         }
@@ -70,20 +65,15 @@ public class GradeController {
      * gradeId로 접속하는 멤버가 grade를 가지고있는 교수여야함
      */
     @GetMapping("/grade/readObjection/{gradeId}")
-    public String readObjection(@PathVariable("gradeId")Long id,Model model,
+    public String readObjection(@PathVariable("gradeId")Long gradeId,Model model,
                                 @Login Member professor){
-        if (!professor.getState().equals(MemberState.professor)){
+        if (!professor.getState().equals(MemberState.professor)||
+                gradeService.checkInaccessibleGradeWithProfessor(professor,gradeId)){
             // 접근 할 수 없음
             return "redirect:/home";
         }
 
-        boolean access = professor.getGrades().stream()
-                .anyMatch(grade -> grade.getId().equals(id));
-        if(!access){
-            return "redirect:/home";
-        }
-
-        Grade grade = gradeService.findGradeById(id);
+        Grade grade = gradeService.findGradeById(gradeId);
         if (!StringUtils.hasText(grade.getObjection())){
             return "redirect:/home";
         }
@@ -92,42 +82,35 @@ public class GradeController {
     }
 
     @PostMapping("/grade/readObjection/{gradeId}")
-    public String editScoreThroughObjectionList(@PathVariable("gradeId")Long id,
+    public String editScoreThroughObjectionList(@PathVariable("gradeId")Long gradeId,
                                                 @RequestParam("gradeScore") Score score,
                                                 @Login Member professor){
-        if (!professor.getState().equals(MemberState.professor)){
+        if (!professor.getState().equals(MemberState.professor) ||
+                gradeService.checkInaccessibleGradeWithProfessor(professor,gradeId)){
             // 접근 할 수 없음
             return "redirect:/home";
         }
 
-        boolean access = professor.getGrades().stream()
-                .anyMatch(grade -> grade.getId().equals(id));
-        if(!access){
-            return "redirect:/home";
-        }
 
-        gradeService.editGradeOfScore(id,score);
+        gradeService.editGradeOfScore(gradeId,score);
         return "redirect:/grade/objectionList";
     }
 
     @GetMapping("/grade/objectionList")
     public String goObjectionList(Model model, @Login Member professor,
-                                  @RequestParam(required = false,value = "lectureId") Long id) {
+                                  @RequestParam(required = false,value = "lectureId") Long lectureId) {
         if (!professor.getState().equals(MemberState.professor)){
             // 접근 할 수 없음
             return "redirect:/home";
         }
         Member member = memberService.findById(professor.getId());
         model.addAttribute("getObjectionListForm", GradeObjectionListForm.of(member));
-        if(id != null){
-
-            boolean access = professor.getProfessorLectures().stream()
-                    .anyMatch(lecture -> lecture.getId().equals(id));
-            if(!access){
+        if(lectureId != null){
+            if(lectureService.checkInaccessibleLectureWithProfessor(professor, lectureId)){
                 return "redirect:/home";
             }
 
-            return "redirect:/grade/objectionList/"+id;
+            return "redirect:/grade/objectionList/"+ lectureId;
         }
         return "grade/objectionList";
     }
@@ -141,16 +124,13 @@ public class GradeController {
                                    @RequestParam(value = "lectureId",required = false) Long newLectureId,
                                    Pageable pageable,
                                    Model model,@Login Member professor){
-        if (!professor.getState().equals(MemberState.professor)){
+        if (!professor.getState().equals(MemberState.professor) ||
+                lectureService.checkInaccessibleLectureWithProfessor(professor,selectLectureId) ||
+                lectureService.checkInaccessibleLectureWithProfessor(professor,newLectureId)){
             // 접근 할 수 없음
             return "redirect:/home";
         }
 
-        boolean access = professor.getProfessorLectures().stream()
-                .anyMatch(lecture -> lecture.getId().equals(selectLectureId) || lecture.getId().equals(newLectureId));
-        if(!access){
-            return "redirect:/home";
-        }
 
         if(gradeId != null){
             return "redirect:/grade/readObjection/"+gradeId;
@@ -176,10 +156,7 @@ public class GradeController {
         Member member = memberService.findById(professor.getId());
         GradeGoGIveGradeForm form;
         if(lectureId != null){
-
-            boolean access = professor.getProfessorLectures().stream()
-                    .anyMatch(lecture -> lecture.getId().equals(lectureId));
-            if(!access){
+            if(lectureService.checkInaccessibleLectureWithProfessor(professor,lectureId)){
                 return "redirect:/home";
             }
 
@@ -202,10 +179,7 @@ public class GradeController {
             return "redirect:/home";
         }
         if(lectureId != null) {
-
-            boolean access = professor.getProfessorLectures().stream()
-                    .anyMatch(lecture -> lecture.getId().equals(lectureId));
-            if(!access){
+            if(lectureService.checkInaccessibleLectureWithProfessor(professor,lectureId)){
                 return "redirect:/home";
             }
 
