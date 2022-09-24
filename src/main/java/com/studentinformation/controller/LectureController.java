@@ -49,13 +49,12 @@ public class LectureController {
 
     @GetMapping("/lectures/my")
     public String goMyLecture(@Login Member member, Model model, RedirectAttributes ra) {
-        //재학생만 가능하도록 바꿀까?
-        if (!(member.getState() != MemberState.inSchool || member.getState() != MemberState.outSchool)) {
+        if (member.getState() == MemberState.professor) {
             ra.addFlashAttribute("msg", "권한이 없습니다!");
             return "redirect:/home";
         }
 
-        List<Lecture> list = lectureRepository.findLecturesByStudentId(member.getId());
+        List<Lecture> list = lectureRepository.findLecturesByStudent(member);
         List<LectureForm> forms = list.stream().map(LectureForm::of).collect(Collectors.toList());
         model.addAttribute("lectureList", forms);
 
@@ -90,7 +89,7 @@ public class LectureController {
     @GetMapping("/lectures")
     public String goCRUDLecture(@Login Member professor, @ModelAttribute("createLecture") LectureForm form,
                                 Model model, RedirectAttributes ra) {
-        if (professor.getState() != MemberState.professor) {
+        if (professor.getState() != MemberState.professor || professor.getState() != MemberState.admin) {
             ra.addFlashAttribute("msg", "권한이 없습니다!");
             return "redirect:/home";
         }
@@ -104,7 +103,7 @@ public class LectureController {
     @PostMapping("/lectures/new")
     public String createLecture(@Login Member professor, @ModelAttribute("createLecture") LectureForm lectureForm,
                                 RedirectAttributes ra) {
-        if (professor.getState() != MemberState.professor) {
+        if (professor.getState() != MemberState.professor || professor.getState() != MemberState.admin) {
             ra.addFlashAttribute("msg", "권한이 없습니다!");
             return "redirect:/home";
         }
@@ -128,7 +127,7 @@ public class LectureController {
     @GetMapping("/lectures/{lectureId}/edit")
     public String getEditLecture(@Login Member professor, @PathVariable long lectureId,
                                  Model model, RedirectAttributes ra) {
-        if (professor.getState() != MemberState.professor) {
+        if (professor.getState() != MemberState.professor || professor.getState() != MemberState.admin) {
             ra.addFlashAttribute("msg", "권한이 없습니다!");
             return "redirect:/home";
         }
@@ -140,7 +139,7 @@ public class LectureController {
     @PostMapping("/lectures/{lectureId}/edit")
     public String editLecture(@Login Member professor, @PathVariable long lectureId,
                               @ModelAttribute("editLecture") LectureForm lectureForm, RedirectAttributes ra) {
-        if (professor.getState() != MemberState.professor) {
+        if (professor.getState() != MemberState.professor || professor.getState() != MemberState.admin) {
             ra.addFlashAttribute("msg", "권한이 없습니다!");
             return "redirect:/home";
         }

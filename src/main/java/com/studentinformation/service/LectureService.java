@@ -10,9 +10,6 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -51,11 +48,7 @@ public class LectureService {
 
 
     /**
-     * 모든 교수 중 이름에 professorName이 포함되어있으면 다 저장
-     * 저장된 교수의 모든 Lecture를 Page로 모아둠
-     * @param professorName
-     * @param pageable
-     * 나중에 쿼리로 최적화 해야할듯
+     * 교수이름이 포함되고, semester에 해당하는 lecutre 반환(쿼리 최적화 완료)
      */
     public Page<Lecture> findByProfessorName(String professorName, String semester, Pageable pageable){
         return lectureRepository.findAllByProfessorName(MemberState.professor, professorName, semester, pageable);
@@ -63,12 +56,9 @@ public class LectureService {
 
 
     /**
-     * 모든 강의 조회한다음, arguement로 들어온 string을 포함하는 강의 검색
-     * @param lectureName
-     * @param pageable
-     * 나중에 쿼리로 최적화 해야할듯
+     * 강의이름이 포함되고, semester에 해당하는 lecture 반환(쿼리 최적화 완료)
      */
-    public Page<Lecture> findByLectureName(String lectureName,String semester,Pageable pageable){
+    public Page<Lecture> findByLectureName(String lectureName, String semester, Pageable pageable) {
         return lectureRepository.findAllByLectureName(MemberState.professor, lectureName, semester, pageable);
     }
 
@@ -77,4 +67,10 @@ public class LectureService {
         return lectureRepository.findById(lectureId).orElse(null);
     }
 
+    /**
+     * member가 신청하지 않은 lecture 반환
+     */
+    public Page<Lecture> findRemainLecture(Member member, Pageable pageable) {
+        return lectureRepository.findAllRemainLecture(member,"202202", pageable);
+    }
 }

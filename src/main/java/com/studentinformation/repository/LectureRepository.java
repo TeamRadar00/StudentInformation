@@ -5,6 +5,7 @@ import com.studentinformation.domain.Member;
 import com.studentinformation.domain.MemberState;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,8 +17,8 @@ public interface LectureRepository extends JpaRepository<Lecture, Long> {
 
     Page<Lecture> findBySemester(String semester, Pageable pageable);
 
-    @Query("select a.lecture from Application a where a.student.id = :id")
-    List<Lecture> findLecturesByStudentId(@Param("id") Long id);
+    @Query("select a.lecture from Application a left join fetch a.lecture.professor where a.student = :student")
+    List<Lecture> findLecturesByStudent(@Param("student") Member student);
 
     List<Lecture> findLecturesByProfessor(Member member);
 
@@ -40,4 +41,9 @@ public interface LectureRepository extends JpaRepository<Lecture, Long> {
                     " and l.semester = :semester")
     Page<Lecture> findAllByLectureName(@Param("state") MemberState state, @Param("name") String name,
                                        @Param("semester") String semester, Pageable pageable);
+
+    // 2022/02 학기에 해당하는 모든 강좌에서 내가 신청한 강좌를 제외한 나머지 반환
+    @Query("select l from Lecture l where l.semester = :semester and not l " +
+            "in (select a.lecture from Application a where a.student = :student)")
+    Page<Lecture> findAllRemainLecture(@Param("student") Member member, @Param("semester") String semester, Pageable pageable);
 }
