@@ -1,15 +1,15 @@
-package com.studentinformation.domain.form;
+package com.studentinformation.web.form.member;
 
 
 import com.studentinformation.domain.Member;
 import com.studentinformation.domain.MemberState;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 
 @Getter
+@Setter
 @ToString
+@NoArgsConstructor
 @AllArgsConstructor
 public class MemberForm {
 

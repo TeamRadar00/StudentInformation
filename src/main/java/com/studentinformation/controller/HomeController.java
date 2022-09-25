@@ -1,18 +1,13 @@
 package com.studentinformation.controller;
 
 import com.studentinformation.domain.Member;
-import com.studentinformation.domain.MemberState;
-import com.studentinformation.domain.form.LoginMemberForm;
-import com.studentinformation.domain.form.MemberForm;
-import com.studentinformation.service.MemberService;
+import com.studentinformation.web.form.member.MemberForm;
 import com.studentinformation.web.argumentResolver.Login;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
-import javax.annotation.PostConstruct;
 
 @Slf4j
 @Controller

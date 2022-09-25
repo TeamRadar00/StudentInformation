@@ -1,4 +1,4 @@
-package com.studentinformation.domain.form;
+package com.studentinformation.web.form.lecture;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

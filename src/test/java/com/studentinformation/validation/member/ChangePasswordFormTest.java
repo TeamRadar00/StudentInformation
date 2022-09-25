@@ -1,8 +1,6 @@
-package com.studentinformation.validation;
+package com.studentinformation.validation.member;
 
-import com.studentinformation.domain.form.ChangePasswordForm;
-import com.studentinformation.domain.form.LoginMemberForm;
-import org.assertj.core.api.Assertions;
+import com.studentinformation.web.form.member.ChangePasswordForm;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

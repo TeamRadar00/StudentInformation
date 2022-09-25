@@ -21,11 +21,11 @@ public class Application extends BaseEntity{
     @Column(name = "applicaion_id")
     private Long id;
 
-    @ManyToOne(fetch = LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id")
     private Member student;
 
-    @ManyToOne(fetch = LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "lecture_id")
     private Lecture lecture;
 

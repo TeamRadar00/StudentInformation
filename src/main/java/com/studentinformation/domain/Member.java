@@ -1,7 +1,5 @@
 package com.studentinformation.domain;
 
-import com.studentinformation.domain.form.LoginMemberForm;
-import com.studentinformation.domain.form.MemberForm;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -13,7 +11,6 @@ import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Entity
 @Getter

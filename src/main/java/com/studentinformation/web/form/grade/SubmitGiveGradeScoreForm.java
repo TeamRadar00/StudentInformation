@@ -1,4 +1,4 @@
-package com.studentinformation.domain.form;
+package com.studentinformation.web.form.grade;
 
 import com.studentinformation.domain.Score;
 import lombok.AllArgsConstructor;

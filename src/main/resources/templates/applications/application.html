@@ -11,6 +11,30 @@
             </div>
             <div class="card-body">
                 <table th:replace="~{fragment/lectureTable :: lectureTable('application')}"></table>
+                <div th:if="${lectureList} ? ${!lectureList.isEmpty()} : false">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${!lectureList.hasPrevious} ? 'disabled'">
+                            <a class="page-link" aria-label="Previous"
+                               th:href="@{/applications?page={page}(page=${lectureList.number-1})}">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                        </li>
+                        <li th:each="page: ${#numbers.sequence(0, lectureList.totalPages-1)}"
+                            th:if="${page >= lectureList.number-2 and page <= lectureList.number+2}"
+                            th:classappend="${page == lectureList.number} ? 'active'"
+                            class="page-item">
+                            <a th:text="${page}" class="page-link"
+                               th:href="@{/applications?page={page}(page=${page})}"></a>
+                        </li>
+                        <li class="page-item" th:classappend="${!lectureList.hasNext} ? 'disabled'">
+                            <a class="page-link" th:href="@{/applications?page={page}(page=${lectureList.number+1})}">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">Next</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>

@@ -1,7 +1,8 @@
-package com.studentinformation.domain.form;
+package com.studentinformation.web.form.grade;
 
 import com.studentinformation.domain.Grade;
 import com.studentinformation.domain.Member;
+import com.studentinformation.web.form.member.MemberForm;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

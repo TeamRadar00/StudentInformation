@@ -2,15 +2,16 @@ package com.studentinformation.controller;
 
 import com.studentinformation.domain.Member;
 import com.studentinformation.domain.MemberState;
-import com.studentinformation.domain.form.ChangePasswordForm;
-import com.studentinformation.domain.form.LoginMemberForm;
-import com.studentinformation.domain.form.MemberForm;
+import com.studentinformation.web.form.member.ChangePasswordForm;
+import com.studentinformation.web.form.member.LoginMemberForm;
+import com.studentinformation.web.form.member.MemberForm;
 import com.studentinformation.service.MemberService;
 import com.studentinformation.web.argumentResolver.Login;
 import com.studentinformation.web.session.SessionConst;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -85,37 +86,51 @@ public class MemberController {
     }
 
     @GetMapping("/members/find-member")
-    public String goFindPassword(@ModelAttribute MemberForm form) {
+    public String goFindPassword(Model model) {
+        model.addAttribute("findIdForm", new MemberForm());
+        model.addAttribute("findPasswordForm", new MemberForm());
         return "members/findMember";
     }
 
     @PostMapping("/members/find-id")
-    public String findId(@ModelAttribute MemberForm form, BindingResult bindingResult) {
+    public String findId(@ModelAttribute("findIdForm") MemberForm form, BindingResult bindingResult, Model model) {
+        model.addAttribute("findPasswordForm", new MemberForm());
         if (!StringUtils.hasText(form.getMemberName())) {
             bindingResult.rejectValue("memberName","NotBlack");
             return "members/findMember";
         }
 
-
         try {
             String studentNum = memberService.findStudentNum(form.getMemberName());
             form.updateMessage("학번: " + studentNum);
         } catch (IllegalArgumentException e) {
-            bindingResult.reject("notExistMemberName","존재하지 않는 이름입니다.");
+            bindingResult.reject("findIdFail","존재하지 않는 이름입니다.");
         }
         return "members/findMember";
     }
 
     @PostMapping("/members/find-password")
-    public String findPassword(@ModelAttribute MemberForm form) {
-        String password = memberService.findPassword(form.getMemberName(), form.getStudentNum());
-        if(StringUtils.hasText(password)){
-            form.updateMessage("비밀번호: "+ password);
+    public String findPassword(@ModelAttribute("findPasswordForm") MemberForm form, BindingResult bindingResult,
+                               Model model) {
+        model.addAttribute("findIdForm", new MemberForm());
+        if (!StringUtils.hasText(form.getMemberName())) {
+            bindingResult.rejectValue("memberName","NotBlack");
+        }
+        if (!StringUtils.hasText(form.getStudentNum())) {
+            bindingResult.rejectValue("studentNum","NotBlack");
+        }
+        if (bindingResult.hasErrors()) {
+            return "members/findMember";
+        }
+        try {
+            String password = memberService.findPassword(form.getMemberName(), form.getStudentNum());
+            form.updateMessage("비밀번호: " + password);
+        } catch (IllegalArgumentException e) {
+            bindingResult.reject("findPasswordFail", "이름이나 학번이 올바르지 않습니다.");
         }
         return "members/findMember";
     }
 
-    // admin 따로 뺄지 말진 잘 모르겠음
     @GetMapping("/admin")
     public String goRegister(@Login Member member, @ModelAttribute MemberForm form, RedirectAttributes ra) {
         if (member.getState().equals(MemberState.admin)) {
@@ -127,7 +142,24 @@ public class MemberController {
     }
 
     @PostMapping("/admin")
-    public String register(@ModelAttribute MemberForm form, RedirectAttributes ra) {
+    public String register(@Login Member member, @ModelAttribute MemberForm form,
+                           BindingResult bindingResult, RedirectAttributes ra) {
+        if (!member.getState().equals(MemberState.admin)) {
+            ra.addFlashAttribute("msg", "권한이 없습니다!");
+            return "redirect:/home";
+        }
+
+        if (validateRegister(form, bindingResult)) {
+            return "members/admin";
+        }
+        // 학번이 동일한 경우 같은 학생으로 간주한다.
+        try {
+            memberService.findByMemberNum(form.getStudentNum());
+            bindingResult.reject("duplicateMember", "이미 존재하는 회원입니다.");
+            return "members/admin";
+        } catch (IllegalArgumentException e) {}
+
+
         ra.addFlashAttribute("msg", "회원가입이 완료됐습니다!");
         memberService.addMember(form.registerMember());
         return "redirect:/members/login";
@@ -139,5 +171,18 @@ public class MemberController {
         session.removeAttribute(SessionConst.LOGIN_MEMBER);
         ra.addFlashAttribute("msg", "로그아웃 되었습니다!");
         return "redirect:/home";
+    }
+
+    private boolean validateRegister(MemberForm form, BindingResult bindingResult) {
+        if (!StringUtils.hasText(form.getStudentNum())) {
+            bindingResult.rejectValue("studentNum","NotBlack");
+        }
+        if (!StringUtils.hasText(form.getMemberName())) {
+            bindingResult.rejectValue("memberName","NotBlack");
+        }
+        if (!StringUtils.hasText(form.getCollegeName())) {
+            bindingResult.rejectValue("collegeName","NotBlack");
+        }
+        return bindingResult.hasErrors();
     }
 }
