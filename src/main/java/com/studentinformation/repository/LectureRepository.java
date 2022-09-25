@@ -10,12 +10,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import javax.validation.ConstraintValidatorContext;
 import java.util.List;
 import java.util.Optional;
 
 public interface LectureRepository extends JpaRepository<Lecture, Long> {
-
-    Page<Lecture> findBySemester(String semester, Pageable pageable);
 
     @Query("select a.lecture from Application a left join fetch a.lecture.professor where a.student = :student")
     List<Lecture> findLecturesByStudent(@Param("student") Member student);
