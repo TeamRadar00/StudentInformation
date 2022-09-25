@@ -16,8 +16,10 @@ import java.util.Optional;
 
 public interface LectureRepository extends JpaRepository<Lecture, Long> {
 
+
     @Query("select a.lecture from Application a left join fetch a.lecture.professor where a.student = :student")
     List<Lecture> findLecturesByStudent(@Param("student") Member student);
+
 
     List<Lecture> findLecturesByProfessor(Member member);
 
