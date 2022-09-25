@@ -77,4 +77,10 @@ public class LectureService {
         return lectureRepository.findById(lectureId).orElse(null);
     }
 
+
+    public boolean checkInaccessibleLectureWithProfessor(Member professor,Long lectureId){
+        boolean access =professor.getProfessorLectures().stream()
+                .anyMatch(lecture -> lecture.getId().equals(lectureId));
+        return !access;
+    }
 }

@@ -94,4 +94,10 @@ public class GradeService {
         int end = Math.min(start+pageable.getPageSize(),objectionsList.size());
         return new PageImpl<>(objectionsList.subList(start,end),pageable,objectionsList.size());
     }
+
+    public boolean checkInaccessibleGradeWithProfessor(Member professor,Long gradeId){
+        boolean access = professor.getGrades().stream()
+                .anyMatch(grade -> grade.getId().equals(gradeId));
+        return !access;
+    }
 }
