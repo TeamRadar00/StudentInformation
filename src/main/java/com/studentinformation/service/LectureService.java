@@ -71,8 +71,8 @@ public class LectureService {
      * member가 신청하지 않은 lecture 반환 / 2022년 2학기
      */
     public Page<Lecture> findRemainLecture(Member member, Pageable pageable) {
-        return lectureRepository.findAllRemainLecture(member,"202202", pageable);
-
+        return lectureRepository.findAllRemainLecture(member, "202202", pageable);
+    }
     public boolean checkInaccessibleLectureWithProfessor(Member professor,Long lectureId){
         boolean access =professor.getProfessorLectures().stream()
                 .anyMatch(lecture -> lecture.getId().equals(lectureId));
