@@ -29,7 +29,7 @@ public class Lecture extends BaseEntity{
     @Column(name = "lecture_name")
     private String lectureName;
 
-    @ManyToOne(fetch = LAZY,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id")
     private Member professor;
 

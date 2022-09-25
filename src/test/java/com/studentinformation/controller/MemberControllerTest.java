@@ -7,7 +7,6 @@ import com.studentinformation.web.session.SessionConst;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpSession;
@@ -15,8 +14,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import javax.annotation.PostConstruct;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -32,7 +29,7 @@ public class MemberControllerTest {
     private static Member adminMember;
 
     @BeforeAll
-    static void createEmptyMember() {
+    static void createMember() {
         emptyMember = new Member("memberTest", "memberTest", "memberTest", MemberState.inSchool, null);
         adminMember = new Member("adminTest", "adminTest", "adminTest", MemberState.admin, "adminTest");
     }
