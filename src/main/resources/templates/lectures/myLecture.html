@@ -7,7 +7,7 @@
         <div class="card mb-4">
             <div class="card-header" >
                 <i class="fas fa-chart-bar me-1"></i>
-                <span th:text="|${#strings.substringBefore(lectureList[0].semester,'/')}년 ${#strings.substringAfter(lectureList[0].semester,'/')}학기 강의목록|">
+                <span th:text="|${loginMemberName}님의 ${#strings.substring(#messages.msg('current.semester'),1,5)}년 ${#strings.substring(#messages.msg('current.semester'),6,7)}학기 강의목록|">
                     @님의 @년 @학기 강의목록
                 </span>
             </div>

@@ -30,8 +30,8 @@ public class MemberControllerTest {
 
     @BeforeAll
     static void createMember() {
-        emptyMember = new Member("memberTest", "memberTest", "memberTest", MemberState.inSchool, null);
-        adminMember = new Member("adminTest", "adminTest", "adminTest", MemberState.admin, "adminTest");
+        emptyMember = new Member("MCT_member", "MCT_member", "MCT_member", MemberState.inSchool, null);
+        adminMember = new Member("MCT_admin", "MCT_admin", "MCT_admin", MemberState.admin, "MCT_admin");
     }
 
     @BeforeEach
@@ -107,7 +107,7 @@ public class MemberControllerTest {
                 .param("newPassword","qwe")
                 .param("confirmPassword","qwe");
         passwordCorrect.session(createLoginSession())
-                .param("prePassword","memberTest")
+                .param("prePassword","MCT_member")
                 .param("newPassword","qwe")
                 .param("confirmPassword","qwe");
 
@@ -232,9 +232,9 @@ public class MemberControllerTest {
         MockHttpServletRequestBuilder studentSession = post(url);
         MockHttpServletRequestBuilder blackField = post(url).param("studentNum"," ")
                 .param("memberName"," ").param("state","inSchool").param("collegeName"," ");
-        MockHttpServletRequestBuilder duplicateMember = post(url).param("studentNum","memberTest")
-                .param("memberName","memberTest").param("state","inSchool")
-                .param("collegeName","memberTest");
+        MockHttpServletRequestBuilder duplicateMember = post(url).param("studentNum","MCT_member")
+                .param("memberName","MCT_member").param("state","inSchool")
+                .param("collegeName","MCT_member");
         MockHttpServletRequestBuilder registerMember = post(url).param("studentNum","new")
                 .param("memberName","new").param("state","inSchool")
                 .param("collegeName","new");

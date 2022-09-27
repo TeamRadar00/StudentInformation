@@ -16,6 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -54,24 +56,33 @@ public class LectureController {
             return "redirect:/home";
         }
 
-        List<Lecture> list = lectureRepository.findLecturesByStudent(member);
+        List<Lecture> list = lectureRepository.findMyLectures(member, "202202");
         List<LectureForm> forms = list.stream().map(LectureForm::of).collect(Collectors.toList());
         model.addAttribute("lectureList", forms);
+        model.addAttribute("loginMemberName", member.getMemberName());
 
         return "lectures/myLecture";
     }
 
     @GetMapping("/lectures/opened")
-    public String goOpenedLecture(@ModelAttribute SearchLectureForm form) {
+    public String goOpenedLecture(@Login Member member, @ModelAttribute SearchLectureForm form) {
         return "lectures/openedLecture";
     }
 
     @PostMapping("/lectures/opened")
-    public String searchLecture(@ModelAttribute SearchLectureForm form , Model model, Pageable pageable) {
-        Page<Lecture> findLectures = getLectures(form, pageable);
+    public String searchLecture(@Login Member member, @Validated @ModelAttribute SearchLectureForm form,
+                                BindingResult bindingResult, Model model, Pageable pageable) {
+        if (bindingResult.hasErrors()) {
+            return "lectures/openedLecture";
+        }
 
+        Page<Lecture> findLectures = getLectures(form, pageable);
         Page<LectureForm> lectureFormList = findLectures.map(LectureForm::of);
         model.addAttribute("lectureList", lectureFormList);
+
+        if (lectureFormList.isEmpty()) {
+            bindingResult.reject("lectureNotFound","검색 조건에 해당하는 강의가 없습니다.");
+        }
         return "lectures/openedLecture";
     }
 
