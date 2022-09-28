@@ -26,7 +26,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String[] PROFESSOR_ACCESS = {
             GRADE_URI+"readObjection/**",
             GRADE_URI+"objectionList/**",
-            GRADE_URI+"giveGrade"
+            GRADE_URI+"giveGrade/**"
     };
 
     private static final String[] STUDENT_ACCESS = {
@@ -42,7 +42,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
+        http.csrf().disable()
+            .authorizeRequests()
                 .antMatchers(PROFESSOR_ACCESS).hasRole("PROFESSOR")
                     // 교수님만 접근가능
                 .antMatchers(STUDENT_ACCESS).hasAnyRole("INSCHOOL","OUTSCHOOL")
@@ -54,8 +55,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .loginPage("/members/login") // 인증이 필요한 URL에 접근하면 /members/login으로 이동
                     .usernameParameter("studentNum") //로그인 시 form에서 가져올 값
                     .passwordParameter("password") //로그인시 form에서 가져올 값
-                    .loginProcessingUrl("/login") //로그인시 처리할 URL 입력
-                    .defaultSuccessUrl("/") //로그인 성공하면 "/"로 이동
+                    .loginProcessingUrl("/member_login") //로그인시 처리할 URL 입력
+                    .defaultSuccessUrl("/grade/giveGrade") //로그인 성공하면 "/"로 이동
                     .failureUrl("/members/login") //로그인 실패하면 /member/login으로 이동
             .and()
                 .logout()

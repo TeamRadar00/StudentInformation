@@ -30,6 +30,10 @@ dependencies {
 
     //타임리프 라이브 코딩하기 위해 데브툴즈 추가함
     implementation 'org.springframework.boot:spring-boot-devtools'
+
+    //spring security 적용
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
 }
 
 tasks.named('test') {

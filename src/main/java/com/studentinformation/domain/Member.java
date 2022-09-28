@@ -4,6 +4,8 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -62,18 +64,18 @@ public class Member extends BaseEntity{
     }
 
 
-    public void update(Member member){
+    public void update(Member member,PasswordEncoder passwordEncoder){
         this.lastModifiedDate = LocalDateTime.now();
         this.studentNum = member.getStudentNum();
-        this.password = member.getPassword();
+        encodePassword(passwordEncoder);
         this.memberName = member.getMemberName();
         this.state = member.getState();
         this.collegeName = member.getCollegeName();
     }
 
-    public void changePassword(String newPassword){
+    public void changePassword(String newPassword,PasswordEncoder passwordEncoder){
         this.lastModifiedDate = LocalDateTime.now();
-        this.password = newPassword;
+        encodePassword(passwordEncoder);
     }
 
     public boolean checkFirstAccess(){
@@ -96,6 +98,10 @@ public class Member extends BaseEntity{
         int months = period.getMonths() / 6;
         int schoolYear = (years*2+months-outSchoolCount)/2+1;
         return schoolYear;
+    }
+
+    public void encodePassword(PasswordEncoder passwordEncoder){
+        this.password = passwordEncoder.encode(password);
     }
 
     @Override

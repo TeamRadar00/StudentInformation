@@ -2,6 +2,7 @@ package com.studentinformation.controller;
 
 import com.studentinformation.domain.Member;
 import com.studentinformation.domain.MemberState;
+import com.studentinformation.security.PrincipalDetails;
 import com.studentinformation.web.form.member.ChangePasswordForm;
 import com.studentinformation.web.form.member.LoginMemberForm;
 import com.studentinformation.web.form.member.MemberForm;
@@ -10,6 +11,8 @@ import com.studentinformation.web.argumentResolver.Login;
 import com.studentinformation.web.session.SessionConst;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -35,28 +38,31 @@ public class MemberController {
     public MemberState[] memberStates() { return MemberState.values(); }
 
     @GetMapping("/members/login")
-    public String goLogin(@ModelAttribute LoginMemberForm form) { return "members/login"; }
+    public String goLogin(@ModelAttribute LoginMemberForm form) {
 
-    @PostMapping("/members/login")
-    public String login(@Validated @ModelAttribute LoginMemberForm form, BindingResult bindingResult,
-                        @RequestParam(defaultValue = "/")String redirectURL,
-                        HttpServletRequest request) {
-
-        if (bindingResult.hasErrors()) {
-            return "members/login";
-        }
-
-        Member loginMember = memberService.login(form.getStudentNum(), form.getPassword());
-
-        if (loginMember == null) {
-            bindingResult.reject("loginFail", "학번 또는 비밀번호가 맞지 않습니다.");
-            return "members/login";
-        }
-
-        HttpSession session = request.getSession();
-        session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
-        return "redirect:" + redirectURL;
+        return "members/login";
     }
+
+//    @PostMapping("/members/login")
+//    public String login(@Validated @ModelAttribute LoginMemberForm form, BindingResult bindingResult,
+//                        @RequestParam(defaultValue = "/")String redirectURL,
+//                        HttpServletRequest request) {
+//
+//        if (bindingResult.hasErrors()) {
+//            return "members/login";
+//        }
+//
+//        Member loginMember = memberService.login(form.getStudentNum(), form.getPassword());
+//
+//        if (loginMember == null) {
+//            bindingResult.reject("loginFail", "학번 또는 비밀번호가 맞지 않습니다.");
+//            return "members/login";
+//        }
+//
+//        HttpSession session = request.getSession();
+//        session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
+//        return "redirect:" + redirectURL;
+//    }
 
     @GetMapping("/members/password")
     public String goPassword(@ModelAttribute ChangePasswordForm form) {

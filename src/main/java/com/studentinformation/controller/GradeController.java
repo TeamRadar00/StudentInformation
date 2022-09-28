@@ -1,6 +1,7 @@
 package com.studentinformation.controller;
 
 import com.studentinformation.domain.*;
+import com.studentinformation.security.PrincipalDetails;
 import com.studentinformation.service.GradeService;
 import com.studentinformation.service.LectureService;
 import com.studentinformation.service.MemberService;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -33,10 +35,6 @@ public class GradeController {
 
     @GetMapping("/grade/myGrade")
     public String goMyGrade(Model model, @Login Member student) {
-        if(student.getState() != MemberState.inSchool && student.getState() != MemberState.outSchool){
-            // 접근 할 수 없음
-            return "redirect:/home";
-        }
         Member member = memberService.findById(student.getId());
         model.addAttribute("myGrade", GoMyGradeForm.of(member));
         return "grade/myGrade";
@@ -44,10 +42,6 @@ public class GradeController {
 
     @GetMapping("/grade/objection")
     public String goObjection(Model model, @Login Member student) {
-        if(student.getState() != MemberState.inSchool && student.getState() != MemberState.outSchool){
-            // 접근 할 수 없음
-            return "redirect:/home";
-        }
 
         Member member = memberService.findById(student.getId());
         model.addAttribute("gradeList",member.getGrades());
@@ -56,10 +50,6 @@ public class GradeController {
 
     @PostMapping("/grade/objection")
     public String submitObjection(@ModelAttribute SubmitObjectionForm form, @Login Member student) {
-        if(student.getState() != MemberState.inSchool && student.getState() != MemberState.outSchool){
-            // 접근 할 수 없음
-            return "redirect:/home";
-        }
 
         gradeService.editGradeOfObjection(form.getGradeId(),form.getGradeObjection());
         return "redirect:/grade/objection";
@@ -72,12 +62,6 @@ public class GradeController {
     @GetMapping("/grade/readObjection/{gradeId}")
     public String readObjection(@PathVariable("gradeId")Long gradeId,Model model,
                                 @Login Member professor){
-        if (!professor.getState().equals(MemberState.professor)||
-                gradeService.checkInaccessibleGradeWithProfessor(professor,gradeId)){
-            // 접근 할 수 없음
-            return "redirect:/home";
-        }
-
         Grade grade = gradeService.findGradeById(gradeId);
         if (!StringUtils.hasText(grade.getObjection())){
             return "redirect:/home";
@@ -90,13 +74,6 @@ public class GradeController {
     public String editScoreThroughObjectionList(@PathVariable("gradeId")Long gradeId,
                                                 @RequestParam("gradeScore") Score score,
                                                 @Login Member professor){
-        if (!professor.getState().equals(MemberState.professor) ||
-                gradeService.checkInaccessibleGradeWithProfessor(professor,gradeId)){
-            // 접근 할 수 없음
-            return "redirect:/home";
-        }
-
-
         gradeService.editGradeOfScore(gradeId,score);
         return "redirect:/grade/objectionList";
     }
@@ -104,10 +81,6 @@ public class GradeController {
     @GetMapping("/grade/objectionList")
     public String goObjectionList(Model model, @Login Member professor,
                                   @RequestParam(required = false,value = "lectureId") Long lectureId) {
-        if (!professor.getState().equals(MemberState.professor)){
-            // 접근 할 수 없음
-            return "redirect:/home";
-        }
         Member member = memberService.findById(professor.getId());
         model.addAttribute("getObjectionListForm", GradeObjectionListForm.of(member));
         if(lectureId != null){
@@ -129,14 +102,6 @@ public class GradeController {
                                    @RequestParam(value = "lectureId",required = false) Long newLectureId,
                                    Pageable pageable,
                                    Model model,@Login Member professor){
-        if (!professor.getState().equals(MemberState.professor) ||
-                lectureService.checkInaccessibleLectureWithProfessor(professor,selectLectureId) ||
-                lectureService.checkInaccessibleLectureWithProfessor(professor,newLectureId)){
-            // 접근 할 수 없음
-            return "redirect:/home";
-        }
-
-
         if(gradeId != null){
             return "redirect:/grade/readObjection/"+gradeId;
         }
@@ -150,15 +115,13 @@ public class GradeController {
     }
 
     @GetMapping("/grade/giveGrade")
-    public String goGiveGrade(Model model,@Login Member professor,
-                              @RequestParam(value = "lectureId",required = false) Long lectureId) {
-        if (!professor.getState().equals(MemberState.professor)){
-            // 접근 할 수 없음
-            return "redirect:/home";
-        }
+    public String goGiveGrade(Model model,
+                              @RequestParam(value = "lectureId",required = false) Long lectureId,
+                              Authentication authentication) {
 
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal(); //세션에서 정보 가져옴
 
-        Member member = memberService.findById(professor.getId());
+        Member professor = memberService.findById(principal.getMember().getId());
         GradeGoGIveGradeForm form;
         if(lectureId != null){
             if(lectureService.checkInaccessibleLectureWithProfessor(professor,lectureId)){
@@ -167,9 +130,9 @@ public class GradeController {
 
             Lecture lecture = lectureService.findByLectureId(lectureId);
 
-            form = GradeGoGIveGradeForm.makeFormWithLectureId(member, lecture);
+            form = GradeGoGIveGradeForm.makeFormWithLectureId(professor, lecture);
         }else{
-            form = GradeGoGIveGradeForm.makeForm(member);
+            form = GradeGoGIveGradeForm.makeForm(professor);
         }
         model.addAttribute("GradeGoGiveGradeForm",form);
         return "grade/giveGrade";
@@ -178,11 +141,12 @@ public class GradeController {
     @PostMapping("/grade/giveGrade")
     public String submitGiveGrade(@RequestParam(value = "gradeScore",required = false) List<Score> scoreList,
                                   @RequestParam(value = "lectureId",required = false) Long lectureId,
-                                  @Login Member professor){
-        if (!professor.getState().equals(MemberState.professor)){
-            // 접근 할 수 없음
-            return "redirect:/home";
-        }
+                                  Authentication authentication){
+
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal(); //세션에서 정보 가져옴
+
+        Member professor = memberService.findById(principal.getMember().getId());
+
         if(lectureId != null) {
             if(lectureService.checkInaccessibleLectureWithProfessor(professor,lectureId)){
                 return "redirect:/home";
