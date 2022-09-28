@@ -6,6 +6,7 @@ import com.studentinformation.repository.MemberRepository;
 import com.sun.jdi.request.DuplicateRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +19,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     // 비밀번호 암호화 해야함
     @Transactional
     public Member addMember(Member member){
+        member.encodePassword(bCryptPasswordEncoder);
         memberRepository.save(member);
         log.info("addMember = {}",member);
         return member;
@@ -36,7 +38,7 @@ public class MemberService {
     @Transactional
     public Member update(Long oldMemberId, Member newMember){
         Member findMember = findById(oldMemberId);
-        findMember.update(newMember);
+        findMember.update(newMember,bCryptPasswordEncoder);
         log.info("updateMember = {}",findMember);
         return findMember;
     }
@@ -50,7 +52,7 @@ public class MemberService {
             throw new DuplicateRequestException("newPassword is duplicated oldPassword");
         else{
             log.info("changePassword = {}, oldPassword= {}",newPassword,findMember.getPassword());
-            findMember.changePassword(newPassword);
+            findMember.changePassword(newPassword,bCryptPasswordEncoder);
             return findMember;
         }
     }
