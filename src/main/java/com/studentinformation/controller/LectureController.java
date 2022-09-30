@@ -4,6 +4,7 @@ import com.studentinformation.domain.Lecture;
 import com.studentinformation.domain.Member;
 import com.studentinformation.domain.MemberState;
 import com.studentinformation.domain.Week;
+import com.studentinformation.security.PrincipalDetails;
 import com.studentinformation.web.form.lecture.LectureForm;
 import com.studentinformation.web.form.lecture.SearchLectureForm;
 import com.studentinformation.repository.LectureRepository;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -48,11 +50,14 @@ public class LectureController {
 
 
     @GetMapping("/lectures/my")
-    public String goMyLecture(@Login Member member, Model model, RedirectAttributes ra) {
-        if (member.getState() == MemberState.professor) {
-            ra.addFlashAttribute("msg", "권한이 없습니다!");
-            return "redirect:/home";
-        }
+    public String goMyLecture(Model model, RedirectAttributes ra, Authentication authentication) {
+//        if (member.getState() == MemberState.professor) {
+//            ra.addFlashAttribute("msg", "권한이 없습니다!");
+//            return "redirect:/home";
+//        }
+
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        Member member = principal.getMember();
 
         List<Lecture> list = lectureRepository.findLecturesByStudent(member);
         List<LectureForm> forms = list.stream().map(LectureForm::of).collect(Collectors.toList());
@@ -87,12 +92,16 @@ public class LectureController {
     }
 
     @GetMapping("/lectures")
-    public String goCRUDLecture(@Login Member professor, @ModelAttribute("createLecture") LectureForm form,
-                                Model model, RedirectAttributes ra) {
-        if (professor.getState() != MemberState.professor || professor.getState() != MemberState.admin) {
-            ra.addFlashAttribute("msg", "권한이 없습니다!");
-            return "redirect:/home";
-        }
+    public String goCRUDLecture(@ModelAttribute("createLecture") LectureForm form,
+                                Model model, RedirectAttributes ra,
+                                Authentication authentication) {
+//        if (professor.getState() != MemberState.professor || professor.getState() != MemberState.admin) {
+//            ra.addFlashAttribute("msg", "권한이 없습니다!");
+//            return "redirect:/home";
+//        }
+
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        Member professor = principal.getMember();
 
         List<Lecture> lectures = lectureRepository.findLecturesByProfessor(professor);
         List<LectureForm> forms = lectures.stream().map(LectureForm::of).collect(Collectors.toList());
@@ -101,12 +110,16 @@ public class LectureController {
     }
 
     @PostMapping("/lectures/new")
-    public String createLecture(@Login Member professor, @ModelAttribute("createLecture") LectureForm lectureForm,
-                                RedirectAttributes ra) {
-        if (professor.getState() != MemberState.professor || professor.getState() != MemberState.admin) {
-            ra.addFlashAttribute("msg", "권한이 없습니다!");
-            return "redirect:/home";
-        }
+    public String createLecture(@ModelAttribute("createLecture") LectureForm lectureForm,
+                                RedirectAttributes ra,
+                                Authentication authentication) {
+//        if (professor.getState() != MemberState.professor || professor.getState() != MemberState.admin) {
+//            ra.addFlashAttribute("msg", "권한이 없습니다!");
+//            return "redirect:/home";
+//        }
+
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        Member professor = principal.getMember();
 
         professor = memberService.findById(professor.getId()); //엔티티 메니저가 관리하는 professor를 가져온다.
         Lecture newLecture = lectureForm.convertEntity(professor);
@@ -125,24 +138,27 @@ public class LectureController {
     }
 
     @GetMapping("/lectures/{lectureId}/edit")
-    public String getEditLecture(@Login Member professor, @PathVariable long lectureId,
+    public String getEditLecture(@PathVariable long lectureId,
                                  Model model, RedirectAttributes ra) {
-        if (professor.getState() != MemberState.professor || professor.getState() != MemberState.admin) {
-            ra.addFlashAttribute("msg", "권한이 없습니다!");
-            return "redirect:/home";
-        }
-
+//        if (professor.getState() != MemberState.professor || professor.getState() != MemberState.admin) {
+//            ra.addFlashAttribute("msg", "권한이 없습니다!");
+//            return "redirect:/home";
+//        }
         model.addAttribute("editLecture", LectureForm.of(lectureService.findByLectureId(lectureId)));
         return "lectures/editLecture";
     }
 
     @PostMapping("/lectures/{lectureId}/edit")
-    public String editLecture(@Login Member professor, @PathVariable long lectureId,
-                              @ModelAttribute("editLecture") LectureForm lectureForm, RedirectAttributes ra) {
-        if (professor.getState() != MemberState.professor || professor.getState() != MemberState.admin) {
-            ra.addFlashAttribute("msg", "권한이 없습니다!");
-            return "redirect:/home";
-        }
+    public String editLecture(@PathVariable long lectureId,
+                              @ModelAttribute("editLecture") LectureForm lectureForm, RedirectAttributes ra,
+                              Authentication authentication) {
+//        if (professor.getState() != MemberState.professor || professor.getState() != MemberState.admin) {
+//            ra.addFlashAttribute("msg", "권한이 없습니다!");
+//            return "redirect:/home";
+//        }
+
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        Member professor = principal.getMember();
 
         professor = memberService.findById(professor.getId());
         Lecture newLecture = lectureForm.convertEntity(professor);

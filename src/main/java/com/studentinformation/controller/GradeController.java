@@ -34,22 +34,25 @@ public class GradeController {
     private final LectureService lectureService;
 
     @GetMapping("/grade/myGrade")
-    public String goMyGrade(Model model, @Login Member student) {
+    public String goMyGrade(Model model, Authentication authentication) {
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        Member student = principal.getMember();
         Member member = memberService.findById(student.getId());
         model.addAttribute("myGrade", GoMyGradeForm.of(member));
         return "grade/myGrade";
     }
 
     @GetMapping("/grade/objection")
-    public String goObjection(Model model, @Login Member student) {
-
+    public String goObjection(Model model, Authentication authentication) {
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        Member student = principal.getMember();
         Member member = memberService.findById(student.getId());
         model.addAttribute("gradeList",member.getGrades());
         return "grade/objection";
     }
 
     @PostMapping("/grade/objection")
-    public String submitObjection(@ModelAttribute SubmitObjectionForm form, @Login Member student) {
+    public String submitObjection(@ModelAttribute SubmitObjectionForm form) {
 
         gradeService.editGradeOfObjection(form.getGradeId(),form.getGradeObjection());
         return "redirect:/grade/objection";
@@ -60,8 +63,7 @@ public class GradeController {
      * gradeId로 접속하는 멤버가 grade를 가지고있는 교수여야함
      */
     @GetMapping("/grade/readObjection/{gradeId}")
-    public String readObjection(@PathVariable("gradeId")Long gradeId,Model model,
-                                @Login Member professor){
+    public String readObjection(@PathVariable("gradeId")Long gradeId,Model model){
         Grade grade = gradeService.findGradeById(gradeId);
         if (!StringUtils.hasText(grade.getObjection())){
             return "redirect:/home";
@@ -72,19 +74,19 @@ public class GradeController {
 
     @PostMapping("/grade/readObjection/{gradeId}")
     public String editScoreThroughObjectionList(@PathVariable("gradeId")Long gradeId,
-                                                @RequestParam("gradeScore") Score score,
-                                                @Login Member professor){
+                                                @RequestParam("gradeScore") Score score){
         gradeService.editGradeOfScore(gradeId,score);
         return "redirect:/grade/objectionList";
     }
 
     @GetMapping("/grade/objectionList")
-    public String goObjectionList(Model model, @Login Member professor,
+    public String goObjectionList(Model model, Authentication authentication,
                                   @RequestParam(required = false,value = "lectureId") Long lectureId) {
-        Member member = memberService.findById(professor.getId());
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        Member member = memberService.findById(principal.getMember().getId());
         model.addAttribute("getObjectionListForm", GradeObjectionListForm.of(member));
         if(lectureId != null){
-            if(lectureService.checkInaccessibleLectureWithProfessor(professor, lectureId)){
+            if(lectureService.checkInaccessibleLectureWithProfessor(member, lectureId)){
                 return "redirect:/home";
             }
 
@@ -101,7 +103,7 @@ public class GradeController {
                                    @RequestParam(value = "gradeId",required = false) Long gradeId,
                                    @RequestParam(value = "lectureId",required = false) Long newLectureId,
                                    Pageable pageable,
-                                   Model model,@Login Member professor){
+                                   Model model){
         if(gradeId != null){
             return "redirect:/grade/readObjection/"+gradeId;
         }
