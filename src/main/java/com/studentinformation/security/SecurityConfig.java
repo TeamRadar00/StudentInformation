@@ -15,22 +15,45 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
-    private static final String GRADE_URI = "/grade/";
-//    private static final String
+    private static final String GRADE_URI = "/grade";
+    private static final String LECTURE_URI = "/lectures";
+    private static final String APPLICATION_URI = "/applications";
 
     private static final String[] AUTH_WHITELIST = {
+            "/assets/**",
+            "/css/**",
+            "/js/**"
+    };
 
+    private static final String[] ADMIN_ACCESS = {
+            "/admin",
+
+            LECTURE_URI,
+            LECTURE_URI+"/new",
+            LECTURE_URI+"/{lectureId}/edit",
+
+            APPLICATION_URI,
+            APPLICATION_URI+"/{lectureId}/new"
     };
 
     private static final String[] PROFESSOR_ACCESS = {
-            GRADE_URI+"readObjection/**",
-            GRADE_URI+"objectionList/**",
-            GRADE_URI+"giveGrade"
+            GRADE_URI+"/readObjection/**",
+            GRADE_URI+"/objectionList/**",
+            GRADE_URI+"/giveGrade",
+
+            LECTURE_URI,
+            LECTURE_URI+"/new",
+            LECTURE_URI+"/{lectureId}/edit"
     };
 
     private static final String[] STUDENT_ACCESS = {
-            GRADE_URI+"myGrade",
-            GRADE_URI+"objection"
+            GRADE_URI+"/myGrade",
+            GRADE_URI+"/objection",
+
+            LECTURE_URI+"/my",
+
+            APPLICATION_URI,
+            APPLICATION_URI+"/{lectureId}/new"
     };
 
 
@@ -43,13 +66,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
             .authorizeRequests()
-                .antMatchers("/home").authenticated()
+                .antMatchers("/members/login").permitAll()
+                .antMatchers(ADMIN_ACCESS).hasRole("ADMIN")
                 .antMatchers(PROFESSOR_ACCESS).hasRole("PROFESSOR")
                     // 교수님만 접근가능
                 .antMatchers(STUDENT_ACCESS).hasAnyRole("INSCHOOL","OUTSCHOOL")
                     // 학생만 접근 가능
-                .anyRequest().permitAll()
-                    // 나머지 주소는 인증없이 접근 가능
+                .antMatchers(AUTH_WHITELIST).permitAll()
+                .anyRequest().authenticated()
+                    // 나머지 주소는 인증해야 접근 가능
             .and()
                 .formLogin() //form 기반의 로그인
                     .loginPage("/members/login") // 인증이 필요한 URL에 접근하면 /members/login으로 이동
