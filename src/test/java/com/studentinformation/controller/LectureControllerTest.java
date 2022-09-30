@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -39,7 +40,7 @@ public class LectureControllerTest {
                 MemberState.inSchool, "LCT_member");
         professor = new Member("LCT_professor", "LCT_professor", "LCT_professor",
                 MemberState.professor, "LCT_professor");
-        lecture = new Lecture("LCT_lecture", professor, "202202", "~/12:00~13:50/~/13:00~14:50/~/~/~/", 1);
+        lecture = new Lecture("LCT_lecture", professor, "202202", "~/12:00~13:50/~/~/~/~/~/", 1);
     }
 
     @BeforeEach
@@ -108,10 +109,10 @@ public class LectureControllerTest {
                 .param("year", " ").param("semester", "2")
                 .param("selectOne", "professor").param("content", "");
 
-        lectureNotFound.session(createSession(student))
+        lectureNotFound.session(createSession(professor))
                 .param("year", "notFound").param("semester", "2")
                 .param("selectOne", "professor").param("content", "notFound");
-        findLecture.session(createSession(student))
+        findLecture.session(createSession(professor))
                 .param("year", "2022").param("semester", "2")
                 .param("selectOne", "professor").param("content", "LCT_professor");
 
@@ -132,6 +133,161 @@ public class LectureControllerTest {
                 .andExpect(handler().methodName("searchLecture"))
                 .andExpect(model().attributeExists("lectureList"))
                 .andExpect(model().hasNoErrors());
+    }
+
+    @Test
+    void goCRUDLecture_test() throws Exception {
+        //given
+        String url = "/lectures";
+        MockHttpServletRequestBuilder noSession = get(url);
+        MockHttpServletRequestBuilder studentSession = get(url);
+        MockHttpServletRequestBuilder professorSession = get(url);
+
+        //when
+        studentSession.session(createSession(student));
+        professorSession.session(createSession(professor));
+
+        //then
+        ifNoSessionThenRedirect(noSession, url);
+        mock.perform(studentSession)
+                .andExpect(handler().handlerType(LectureController.class))
+                .andExpect(handler().methodName("goCRUDLecture"))
+                .andExpect(flash().attributeExists("msg"))
+                .andExpect(redirectedUrl("/home"));
+        mock.perform(professorSession)
+                .andExpect(handler().handlerType(LectureController.class))
+                .andExpect(handler().methodName("goCRUDLecture"))
+                .andExpect(model().attributeExists("lectureList"))
+                .andExpect(view().name("lectures/CRUDLecture"));
+    }
+
+    @Test
+    void createLecture_test() throws Exception {
+        //given
+        String url = "/lectures/new";
+        MockHttpServletRequestBuilder noSession = post(url);
+        MockHttpServletRequestBuilder studentSession = post(url);
+        MockHttpServletRequestBuilder sameLecture = post(url);
+        MockHttpServletRequestBuilder differentLecture = post(url);
+        //when
+        studentSession.session(createSession(student));
+        sameLecture.session(createSession(professor))
+                .param("lectureName", "LCT_lecture").param("year", "2022")
+                .param("semester", "2").param("lectureTimeList[0].startTime", "12:00")
+                .param("lectureTimeList[0].endTime", "13:50").param("limitNum", "12");
+        differentLecture.session(createSession(professor))
+                .param("lectureName", "LCT_lecture2").param("year", "2022")
+                .param("semester", "2").param("lectureTimeList[0].startTime", "12:00")
+                .param("lectureTimeList[0].endTime", "13:50")
+                .param("lectureTimeList[1].startTime", "").param("lectureTimeList[1].endTime", "")
+                .param("lectureTimeList[2].startTime", "").param("lectureTimeList[2].endTime", "")
+                .param("lectureTimeList[3].startTime", "").param("lectureTimeList[3].endTime", "")
+                .param("lectureTimeList[4].startTime", "").param("lectureTimeList[4].endTime", "")
+                .param("lectureTimeList[5].startTime", "").param("lectureTimeList[5].endTime", "")
+                .param("lectureTimeList[6].startTime", "").param("lectureTimeList[6].endTime", "")
+                .param("limitNum", "12");
+        //then
+        ifNoSessionThenRedirect(noSession, url);
+        mock.perform(studentSession)
+                .andExpect(handler().handlerType(LectureController.class))
+                .andExpect(handler().methodName("createLecture"))
+                .andExpect(flash().attributeExists("msg"))
+                .andExpect(redirectedUrl("/home"));
+        mock.perform(sameLecture)
+                .andExpect(handler().handlerType(LectureController.class))
+                .andExpect(handler().methodName("createLecture"))
+                .andExpect(flash().attributeExists("msg"))
+                .andExpect(flash().attributeExists("createLectureForm"))
+                .andExpect(redirectedUrl("/lectures"));
+        mock.perform(differentLecture)
+                .andExpect(handler().handlerType(LectureController.class))
+                .andExpect(handler().methodName("createLecture"))
+                .andExpect(flash().attributeExists("msg"))
+                .andExpect(flash().attributeCount(1))
+                .andExpect(redirectedUrl("/lectures"));
+    }
+
+    @Test
+    void getEditLecture_test() throws Exception {
+        //given
+        String url = "/lectures/" + lecture.getId() + "/edit";
+        MockHttpServletRequestBuilder noSession = get(url);
+        MockHttpServletRequestBuilder studentSession = get(url);
+        MockHttpServletRequestBuilder notFoundLecture = get("/lectures/123456789/edit");
+        MockHttpServletRequestBuilder foundLecture = get(url);
+
+        //when
+        studentSession.session(createSession(student));
+        notFoundLecture.session(createSession(professor));
+        foundLecture.session(createSession(professor));
+
+        //then
+        ifNoSessionThenRedirect(noSession, url);
+        mock.perform(studentSession)
+                .andExpect(handler().handlerType(LectureController.class))
+                .andExpect(handler().methodName("getEditLecture"))
+                .andExpect(flash().attributeExists("msg"))
+                .andExpect(redirectedUrl("/home"));
+        mock.perform(notFoundLecture)
+                .andExpect(handler().handlerType(LectureController.class))
+                .andExpect(handler().methodName("getEditLecture"))
+                .andExpect(flash().attributeExists("msg"))
+                .andExpect(redirectedUrl("/home"));
+        mock.perform(foundLecture)
+                .andExpect(handler().handlerType(LectureController.class))
+                .andExpect(handler().methodName("getEditLecture"))
+                .andExpect(model().attributeExists("editLectureForm"))
+                .andExpect(view().name("lectures/editLecture"));
+    }
+
+    @Test
+    void editLecture_test() throws Exception {
+        //given
+        String url = "/lectures/" + lecture.getId() + "/edit";
+        MockHttpServletRequestBuilder noSession = post(url);
+        MockHttpServletRequestBuilder studentSession = post(url);
+        MockHttpServletRequestBuilder sameLecture = post(url);
+        MockHttpServletRequestBuilder notFoundLecture = post("/lectures/123456789/edit");
+        MockHttpServletRequestBuilder foundLecture = post(url);
+
+        //when
+        studentSession.session(createSession(student));
+        sameLecture.session(createSession(professor))
+                .param("lectureName", "LCT_lecture").param("year", "2022")
+                .param("semester", "2").param("lectureTimeList[0].startTime", "12:00")
+                .param("lectureTimeList[0].endTime", "13:50").param("limitNum", "12");
+        notFoundLecture.session(createSession(professor))
+                .param("lectureName", "LCT_lecture3").param("year", "2022")
+                .param("semester", "2").param("lectureTimeList[0].startTime", "12:00")
+                .param("lectureTimeList[0].endTime", "13:50").param("limitNum", "12");
+        foundLecture.session(createSession(professor))
+                .param("lectureName", "LCT_lecture3").param("year", "2022")
+                .param("semester", "2").param("lectureTimeList[0].startTime", "12:00")
+                .param("lectureTimeList[0].endTime", "13:50").param("limitNum", "12");
+
+        //then
+        ifNoSessionThenRedirect(noSession, url);
+        mock.perform(studentSession)
+                .andExpect(handler().methodName("editLecture"))
+                .andExpect(flash().attributeExists("msg"))
+                .andExpect(redirectedUrl("/home"));
+        mock.perform(sameLecture)
+                .andExpect(handler().handlerType(LectureController.class))
+                .andExpect(handler().methodName("editLecture"))
+                .andExpect(flash().attributeExists("msg"))
+                .andExpect(flash().attributeExists("createLectureForm"))
+                .andExpect(redirectedUrl("/lectures"));
+        mock.perform(notFoundLecture)
+                .andExpect(handler().handlerType(LectureController.class))
+                .andExpect(handler().methodName("editLecture"))
+                .andExpect(flash().attributeExists("msg"))
+                .andExpect(flash().attributeCount(1))
+                .andExpect(redirectedUrl("/home"));
+        mock.perform(foundLecture)
+                .andExpect(handler().handlerType(LectureController.class))
+                .andExpect(handler().methodName("editLecture"))
+                .andExpect(flash().attributeExists("msg"))
+                .andExpect(redirectedUrl("/lectures"));
     }
 
     private void ifNoSessionThenRedirect(MockHttpServletRequestBuilder noSession, String url) throws Exception {

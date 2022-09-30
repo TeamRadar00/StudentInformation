@@ -10,29 +10,45 @@
                 강의 개설/수정
             </div>
             <div class="card-body">
-                <form th:object="${editLecture}" method="post">
+                <form th:object="${editLectureForm}" method="post">
                     <div class="form-floating mb-3">
-                        <input class="form-control" th:field="*{lectureName}" type="text" placeholder="lectureName"/>
-                        <label th:for="*{lectureName}">강의 이름</label>
+                        <input class="form-control" th:field="*{lectureName}" type="text"
+                               th:errorclass="is-invalid" placeholder="lectureName"/>
+                        <label for="lectureName">강의 이름</label>
+                        <div class="invalid-feedback" th:errors="*{lectureName}">에러 메시지</div>
                     </div>
-                    <div class="form-floating mb-3">
-                        <input class="form-control" th:field="*{semester}" type="text" placeholder="20**/*"/>
-                        <label th:for="*{semester}">학기</label>
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3 mb-md-0">
+                            <input class="form-control" th:field="*{year}" type="text"
+                                   th:errorclass="is-invalid" placeholder="year"/>
+                            <label for="year">****년도</label>
+                            <div class="invalid-feedback" th:errors="*{year}">에러 메시지</div>
+                        </div>
                     </div>
-                    <div  th:each="day,dayStat : ${week}" class="form-row">
-                        <div  class="form-group col-md-2">
+                    <div class="col-md-6">
+                        <select th:field="*{semester}" class="form-select">
+                            <option th:each="semester : ${semesters}" th:value="${semester.key}"
+                                    th:text="${semester.value}">@학기</option>
+                        </select>
+                    </div>
+                    <div th:each="day,dayStat : ${week}" class="form-row">
+                        <div class="form-group col-md-2">
                             <input class="form-control" type="text" th:value="${day.name}" readonly>
                         </div>
                         <div class="form-group col-md-3">
-                            <input class="form-control" th:field="*{lectureTimeList[__${dayStat.index}__].startTime}" type="time" placeholder="startTime"/>
+                            <input class="form-control" th:field="*{lectureTimeList[__${dayStat.index}__].startTime}"
+                                   type="time" placeholder="startTime"/>
                         </div>
                         <div class="form-group col-md-3">
-                            <input class="form-control" th:field="*{lectureTimeList[__${dayStat.index}__].endTime}" type="time" placeholder="endTime"/>
+                            <input class="form-control" th:field="*{lectureTimeList[__${dayStat.index}__].endTime}"
+                                   type="time" placeholder="endTime"/>
                         </div>
                     </div>
                     <div class="form-floating mb-3">
-                        <input class="form-control" th:field="*{limitNum}" type="text" placeholder="숫자로 입력해주세요."/>
-                        <label th:for="*{limitNum}">최대 정원</label>
+                        <input class="form-control" th:field="*{limitNum}" type="text"
+                               th:errorclass="is-invalid" placeholder="숫자로 입력해주세요."/>
+                        <label for="limitNum">최대 정원</label>
+                        <div class="invalid-feedback" th:errors="*{limitNum}">에러 메시지</div>
                     </div>
                     <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
                         <button type="submit" class="btn btn-primary">강의 수정</button>

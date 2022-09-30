@@ -33,7 +33,8 @@ public class LectureService {
      */
     @Transactional
     public Lecture editLecture(Long oldLectureId,Lecture newLecture){
-        Lecture oldLecture = lectureRepository.findById(oldLectureId).get();
+        Lecture oldLecture = lectureRepository.findById(oldLectureId).orElseThrow(
+                () -> new IllegalArgumentException("no such data"));
         log.info("oldLecture = {}",oldLecture);
         oldLecture.update(newLecture);
         log.info("newLecture = {}",oldLecture);
