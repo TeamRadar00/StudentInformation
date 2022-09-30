@@ -33,11 +33,11 @@ public class ApplicationControllerTest {
 
     @BeforeAll
     static void createTestData() {
-        student = new Member("memberTest", "memberTest", "memberTest",
-                MemberState.inSchool, "memberTest");
-        professor = new Member("professorTest", "professorTest", "professorTest",
-                MemberState.professor, "professorTest");
-        lecture = new Lecture("lectureTest1", professor, "202202", "/12:00~12:50/////", 1);
+        student = new Member("ACT_member", "ACT_member", "ACT_member",
+                MemberState.inSchool, "ACT_member");
+        professor = new Member("ACT_professor", "ACT_professor", "ACT_professor",
+                MemberState.professor, "ACT_professor");
+        lecture = new Lecture("ACT_lecture", professor, "202202", "~/12:00~13:50/~/13:00~14:50/~/~/~/", 1);
     }
 
     @BeforeEach

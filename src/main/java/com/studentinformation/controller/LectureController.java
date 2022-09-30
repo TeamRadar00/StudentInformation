@@ -5,6 +5,7 @@ import com.studentinformation.domain.Member;
 import com.studentinformation.domain.MemberState;
 import com.studentinformation.domain.Week;
 import com.studentinformation.security.PrincipalDetails;
+import com.studentinformation.web.form.lecture.CRUDLectureForm;
 import com.studentinformation.web.form.lecture.LectureForm;
 import com.studentinformation.web.form.lecture.SearchLectureForm;
 import com.studentinformation.repository.LectureRepository;
@@ -18,6 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -50,18 +53,15 @@ public class LectureController {
 
 
     @GetMapping("/lectures/my")
-    public String goMyLecture(Model model, RedirectAttributes ra, Authentication authentication) {
-//        if (member.getState() == MemberState.professor) {
-//            ra.addFlashAttribute("msg", "권한이 없습니다!");
-//            return "redirect:/home";
-//        }
+    public String goMyLecture(Model model, Authentication authentication) {
 
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         Member member = principal.getMember();
 
-        List<Lecture> list = lectureRepository.findLecturesByStudent(member);
+        List<Lecture> list = lectureRepository.findMyLectures(member, "202202");
         List<LectureForm> forms = list.stream().map(LectureForm::of).collect(Collectors.toList());
         model.addAttribute("lectureList", forms);
+        model.addAttribute("loginMemberName", member.getMemberName());
 
         return "lectures/myLecture";
     }
@@ -72,11 +72,19 @@ public class LectureController {
     }
 
     @PostMapping("/lectures/opened")
-    public String searchLecture(@ModelAttribute SearchLectureForm form , Model model, Pageable pageable) {
-        Page<Lecture> findLectures = getLectures(form, pageable);
+    public String searchLecture(@Validated @ModelAttribute SearchLectureForm form,
+                                BindingResult bindingResult, Model model, Pageable pageable) {
+        if (bindingResult.hasErrors()) {
+            return "lectures/openedLecture";
+        }
 
+        Page<Lecture> findLectures = getLectures(form, pageable);
         Page<LectureForm> lectureFormList = findLectures.map(LectureForm::of);
         model.addAttribute("lectureList", lectureFormList);
+
+        if (lectureFormList.isEmpty()) {
+            bindingResult.reject("lectureNotFound","검색 조건에 해당하는 강의가 없습니다.");
+        }
         return "lectures/openedLecture";
     }
 
@@ -92,13 +100,8 @@ public class LectureController {
     }
 
     @GetMapping("/lectures")
-    public String goCRUDLecture(@ModelAttribute("createLecture") LectureForm form,
-                                Model model, RedirectAttributes ra,
-                                Authentication authentication) {
-//        if (professor.getState() != MemberState.professor || professor.getState() != MemberState.admin) {
-//            ra.addFlashAttribute("msg", "권한이 없습니다!");
-//            return "redirect:/home";
-//        }
+    public String goCRUDLecture(@ModelAttribute("createLectureForm") CRUDLectureForm form, Authentication authentication,
+                                Model model, RedirectAttributes ra) {
 
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         Member professor = principal.getMember();
@@ -110,25 +113,24 @@ public class LectureController {
     }
 
     @PostMapping("/lectures/new")
-    public String createLecture(@ModelAttribute("createLecture") LectureForm lectureForm,
-                                RedirectAttributes ra,
-                                Authentication authentication) {
-//        if (professor.getState() != MemberState.professor || professor.getState() != MemberState.admin) {
-//            ra.addFlashAttribute("msg", "권한이 없습니다!");
-//            return "redirect:/home";
-//        }
-
+    public String createLecture(@Validated @ModelAttribute("createLectureForm") CRUDLectureForm form,
+                                BindingResult bindingResult, RedirectAttributes ra, Authentication authentication) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         Member professor = principal.getMember();
 
+        if (bindingResult.hasErrors()) {
+            return "lectures/CRUDLecture";
+        }
+
         professor = memberService.findById(professor.getId()); //엔티티 메니저가 관리하는 professor를 가져온다.
-        Lecture newLecture = lectureForm.convertEntity(professor);
+        Lecture newLecture = form.convertEntity(professor);
 
         // 동일한 교수가 같은 학기에 같은 이름의 수업을 개강할 순 없다.
         if (lectureRepository.findByLectureNameAndProfessorAndSemester(
-                newLecture.getLectureName(), newLecture.getProfessor(), newLecture.getSemester()).isPresent()) {
+                newLecture.getLectureName(), newLecture.getProfessor(), newLecture.getSemester()
+                ).isPresent()) {
             ra.addFlashAttribute("msg", "동일한 교수가 같은 학기에 같은 이름의 수업을 개강할 순 없습니다.");
-            ra.addFlashAttribute("createLecture", lectureForm);
+            ra.addFlashAttribute("createLectureForm", form);
             return "redirect:/lectures";
         }
 
@@ -138,43 +140,54 @@ public class LectureController {
     }
 
     @GetMapping("/lectures/{lectureId}/edit")
-    public String getEditLecture(@PathVariable long lectureId,
-                                 Model model, RedirectAttributes ra) {
-//        if (professor.getState() != MemberState.professor || professor.getState() != MemberState.admin) {
-//            ra.addFlashAttribute("msg", "권한이 없습니다!");
-//            return "redirect:/home";
-//        }
-        model.addAttribute("editLecture", LectureForm.of(lectureService.findByLectureId(lectureId)));
+    public String getEditLecture(@PathVariable long lectureId, Model model, RedirectAttributes ra) {
+
+        Lecture findLecture = lectureService.findByLectureId(lectureId);
+        if (findLecture == null) {
+            ra.addFlashAttribute("msg", "잘못된 접근입니다.");
+            return "redirect:/home";
+        }
+
+        model.addAttribute("editLectureForm", CRUDLectureForm.of(findLecture));
         return "lectures/editLecture";
     }
 
     @PostMapping("/lectures/{lectureId}/edit")
-    public String editLecture(@PathVariable long lectureId,
-                              @ModelAttribute("editLecture") LectureForm lectureForm, RedirectAttributes ra,
-                              Authentication authentication) {
-//        if (professor.getState() != MemberState.professor || professor.getState() != MemberState.admin) {
-//            ra.addFlashAttribute("msg", "권한이 없습니다!");
-//            return "redirect:/home";
-//        }
-
+    public String editLecture(@PathVariable long lectureId, RedirectAttributes ra,
+                              @Validated @ModelAttribute("editLectureForm") CRUDLectureForm form,
+                              BindingResult bindingResult, Authentication authentication) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         Member professor = principal.getMember();
 
+        if (professor.getState() != MemberState.professor && professor.getState() != MemberState.admin) {
+            ra.addFlashAttribute("msg", "권한이 없습니다!");
+            return "redirect:/home";
+        }
+
+        if (bindingResult.hasErrors()) {
+            return "lectures/" + String.valueOf(lectureId) + "/edit";
+        }
+
         professor = memberService.findById(professor.getId());
-        Lecture newLecture = lectureForm.convertEntity(professor);
+        Lecture newLecture = form.convertEntity(professor);
 
         // 동일한 교수가 같은 학기에 같은 이름의 수업을 개강할 순 없다.
         if (lectureRepository.findByLectureNameAndProfessorAndSemester(
                 newLecture.getLectureName(), newLecture.getProfessor(), newLecture.getSemester()).isPresent()) {
             ra.addFlashAttribute("msg", "동일한 교수가 같은 학기에 같은 이름의 수업을 개강할 순 없습니다.");
-            ra.addFlashAttribute("createLecture", lectureForm);
+            ra.addFlashAttribute("createLectureForm", form);
             return "redirect:/lectures";
         }
 
-        lectureService.editLecture(lectureId, newLecture);
+        try {
+            lectureService.editLecture(lectureId, newLecture);
+        } catch (IllegalArgumentException e) {
+            ra.addFlashAttribute("msg", "잘못된 접근입니다.");
+            return "redirect:/home";
+        }
+
         ra.addFlashAttribute("msg", "강의 수정이 완료됐습니다.");
         return "redirect:/lectures";
     }
-
 
 }

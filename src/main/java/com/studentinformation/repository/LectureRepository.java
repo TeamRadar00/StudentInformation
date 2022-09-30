@@ -5,20 +5,19 @@ import com.studentinformation.domain.Member;
 import com.studentinformation.domain.MemberState;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import javax.validation.ConstraintValidatorContext;
 import java.util.List;
 import java.util.Optional;
 
 public interface LectureRepository extends JpaRepository<Lecture, Long> {
 
 
-    @Query("select a.lecture from Application a left join fetch a.lecture.professor where a.student = :student")
-    List<Lecture> findLecturesByStudent(@Param("student") Member student);
+    @Query("select a.lecture from Application a left join fetch a.lecture.professor where a.student = :student" +
+            " and a.lecture.semester = :semester")
+    List<Lecture> findMyLectures(@Param("student") Member student,@Param("semester")String semester);
 
 
     List<Lecture> findLecturesByProfessor(Member member);

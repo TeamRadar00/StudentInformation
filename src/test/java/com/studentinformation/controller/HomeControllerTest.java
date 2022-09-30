@@ -39,7 +39,7 @@ class HomeControllerTest {
         MockHttpServletRequestBuilder noSession = get("/");
         MockHttpServletRequestBuilder builder = get("/");
         //when
-        builder.session(createLoginSession());
+//        builder.session(createLoginSession());
         //then
         mock.perform(noSession)
                 .andExpect(handler().handlerType(HomeController.class))

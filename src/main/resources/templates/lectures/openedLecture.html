@@ -11,11 +11,17 @@
             </div>
             <div class="card-body">
                 <form id="searchForm" th:object="${searchLectureForm}" method="post">
+                    <div th:if="${#fields.hasGlobalErrors()}">
+                        <p class="alert-info" th:each="err : ${#fields.globalErrors()}" th:text="${err}">
+                            전체 오류 메시지</p>
+                    </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <div class="form-floating mb-3 mb-md-0">
-                                <input class="form-control" th:field="*{year}" type="text" placeholder="year"/>
+                                <input class="form-control" th:field="*{year}" type="text"
+                                       th:errorclass="is-invalid" placeholder="year"/>
                                 <label for="year">****년도</label>
+                                <div class="invalid-feedback" th:errors="*{year}">에러 메시지</div>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -30,8 +36,10 @@
                                 th:text="${one.value}">교수님 or 강의이름</option>
                     </select>
                     <div class="form-floating mb-3">
-                        <input class="form-control" th:field="*{content}" type="text" placeholder="content"/>
+                        <input class="form-control" th:field="*{content}" type="text"
+                               th:errorclass="is-invalid" placeholder="content"/>
                         <label for="content">내용</label>
+                        <div class="invalid-feedback" th:errors="*{content}">에러 메시지</div>
                     </div>
                     <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
                         <button type="submit" class="btn btn-primary">조회</button>
