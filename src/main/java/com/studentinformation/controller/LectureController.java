@@ -4,6 +4,7 @@ import com.studentinformation.domain.Lecture;
 import com.studentinformation.domain.Member;
 import com.studentinformation.domain.MemberState;
 import com.studentinformation.domain.Week;
+import com.studentinformation.security.PrincipalDetails;
 import com.studentinformation.web.form.lecture.CRUDLectureForm;
 import com.studentinformation.web.form.lecture.LectureForm;
 import com.studentinformation.web.form.lecture.SearchLectureForm;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -51,11 +53,10 @@ public class LectureController {
 
 
     @GetMapping("/lectures/my")
-    public String goMyLecture(@Login Member member, Model model, RedirectAttributes ra) {
-        if (member.getState() == MemberState.professor) {
-            ra.addFlashAttribute("msg", "권한이 없습니다!");
-            return "redirect:/home";
-        }
+    public String goMyLecture(Model model, Authentication authentication) {
+
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        Member member = principal.getMember();
 
         List<Lecture> list = lectureRepository.findMyLectures(member, "202202");
         List<LectureForm> forms = list.stream().map(LectureForm::of).collect(Collectors.toList());
@@ -66,12 +67,12 @@ public class LectureController {
     }
 
     @GetMapping("/lectures/opened")
-    public String goOpenedLecture(@Login Member member, @ModelAttribute SearchLectureForm form) {
+    public String goOpenedLecture(@ModelAttribute SearchLectureForm form) {
         return "lectures/openedLecture";
     }
 
     @PostMapping("/lectures/opened")
-    public String searchLecture(@Login Member member, @Validated @ModelAttribute SearchLectureForm form,
+    public String searchLecture(@Validated @ModelAttribute SearchLectureForm form,
                                 BindingResult bindingResult, Model model, Pageable pageable) {
         if (bindingResult.hasErrors()) {
             return "lectures/openedLecture";
@@ -99,12 +100,11 @@ public class LectureController {
     }
 
     @GetMapping("/lectures")
-    public String goCRUDLecture(@Login Member professor, @ModelAttribute("createLectureForm") CRUDLectureForm form,
+    public String goCRUDLecture(@ModelAttribute("createLectureForm") CRUDLectureForm form, Authentication authentication,
                                 Model model, RedirectAttributes ra) {
-        if (professor.getState() != MemberState.professor && professor.getState() != MemberState.admin) {
-            ra.addFlashAttribute("msg", "권한이 없습니다!");
-            return "redirect:/home";
-        }
+
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        Member professor = principal.getMember();
 
         List<Lecture> lectures = lectureRepository.findLecturesByProfessor(professor);
         List<LectureForm> forms = lectures.stream().map(LectureForm::of).collect(Collectors.toList());
@@ -113,12 +113,10 @@ public class LectureController {
     }
 
     @PostMapping("/lectures/new")
-    public String createLecture(@Login Member professor, @Validated @ModelAttribute("createLectureForm") CRUDLectureForm form,
-                                BindingResult bindingResult, RedirectAttributes ra) {
-        if (professor.getState() != MemberState.professor && professor.getState() != MemberState.admin) {
-            ra.addFlashAttribute("msg", "권한이 없습니다!");
-            return "redirect:/home";
-        }
+    public String createLecture(@Validated @ModelAttribute("createLectureForm") CRUDLectureForm form,
+                                BindingResult bindingResult, RedirectAttributes ra, Authentication authentication) {
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        Member professor = principal.getMember();
 
         if (bindingResult.hasErrors()) {
             return "lectures/CRUDLecture";
@@ -142,12 +140,7 @@ public class LectureController {
     }
 
     @GetMapping("/lectures/{lectureId}/edit")
-    public String getEditLecture(@Login Member professor, @PathVariable long lectureId,
-                                 Model model, RedirectAttributes ra) {
-        if (professor.getState() != MemberState.professor && professor.getState() != MemberState.admin) {
-            ra.addFlashAttribute("msg", "권한이 없습니다!");
-            return "redirect:/home";
-        }
+    public String getEditLecture(@PathVariable long lectureId, Model model, RedirectAttributes ra) {
 
         Lecture findLecture = lectureService.findByLectureId(lectureId);
         if (findLecture == null) {
@@ -160,9 +153,12 @@ public class LectureController {
     }
 
     @PostMapping("/lectures/{lectureId}/edit")
-    public String editLecture(@Login Member professor, @PathVariable long lectureId,
+    public String editLecture(@PathVariable long lectureId, RedirectAttributes ra,
                               @Validated @ModelAttribute("editLectureForm") CRUDLectureForm form,
-                              BindingResult bindingResult, RedirectAttributes ra) {
+                              BindingResult bindingResult, Authentication authentication) {
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        Member professor = principal.getMember();
+
         if (professor.getState() != MemberState.professor && professor.getState() != MemberState.admin) {
             ra.addFlashAttribute("msg", "권한이 없습니다!");
             return "redirect:/home";
@@ -193,6 +189,5 @@ public class LectureController {
         ra.addFlashAttribute("msg", "강의 수정이 완료됐습니다.");
         return "redirect:/lectures";
     }
-
 
 }
