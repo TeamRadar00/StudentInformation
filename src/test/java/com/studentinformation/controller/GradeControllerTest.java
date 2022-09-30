@@ -32,7 +32,8 @@ public class GradeControllerTest {
     WebApplicationContext was;
 
     private MockMvc mock;
-    private Member member;
+    private Member student;
+    private Member professor;
     private List<Grade> gradeList;
     private Long lectureId;
     protected MockHttpSession session;
@@ -42,11 +43,12 @@ public class GradeControllerTest {
     @BeforeEach
     public void init(){
         mock = MockMvcBuilders.webAppContextSetup(was).build();
-        member = memberRepository.findByMemberName("test").get();
-        gradeList = gradeRepository.findByStudentId(member.getId());
+        student = memberRepository.findByMemberName("test").get();
+        professor = memberRepository.findByMemberName("professor0").get();
+        gradeList = gradeRepository.findByStudentId(student.getId());
         lectureId = gradeList.get(0).getLecture().getId();
         session = new MockHttpSession();
-        session.setAttribute(SessionConst.LOGIN_MEMBER,member);
+        session.setAttribute(SessionConst.LOGIN_MEMBER,student);
     }
 
     @Test
