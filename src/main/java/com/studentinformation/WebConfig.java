@@ -15,15 +15,22 @@ import java.util.List;
 public class WebConfig implements WebMvcConfigurer {
 
     @Override
-    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new LoginMemberArgumentResolver());
-    }
-
-    @Override
     public void addFormatters(FormatterRegistry registry) {
         registry.addConverter(new ScoreRequestConverter());
     }
 
+
+    /**
+     * ArgumentResolver 가 아닌 어노테이션으로 처리해서 주석처리함
+     */
+//    @Override
+//    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+//        resolvers.add(new LoginMemberArgumentResolver());
+//    }
+
+    /**
+     * spring security 가 filter 기반으로 작동하기 때문에 로그인 확인 interceptor 주석처리함
+     */
 //    @Override
 //    public void addInterceptors(InterceptorRegistry registry) {
 ////        registry.addInterceptor(new LoginInterceptor())
