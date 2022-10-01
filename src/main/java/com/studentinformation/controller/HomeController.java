@@ -34,9 +34,7 @@ public class HomeController {
     }
 
     @GetMapping("/home")
-    public String home(Model model,Authentication authentication) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        Member loginMember = principal.getMember();
+    public String home(Model model, @Login Member loginMember) {
 
         MemberForm form = MemberForm.of(loginMember);
         model.addAttribute("form", form);

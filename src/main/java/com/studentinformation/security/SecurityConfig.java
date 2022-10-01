@@ -81,7 +81,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .usernameParameter("studentNum") //로그인 시 form에서 가져올 값
                     .passwordParameter("password") //로그인시 form에서 가져올 값
                     .loginProcessingUrl("/member_login") //로그인시 처리할 URL 입력
-                    .defaultSuccessUrl("/home") //로그인 성공하면 "/"로 이동
+                    .defaultSuccessUrl("/home") //로그인 성공하면 "/home"로 이동
+                    .successHandler(new LoginSuccessHandler()) // 로그인 전의 페이지로 리다이렉트
                     .failureUrl("/members/login") //로그인 실패하면 /member/login으로 이동
             .and()
                 .logout()

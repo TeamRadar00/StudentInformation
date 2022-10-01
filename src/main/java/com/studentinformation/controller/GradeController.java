@@ -34,18 +34,14 @@ public class GradeController {
     private final LectureService lectureService;
 
     @GetMapping("/grade/myGrade")
-    public String goMyGrade(Model model, Authentication authentication) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        Member student = principal.getMember();
+    public String goMyGrade(Model model, @Login Member student) {
         Member member = memberService.findById(student.getId());
         model.addAttribute("myGrade", GoMyGradeForm.of(member));
         return "grade/myGrade";
     }
 
     @GetMapping("/grade/objection")
-    public String goObjection(Model model, Authentication authentication) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        Member student = principal.getMember();
+    public String goObjection(Model model, @Login Member student) {
         Member member = memberService.findById(student.getId());
         model.addAttribute("gradeList",member.getGrades());
         return "grade/objection";
@@ -80,10 +76,9 @@ public class GradeController {
     }
 
     @GetMapping("/grade/objectionList")
-    public String goObjectionList(Model model, Authentication authentication,
+    public String goObjectionList(Model model, @Login Member professor,
                                   @RequestParam(required = false,value = "lectureId") Long lectureId) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        Member member = memberService.findById(principal.getMember().getId());
+        Member member = memberService.findById(professor.getId());
         model.addAttribute("getObjectionListForm", GradeObjectionListForm.of(member));
         if(lectureId != null){
             if(lectureService.checkInaccessibleLectureWithProfessor(member, lectureId)){
@@ -119,11 +114,9 @@ public class GradeController {
     @GetMapping("/grade/giveGrade")
     public String goGiveGrade(Model model,
                               @RequestParam(value = "lectureId",required = false) Long lectureId,
-                              Authentication authentication) {
+                              @Login Member member) {
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal(); //세션에서 정보 가져옴
-
-        Member professor = memberService.findById(principal.getMember().getId());
+        Member professor = memberService.findById(member.getId());
         GradeGoGIveGradeForm form;
         if(lectureId != null){
             if(lectureService.checkInaccessibleLectureWithProfessor(professor,lectureId)){
@@ -143,11 +136,9 @@ public class GradeController {
     @PostMapping("/grade/giveGrade")
     public String submitGiveGrade(@RequestParam(value = "gradeScore",required = false) List<Score> scoreList,
                                   @RequestParam(value = "lectureId",required = false) Long lectureId,
-                                  Authentication authentication){
+                                  @Login Member member){
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal(); //세션에서 정보 가져옴
-
-        Member professor = memberService.findById(principal.getMember().getId());
+        Member professor = memberService.findById(member.getId());
 
         if(lectureId != null) {
             if(lectureService.checkInaccessibleLectureWithProfessor(professor,lectureId)){
