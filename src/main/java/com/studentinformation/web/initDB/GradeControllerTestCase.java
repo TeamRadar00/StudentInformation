@@ -43,7 +43,7 @@ public class GradeControllerTestCase {
     }
 
 
-    @EventListener(ApplicationReadyEvent.class)
+//    @EventListener(ApplicationReadyEvent.class)
     @Transactional
     public void createTestCaseForProfessor(){
         Member professor = createMemberTest2();

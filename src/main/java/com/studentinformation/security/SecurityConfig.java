@@ -3,6 +3,7 @@ package com.studentinformation.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private final PrincipalDetailsService service;
 
     private static final String GRADE_URI = "/grade";
     private static final String LECTURE_URI = "/lectures";
@@ -83,10 +85,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .loginProcessingUrl("/member_login") //로그인시 처리할 URL 입력
                     .defaultSuccessUrl("/home") //로그인 성공하면 "/home"로 이동
                     .successHandler(new LoginSuccessHandler()) // 로그인 전의 페이지로 리다이렉트
-                    .failureUrl("/members/login") //로그인 실패하면 /member/login으로 이동
+                    .failureHandler(new LoginFailureHandler("/members/login"))
             .and()
                 .logout()
                     .logoutUrl("/members/logout")
                     .logoutSuccessUrl("/members/login");
+
+    }
+
+    @Bean
+    public ValidationAuthenticationProvider validationProvider() throws Exception{
+        ValidationAuthenticationProvider provider = new ValidationAuthenticationProvider();
+        provider.setPasswordEncoder(encodePassword());
+        provider.setUserDetailsService(service);
+        return provider;
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(validationProvider());
     }
 }
