@@ -10,22 +10,24 @@
                     <div class="card-header"><h3 class="text-center font-weight-light my-4">로그인</h3></div>
                     <div class="card-body" >
                         <form th:object="${loginMemberForm}" method="post" action="/member_login">
-                            <div th:if="${#fields.hasGlobalErrors()}">
-                                <p class="alert-danger" th:each="err : ${#fields.globalErrors()}" th:text="${err}">
-                                    전체 오류 메시지</p>
+                            <div th:if="${#request.getParameter('notMatched')}">
+                                <p class="alert-danger" th:text="'학번과 비밀번호가 올바르지 않습니다.'">전체 오류 메시지</p>
                             </div>
-
                             <div class="form-floating mb-3">
                                 <input class="form-control" th:field="*{studentNum}" type="text"
-                                       th:errorclass="is-invalid" placeholder="studentNum"/>
+                                       th:classappend="${#request.getParameter('memberNumBlank')}?'is-invalid':_"
+                                       placeholder="studentNum"/>
                                 <label for="studentNum">학번</label>
-                                <div class="invalid-feedback" th:errors="*{studentNum}">에러 메시지</div>
+                                <div class="invalid-feedback" th:if="${#request.getParameter('memberNumBlank')}"
+                                     th:text="'학번을 입력해주세요.'">에러 메시지</div>
                             </div>
                             <div class="form-floating mb-3">
                                 <input class="form-control" th:field="*{password}" type="password"
-                                       th:errorclass="is-invalid" placeholder="password"/>
+                                       th:classappend="${#request.getParameter('passwordBlack')}?'is-invalid':_"
+                                       placeholder="password"/>
                                 <label for="password">비밀번호</label>
-                                <div class="invalid-feedback" th:errors="*{password}">에러 메시지</div>
+                                <div class="invalid-feedback" th:if="${#request.getParameter('passwordBlack')}"
+                                     th:text="'비밀번호를 입력해주세요.'">에러 메시지</div>
                             </div>
                             <div class="form-check mb-3">
                                 <input class="form-check-input" id="inputRememberPassword" type="checkbox" value="" />
