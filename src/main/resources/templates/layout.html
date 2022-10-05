@@ -12,6 +12,7 @@
             layout을 적용한 페이지는 전부 해당한다.-->
         <script th:if="not ${#strings.isEmpty(msg)}">
             alert('[[${msg}]]');
+            location.href = nextPage;
         </script>
 
         <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>

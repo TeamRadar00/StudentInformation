@@ -2,12 +2,15 @@ package com.studentinformation.security;
 
 
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.ast.And;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
@@ -85,11 +88,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .loginProcessingUrl("/member_login") //로그인시 처리할 URL 입력
                     .defaultSuccessUrl("/home") //로그인 성공하면 "/home"로 이동
                     .successHandler(new LoginSuccessHandler()) // 로그인 전의 페이지로 리다이렉트
-                    .failureHandler(new LoginFailureHandler("/members/login"))
+                    .failureUrl("/members/login") //로그인 실패하면 /member/login으로 이동
             .and()
                 .logout()
                     .logoutUrl("/members/logout")
-                    .logoutSuccessUrl("/members/login");
+                    .logoutSuccessUrl("/members/login")
+        .and()
+                .exceptionHandling().accessDeniedHandler(new WebAccessDeniedHandler());
 
     }
 
