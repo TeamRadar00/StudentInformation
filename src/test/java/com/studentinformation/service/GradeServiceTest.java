@@ -1,6 +1,8 @@
 package com.studentinformation.service;
 
 import com.studentinformation.domain.*;
+import com.studentinformation.repository.LectureRepository;
+import com.studentinformation.repository.MemberRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +19,10 @@ public class GradeServiceTest {
 
     @Autowired
     private GradeService gradeService;
+    @Autowired
+    private MemberRepository memberRepository;
+    @Autowired
+    private LectureRepository lectureRepository;
     @Autowired
     private ApplicationService applicationService;
 
@@ -61,10 +67,12 @@ public class GradeServiceTest {
         int totalApplication = 100;
 
         Member professor = new Member("test","test","test", MemberState.professor,"test");
+        memberRepository.save(professor);
         Lecture lecture = new Lecture("test",professor,"test", "",100);
-
+        lectureRepository.save(lecture);
         for(int i=0;i<totalApplication;i++){
             Member member = new Member("test"+i,"test"+i,"test"+i,MemberState.inSchool,"test"+i);
+            memberRepository.save(member);
             Grade grade = new Grade(member, lecture);
             gradeService.saveGrade(grade);
             if(i%4==0){
