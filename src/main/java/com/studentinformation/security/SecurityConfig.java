@@ -4,6 +4,7 @@ package com.studentinformation.security;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.weaver.ast.And;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,7 +12,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 
 @EnableWebSecurity
@@ -67,11 +71,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public SessionRegistry sessionRegistry(){
+        return new SessionRegistryImpl();
+    }
+
+    @Bean
+    public ServletListenerRegistrationBean<HttpSessionEventPublisher> httpSessionEventPublisher(){
+        return new ServletListenerRegistrationBean<HttpSessionEventPublisher>(new HttpSessionEventPublisher());
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
             .authorizeRequests()
-                .antMatchers("/members/login").permitAll()
+                .antMatchers("/members/login**").permitAll()
                 .antMatchers(ADMIN_ACCESS).hasRole("ADMIN")
                 .antMatchers(PROFESSOR_ACCESS).hasRole("PROFESSOR")
                     // 교수님만 접근가능
@@ -87,14 +101,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .passwordParameter("password") //로그인시 form에서 가져올 값
                     .loginProcessingUrl("/member_login") //로그인시 처리할 URL 입력
                     .defaultSuccessUrl("/home") //로그인 성공하면 "/home"로 이동
-                    .successHandler(new LoginSuccessHandler()) // 로그인 전의 페이지로 리다이렉트
+//                    .successHandler(new LoginSuccessHandler()) // 로그인 전의 페이지로 리다이렉트
+//                .failureHandler(new LoginFailureHandler())
                     .failureUrl("/members/login") //로그인 실패하면 /member/login으로 이동
             .and()
                 .logout()
                     .logoutUrl("/members/logout")
                     .logoutSuccessUrl("/members/login")
-        .and()
+                /**
+                 *  스프링 시큐리티에서는 기본적으로 로그인하지 않은 사용자를 anonymous 인증 객체를 생성해서 사용한다.
+                 *  사용자가 anonymous 즉 익명 객체인 경우 AuthenticationEntryPoint 를 통해 처리하지만
+                 *  인증 객체는 accessDeniedHandler 를 사용한다.
+                 *  여기서 accessDeniedHandler 가 설정되지 않는다면 AccessDeniedHandlerImpl 구현체가 실행된다.
+                 *  이 구현체에서 403 forbidden 던짐
+                 */
+            .and()
                 .exceptionHandling().accessDeniedHandler(new WebAccessDeniedHandler());
+
+
+        http.sessionManagement()
+                .maximumSessions(1)//동시에 여러 로그인하는것을 막음.
+                .maxSessionsPreventsLogin(false)
+                .sessionRegistry(sessionRegistry());
 
     }
 
@@ -110,4 +138,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(validationProvider());
     }
+
+
 }

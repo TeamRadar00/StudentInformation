@@ -16,7 +16,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity{
 
@@ -119,4 +118,22 @@ public class Member extends BaseEntity{
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Member member = (Member) o;
+
+        if (getStudentNum() != null ? !getStudentNum().equals(member.getStudentNum()) : member.getStudentNum() != null)
+            return false;
+        return getPassword() != null ? getPassword().equals(member.getPassword()) : member.getPassword() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getStudentNum() != null ? getStudentNum().hashCode() : 0;
+        result = 31 * result + (getPassword() != null ? getPassword().hashCode() : 0);
+        return result;
+    }
 }

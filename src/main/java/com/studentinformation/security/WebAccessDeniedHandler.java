@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.ResourceBundle;
 
 
-//@Component
+@Component
 @Slf4j
 public class WebAccessDeniedHandler implements AccessDeniedHandler {
 
@@ -24,13 +24,8 @@ public class WebAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
         response.setStatus(HttpStatus.FORBIDDEN.value());
 
-        if(accessDeniedException instanceof AccessDeniedException){
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            request.setAttribute("msg","접근 권한 없는 사용자입니다.");
-            request.setAttribute("newPage","/members/login");
-        }else{
-            log.info(accessDeniedException.getClass().getCanonicalName());
-        }
+        request.setAttribute("msg","접근 권한 없는 사용자입니다.");
+        request.setAttribute("newPage","/members/login");
         request.getRequestDispatcher("/home").forward(request, response);
     }
 }

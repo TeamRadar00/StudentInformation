@@ -1,6 +1,7 @@
 package com.studentinformation.security;
 
 import com.studentinformation.domain.Member;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,10 +11,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 @Getter
 @ToString
-public class PrincipalDetails implements UserDetails, Serializable {
+@EqualsAndHashCode
+public class PrincipalDetails implements UserDetails {
 
     private Member member;
 
@@ -23,7 +26,7 @@ public class PrincipalDetails implements UserDetails, Serializable {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        ArrayList<GrantedAuthority> list = new ArrayList<>();
+        Collection<GrantedAuthority> list = new ArrayList<>();
         list.add(new SimpleGrantedAuthority(member.getState().getCode()));
         return list;
     }
@@ -35,7 +38,7 @@ public class PrincipalDetails implements UserDetails, Serializable {
 
     @Override
     public String getUsername() {
-        return member.getMemberName();
+        return member.getStudentNum();
     }
 
 
@@ -89,4 +92,5 @@ public class PrincipalDetails implements UserDetails, Serializable {
         return true;
 //        return false(Default)
     }
+
 }
