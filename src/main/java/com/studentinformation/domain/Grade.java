@@ -67,6 +67,7 @@ public class Grade extends BaseEntity{
     public static Grade createEmptyGrade(Member student, Lecture lecture) {
         Grade emptyGrade = new Grade(student, lecture);
         emptyGrade.score = Score.IN;
+        emptyGrade.objection = "test";
         return emptyGrade;
     }
 
