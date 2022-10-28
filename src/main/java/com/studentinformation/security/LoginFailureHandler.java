@@ -16,10 +16,9 @@ import java.io.IOException;
 //@RequiredArgsConstructor
 public class LoginFailureHandler implements AuthenticationFailureHandler {
 
-    private final String defaultFailureUrl = "/members/login";
-
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+        String defaultFailureUrl = "/members/login";
         if (exception.getClass().equals(UsernameNotFoundException.class)) {
             response.sendRedirect(defaultFailureUrl + "?memberNumBlank");
         } else if (exception.getClass().equals(AuthenticationCredentialsNotFoundException.class)) {

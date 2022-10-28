@@ -7,6 +7,11 @@ public class BasicSecurityUrl {
     private static final String APPLICATION_URL = "/applications";
 
     public static final String[] AUTH_WHITELIST = {
+            "/members/login**",
+
+
+
+
             "/assets/**",
             "/css/**",
             "/js/**"
