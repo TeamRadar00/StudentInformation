@@ -30,7 +30,7 @@ public class GradeControllerTestCase {
     public void createTestCaseForStudent(){
         Member member = createMemberTest1();
         for(int i=0;i<6;i++){
-            Member professor = new Member("test" + i, "test" + i, "professor" + i, MemberState.professor, "test");
+            Member professor = new Member("professor" + i, "test" + i, "professor" + i, MemberState.professor, "test");
             memberService.addMember(professor);
             Lecture lecture = new Lecture("test" + i, professor, "202202", "~/12:00~13:50/~/13:00~14:50/~/~/~/", 20);
             lectureService.makeLecture(lecture);

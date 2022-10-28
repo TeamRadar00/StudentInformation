@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -68,7 +69,8 @@ public class GradeService {
      */
     @Transactional
     public Grade editGradeOfObjection(Long gradeId, String objection){
-        Grade grade = gradeRepository.findById(gradeId).get();//확실하게 존재함
+        Grade grade = gradeRepository.findById(gradeId)
+                .orElseThrow(() -> new IllegalArgumentException("not exist gradeId"));
         if(StringUtils.hasText(objection)) {
             grade.updateObjection(objection);
             log.info("update grade objection = {}",grade);
@@ -81,7 +83,8 @@ public class GradeService {
      * 이의제기하는 글만 반환
      */
     public Page<Grade> findAllExistObjection(Long lectureId, Pageable pageable){
-        Lecture lecture = lectureRepository.findById(lectureId).get();
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new IllegalArgumentException("not exits lectureId"));
         List<Grade> grades = lecture.getGrades();
         List<Grade> objectionsList = grades.stream()
                 .filter(grade -> StringUtils.hasText(grade.getObjection()))// null, 공백이면 false
