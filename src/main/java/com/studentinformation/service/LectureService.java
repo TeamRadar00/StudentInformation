@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class LectureService {
 
     private final LectureRepository lectureRepository;
-    private final MemberRepository memberRepository;
 
     //강의 생성
     @Transactional

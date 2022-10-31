@@ -13,6 +13,7 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
@@ -21,13 +22,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Transactional
 @SpringBootTest
 public class GradeControllerTest {
 
     static final String BASE_URL = "/grade";
 
-    static final String TEST_STUDENT_NUM = "test";
-    static final String TEST_PROFESSOR_NUM = "professor0";
+    static final String TEST_STUDENT_NUM = "student";
+    static final String TEST_PROFESSOR_NUM = "professor";
 
 
     @Autowired

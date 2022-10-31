@@ -53,11 +53,7 @@ public class LectureController {
 
 
     @GetMapping("/lectures/my")
-    public String goMyLecture(Model model, Authentication authentication) {
-
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        Member member = principal.getMember();
-
+    public String goMyLecture(@Login Member member, Model model) {
         List<Lecture> list = lectureRepository.findMyLectures(member, "202202");
         List<LectureForm> forms = list.stream().map(LectureForm::of).collect(Collectors.toList());
         model.addAttribute("lectureList", forms);
@@ -100,12 +96,8 @@ public class LectureController {
     }
 
     @GetMapping("/lectures")
-    public String goCRUDLecture(@ModelAttribute("createLectureForm") CRUDLectureForm form, Authentication authentication,
+    public String goCRUDLecture(@Login Member professor, @ModelAttribute("createLectureForm") CRUDLectureForm form,
                                 Model model, RedirectAttributes ra) {
-
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        Member professor = principal.getMember();
-
         List<Lecture> lectures = lectureRepository.findLecturesByProfessor(professor);
         List<LectureForm> forms = lectures.stream().map(LectureForm::of).collect(Collectors.toList());
         model.addAttribute("lectureList", forms);
@@ -114,10 +106,7 @@ public class LectureController {
 
     @PostMapping("/lectures/new")
     public String createLecture(@Validated @ModelAttribute("createLectureForm") CRUDLectureForm form,
-                                BindingResult bindingResult, RedirectAttributes ra, Authentication authentication) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        Member professor = principal.getMember();
-
+                                @Login Member professor, BindingResult bindingResult, RedirectAttributes ra) {
         if (bindingResult.hasErrors()) {
             return "lectures/CRUDLecture";
         }

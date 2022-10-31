@@ -54,7 +54,8 @@ public class MemberControllerTest {
                 .andExpect(model().attributeExists("loginMemberForm"));
     }
 
-    @Test
+//    @Test
+//    security 추가로 삭제
     void login_test() throws Exception {
         //given
         MockHttpServletRequestBuilder ifUnmatched = post("/members/login");
@@ -80,13 +81,12 @@ public class MemberControllerTest {
     void goPassword_test() throws Exception {
         //given
         String url = "/members/password";
-        MockHttpServletRequestBuilder noSession = get(url);
         MockHttpServletRequestBuilder existSession = get(url);
+
         //when
         existSession.session(createLoginSession());
-        //then
-        ifNoSessionThenRedirect(noSession, url);
 
+        //then
         mock.perform(existSession)
                 .andExpect(handler().handlerType(MemberController.class))
                 .andExpect(handler().methodName("goPassword"))
@@ -97,7 +97,6 @@ public class MemberControllerTest {
     void changePassword_test() throws Exception {
         //given
         String url = "/members/password";
-        MockHttpServletRequestBuilder noSession = post(url);
         MockHttpServletRequestBuilder passwordError = post(url);
         MockHttpServletRequestBuilder passwordCorrect = post(url);
 
@@ -112,8 +111,6 @@ public class MemberControllerTest {
                 .param("confirmPassword","qwe");
 
         //then
-        ifNoSessionThenRedirect(noSession,url);
-
         mock.perform(passwordError)
                 .andExpect(handler().handlerType(MemberController.class))
                 .andExpect(handler().methodName("changePassword"))
@@ -203,7 +200,6 @@ public class MemberControllerTest {
     void goRegister_test() throws Exception {
         //given
         String url = "/admin";
-        MockHttpServletRequestBuilder noSession = get(url);
         MockHttpServletRequestBuilder studentSession = get(url);
         MockHttpServletRequestBuilder adminSession = get(url);
 
@@ -212,7 +208,6 @@ public class MemberControllerTest {
         adminSession.session(createAdminSession());
 
         //then
-        ifNoSessionThenRedirect(noSession, url);
         mock.perform(studentSession)
                 .andExpect(handler().handlerType(MemberController.class))
                 .andExpect(handler().methodName("goRegister"))
@@ -228,7 +223,6 @@ public class MemberControllerTest {
     void register_test() throws Exception {
         //given
         String url = "/admin";
-        MockHttpServletRequestBuilder noSession = post(url);
         MockHttpServletRequestBuilder studentSession = post(url);
         MockHttpServletRequestBuilder blackField = post(url).param("studentNum"," ")
                 .param("memberName"," ").param("state","inSchool").param("collegeName"," ");
@@ -246,7 +240,6 @@ public class MemberControllerTest {
         registerMember.session(createAdminSession());
 
         //then
-        ifNoSessionThenRedirect(noSession, url);
         mock.perform(studentSession)
                 .andExpect(handler().handlerType(MemberController.class))
                 .andExpect(handler().methodName("register"))
@@ -295,11 +288,6 @@ public class MemberControllerTest {
         MockHttpSession session = new MockHttpSession();
         session.setAttribute(SessionConst.LOGIN_MEMBER, adminMember);
         return session;
-    }
-
-    private void ifNoSessionThenRedirect(MockHttpServletRequestBuilder noSession, String url) throws Exception {
-        mock.perform(noSession)
-                .andExpect(redirectedUrl("/members/login?redirectURL="+url));
     }
 
 }
