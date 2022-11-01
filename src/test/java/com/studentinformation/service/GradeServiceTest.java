@@ -23,8 +23,6 @@ public class GradeServiceTest {
     private MemberRepository memberRepository;
     @Autowired
     private LectureRepository lectureRepository;
-    @Autowired
-    private ApplicationService applicationService;
 
     @Test
     public void grade생성() throws Exception {

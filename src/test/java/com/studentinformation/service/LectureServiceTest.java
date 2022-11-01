@@ -15,18 +15,19 @@ import static org.assertj.core.api.Assertions.*;
 @Transactional
 public class LectureServiceTest {
 
-    @Autowired
-    private LectureService lectureService;
+    @Autowired private MemberService memberService;
+    @Autowired private LectureService lectureService;
 
     @Test
     public void 강의생성() throws Exception {
         //given
         Member member = new Member("test","test","test",MemberState.professor,"test");
-        Lecture lecture = new Lecture("test",member,"test", "",100);
-        Lecture test = lectureService.makeLecture(lecture);
-        //when
-        //then
+        Lecture lecture = new Lecture("test", member, "test", "", 100);
 
+         //when
+        Lecture test = lectureService.makeLecture(lecture);
+
+        //then
         assertThat(test).isEqualTo(lecture);
     }
 
@@ -34,7 +35,9 @@ public class LectureServiceTest {
     public void 강의수정() throws Exception {
         //given
         Lecture oldLecture = makeTestLecture();
-        Lecture newLecture = new Lecture("change",oldLecture.getProfessor(),"change","",100);
+        Lecture newLecture = new Lecture("change", oldLecture.getProfessor(), "change",
+                oldLecture.getTime(), 100);
+
         //when
         lectureService.editLecture(oldLecture.getId(),newLecture);
         //then
@@ -64,6 +67,7 @@ public class LectureServiceTest {
 
 
         Member professor = new Member("test","test",testProfessorName, MemberState.professor,"test");
+        memberService.addMember(professor);
 
         for(int i=0;i<totalLecture;i++){
             Lecture testLecture;
@@ -78,7 +82,7 @@ public class LectureServiceTest {
         Pageable pageable = PageRequest.of(startPage,pageContentCount, Sort.by("id"));
         //when
 
-        Page<Lecture> test = lectureService.findByProfessorName(testProfessorName,testSemester,pageable);
+        Page<Lecture> test = lectureService.findByProfessorName(testProfessorName, testSemester, pageable);
 
         //then
         for (Lecture lecture : test) {
@@ -98,6 +102,7 @@ public class LectureServiceTest {
         String testSemester = "202202";
 
         Member professor = new Member("test","test",testLectureName, MemberState.professor,"test");
+        memberService.addMember(professor);
 
         for(int i=0;i<totalLecture;i++){
             Lecture testLecture;

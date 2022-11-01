@@ -41,6 +41,7 @@ public class GradeControllerTest {
     @Autowired
     WebApplicationContext was;
 
+
     private MockMvc mock;
     private List<Grade> gradeList;
     private Long lectureId;

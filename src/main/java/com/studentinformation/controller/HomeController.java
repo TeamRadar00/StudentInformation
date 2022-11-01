@@ -18,16 +18,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RequiredArgsConstructor
 public class HomeController {
 
-    private MemberRepository memberRepository;
-
-//    이거 지우는게 좋겠지?
-//    private final MemberService memberService;
-//
-//    @PostConstruct
-//    public void addTestEntity() {
-//        memberService.addMember(new Member("123", "password", "choi", MemberState.admin, "공대"));
-//    }
-
     @GetMapping("/")
     public String goHome() {
         return "redirect:/home";

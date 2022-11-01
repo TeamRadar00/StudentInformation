@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -18,6 +19,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 class HomeControllerTest {
+
+    static final String TEST_STUDENT_NUM = "student";
 
     @Autowired
     WebApplicationContext wac;
@@ -34,18 +37,12 @@ class HomeControllerTest {
      */
 
     @Test
+    @WithUserDetails(value = TEST_STUDENT_NUM)
     void goHome_test() throws Exception {
         //given
-        MockHttpServletRequestBuilder noSession = get("/");
         MockHttpServletRequestBuilder builder = get("/");
         //when
-//        builder.session(createLoginSession());
         //then
-        mock.perform(noSession)
-                .andExpect(handler().handlerType(HomeController.class))
-                .andExpect(handler().methodName("goHome"))
-                .andExpect(redirectedUrl("/members/login?redirectURL=/"));
-
         mock.perform(builder)
                 .andExpect(handler().handlerType(HomeController.class))
                 .andExpect(handler().methodName("goHome"))
@@ -53,28 +50,15 @@ class HomeControllerTest {
     }
 
     @Test
-    void home_test() throws Exception {
+    @WithUserDetails(value = TEST_STUDENT_NUM)
+    void home_success_test() throws Exception {
         //given
-        MockHttpServletRequestBuilder noSession = get("/home");
         MockHttpServletRequestBuilder builder = get("/home");
         //when
-        builder.session(createLoginSession());
         //then
-        mock.perform(noSession)
-                .andExpect(handler().handlerType(HomeController.class))
-                .andExpect(handler().methodName("home"))
-                .andExpect(redirectedUrl("/members/login?redirectURL=/home"));
-
         mock.perform(builder)
                 .andExpect(handler().handlerType(HomeController.class))
                 .andExpect(handler().methodName("home"))
                 .andExpect(model().attributeExists("form"));
-    }
-
-    private MockHttpSession createLoginSession() {
-        Member emptyMember = new Member(null, null, null, null, null);
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute(SessionConst.LOGIN_MEMBER, emptyMember);
-        return session;
     }
 }

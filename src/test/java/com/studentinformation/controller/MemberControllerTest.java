@@ -1,19 +1,19 @@
 package com.studentinformation.controller;
 
+import com.studentinformation.domain.Grade;
 import com.studentinformation.domain.Member;
-import com.studentinformation.domain.MemberState;
 import com.studentinformation.repository.MemberRepository;
-import com.studentinformation.web.session.SessionConst;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -22,31 +22,30 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class MemberControllerTest {
 
+    static final String BASE_URL = "/members";
+
+    static final String TEST_STUDENT_NUM = "student";
+    static final String TEST_PROFESSOR_NUM = "professor";
+    static final String TEST_ADMIN_NUM = "admin";
+
+
     @Autowired WebApplicationContext wac;
     @Autowired MemberRepository memberRepository;
-    private MockMvc mock;
-    private static Member emptyMember;
-    private static Member adminMember;
 
-    @BeforeAll
-    static void createMember() {
-        emptyMember = new Member("MCT_member", "MCT_member", "MCT_member", MemberState.inSchool, null);
-        adminMember = new Member("MCT_admin", "MCT_admin", "MCT_admin", MemberState.admin, "MCT_admin");
-    }
+    private MockMvc mock;
+
 
     @BeforeEach
-    void getMockObject() {
+    public void init(){
         mock = MockMvcBuilders.webAppContextSetup(wac).build();
-        memberRepository.save(emptyMember); //id값이 생성되지 않기에 generatedValue로 만들어지도록 db에 저장함
-        memberRepository.save(adminMember);
     }
 
     @Test
+//    @WithUserDetails(value = TEST_STUDENT_NUM)
     void goLogin_test() throws Exception {
         //given
-        MockHttpServletRequestBuilder builder = get("/members/login");
+        MockHttpServletRequestBuilder builder = get(BASE_URL + "/login");
         //when
-//        builder.session(createLoginSession());
         //then
         mock.perform(builder)
                 .andExpect(handler().handlerType(MemberController.class))
@@ -54,59 +53,35 @@ public class MemberControllerTest {
                 .andExpect(model().attributeExists("loginMemberForm"));
     }
 
-//    @Test
-//    security 추가로 삭제
-    void login_test() throws Exception {
-        //given
-        MockHttpServletRequestBuilder ifUnmatched = post("/members/login");
-        MockHttpServletRequestBuilder ifCorrect = post("/members/login");
-
-        //when
-        ifUnmatched.param("studentNum", "asd").param("password", "qwe");
-        ifCorrect.param("studentNum", "test").param("password", "test")
-                .queryParam("redirectURL","/home");
-
-        //then
-        mock.perform(ifUnmatched)
-                .andExpect(handler().handlerType(MemberController.class))
-                .andExpect(handler().methodName("login"))
-                .andExpect(view().name("members/login"));
-        mock.perform(ifCorrect)
-                .andExpect(handler().handlerType(MemberController.class))
-                .andExpect(handler().methodName("login"))
-                .andExpect(redirectedUrl("/home"));
-    }
-
     @Test
+    @WithUserDetails(value = TEST_STUDENT_NUM)
     void goPassword_test() throws Exception {
         //given
-        String url = "/members/password";
-        MockHttpServletRequestBuilder existSession = get(url);
+        MockHttpServletRequestBuilder builder = get(BASE_URL + "/password");
 
         //when
-        existSession.session(createLoginSession());
-
         //then
-        mock.perform(existSession)
+        mock.perform(builder)
                 .andExpect(handler().handlerType(MemberController.class))
                 .andExpect(handler().methodName("goPassword"))
                 .andExpect(model().attributeExists("changePasswordForm"));
     }
 
     @Test
+    @WithUserDetails(value = TEST_STUDENT_NUM)
     void changePassword_test() throws Exception {
         //given
-        String url = "/members/password";
+        String url = BASE_URL + "/password";
         MockHttpServletRequestBuilder passwordError = post(url);
         MockHttpServletRequestBuilder passwordCorrect = post(url);
 
         //when
-        passwordError.session(createLoginSession())
+        passwordError
                 .param("prePassword","asd")
                 .param("newPassword","qwe")
                 .param("confirmPassword","qwe");
-        passwordCorrect.session(createLoginSession())
-                .param("prePassword","MCT_member")
+        passwordCorrect
+                .param("prePassword","student")
                 .param("newPassword","qwe")
                 .param("confirmPassword","qwe");
 
@@ -125,10 +100,9 @@ public class MemberControllerTest {
     @Test
     void goFindPassword_test() throws Exception {
         //given
-        String url = "/members/find-member";
-        MockHttpServletRequestBuilder builder = get(url);
+        MockHttpServletRequestBuilder builder = get(BASE_URL + "/find-member");
+
         //when
-//        builder.session(createLoginSession());
         //then
         mock.perform(builder)
                 .andExpect(handler().handlerType(MemberController.class))
@@ -140,10 +114,10 @@ public class MemberControllerTest {
     @Test
     void findId_test() throws Exception {
         //given
-        String url = "/members/find-id";
+        String url = BASE_URL + "/find-id";
         MockHttpServletRequestBuilder blackField = post(url).param("memberName"," ");
         MockHttpServletRequestBuilder notExistName = post(url).param("memberName","notExistName");
-        MockHttpServletRequestBuilder existName = post(url).param("memberName","test");
+        MockHttpServletRequestBuilder existName = post(url).param("memberName","student");
 
         //when
         //then
@@ -168,13 +142,13 @@ public class MemberControllerTest {
     @Test
     void findPassword_test() throws Exception {
         //given
-        String url = "/members/find-password";
+        String url = BASE_URL + "/find-password";
         MockHttpServletRequestBuilder blackField = post(url)
                 .param("memberName", " ").param("studentNum", " ");
         MockHttpServletRequestBuilder incorrectField = post(url)
                 .param("memberName", "incorrectField").param("studentNum", "incorrectField");
         MockHttpServletRequestBuilder existName = post(url)
-                .param("memberName","test").param("studentNum","test");
+                .param("memberName","student").param("studentNum","student");
         //when
         //then
         mock.perform(blackField)
@@ -197,22 +171,28 @@ public class MemberControllerTest {
     }
 
     @Test
-    void goRegister_test() throws Exception {
+    @WithUserDetails(value = TEST_STUDENT_NUM)
+    void goRegister_fail_test() throws Exception {
         //given
-        String url = "/admin";
-        MockHttpServletRequestBuilder studentSession = get(url);
-        MockHttpServletRequestBuilder adminSession = get(url);
+        MockHttpServletRequestBuilder studentSession = get("/admin");
 
         //when
-        studentSession.session(createLoginSession());
-        adminSession.session(createAdminSession());
-
         //then
         mock.perform(studentSession)
                 .andExpect(handler().handlerType(MemberController.class))
                 .andExpect(handler().methodName("goRegister"))
                 .andExpect(flash().attributeExists("msg"))
                 .andExpect(redirectedUrl("/home"));
+    }
+
+    @Test
+    @WithUserDetails(value = TEST_ADMIN_NUM)
+    void goRegister_success_test() throws Exception {
+        //given
+        MockHttpServletRequestBuilder adminSession = get("/admin");
+
+        //when
+        //then
         mock.perform(adminSession)
                 .andExpect(handler().handlerType(MemberController.class))
                 .andExpect(handler().methodName("goRegister"))
@@ -220,31 +200,21 @@ public class MemberControllerTest {
     }
 
     @Test
+    @WithUserDetails(value = TEST_ADMIN_NUM)
     void register_test() throws Exception {
         //given
         String url = "/admin";
-        MockHttpServletRequestBuilder studentSession = post(url);
         MockHttpServletRequestBuilder blackField = post(url).param("studentNum"," ")
                 .param("memberName"," ").param("state","inSchool").param("collegeName"," ");
-        MockHttpServletRequestBuilder duplicateMember = post(url).param("studentNum","MCT_member")
-                .param("memberName","MCT_member").param("state","inSchool")
-                .param("collegeName","MCT_member");
+        MockHttpServletRequestBuilder duplicateMember = post(url).param("studentNum","student")
+                .param("memberName","student").param("state","inSchool")
+                .param("collegeName","student");
         MockHttpServletRequestBuilder registerMember = post(url).param("studentNum","new")
                 .param("memberName","new").param("state","inSchool")
                 .param("collegeName","new");
 
         //when
-        studentSession.session(createLoginSession());
-        blackField.session(createAdminSession());
-        duplicateMember.session(createAdminSession());
-        registerMember.session(createAdminSession());
-
         //then
-        mock.perform(studentSession)
-                .andExpect(handler().handlerType(MemberController.class))
-                .andExpect(handler().methodName("register"))
-                .andExpect(flash().attributeExists("msg"))
-                .andExpect(redirectedUrl("/home"));
         mock.perform(blackField)
                 .andExpect(handler().handlerType(MemberController.class))
                 .andExpect(handler().methodName("register"))
@@ -260,34 +230,6 @@ public class MemberControllerTest {
                 .andExpect(handler().methodName("register"))
                 .andExpect(flash().attributeExists("msg"))
                 .andExpect(redirectedUrl("/members/login"));
-    }
-
-    @Test
-    void logout_test() throws Exception {
-        //given
-        String url = "/members/logout";
-        MockHttpServletRequestBuilder builder = get(url);
-        //when
-        //then
-        mock.perform(builder)
-                .andExpect(handler().handlerType(MemberController.class))
-                .andExpect(handler().methodName("logout"))
-                .andExpect(request().sessionAttributeDoesNotExist(SessionConst.LOGIN_MEMBER))
-                .andExpect(flash().attributeExists("msg"))
-                .andExpect(redirectedUrl("/home"));
-    }
-
-
-    private MockHttpSession createLoginSession() {
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute(SessionConst.LOGIN_MEMBER, emptyMember);
-        return session;
-    }
-
-    private MockHttpSession createAdminSession() {
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute(SessionConst.LOGIN_MEMBER, adminMember);
-        return session;
     }
 
 }

@@ -23,6 +23,7 @@ public class InitTestDB {
     public void createEntity(){
         Member student = createMemberEntity("student", MemberState.inSchool);
         Member professor = createMemberEntity("professor", MemberState.professor);
+        Member admin = createMemberEntity("admin", MemberState.admin);
 
         Lecture lecture1 = createLectureEntity("lecture1", professor);
         Lecture lecture2 = createLectureEntity("lecture2", professor);
