@@ -193,70 +193,59 @@ Lombok, Thymeleaf, Spring Web, Spring Data JPA, Validation, MySQL Driver
 <th>URL</th><th>요청</th><th>설명</th>
 
 <tr>
-<td>/grades</td>
+<td>/grade/myGrade</td>
 <td>GET</td>
-<td>성적 입력/수정 창 가져오기(교수님 전용)</td>
+<td>이번학기 수강 과목 성적, 전체 학점, 평균 학점 및 총 수강 학점 확인(학생 전용)</td>
 </tr>
 
 <tr>
-<td>/grades</td>
-<td>POST</td>
-<td>자신이 개설한 강의 선택 시 학생들 리스트 반환</td>
-</tr>
-
-<tr>
-<td>/grades/{id}</td>
-<td>GET</td>
-<td>학생들 리스트가 추가된 성적 입력/수정 창 가져오기</td>
-</tr>
-
-<tr>
-<td>/grades/{id}</td>
-<td>POST</td>
-<td>학생들 성적 입력/수정 내용 저장</td>
-</tr>
-
-<tr>
-<td>/grades/my</td>
-<td>GET</td>
-<td>수강성적 조회 창 가져오기(학생 전용)</td>
-</tr>
-
-<tr>
-<td>/grades/objection</td>
+<td>/grade/objection</td>
 <td>GET</td>
 <td>성적 이의신청 창 가져오기(학생 전용)</td>
 </tr>
 
 <tr>
-<td>/grades/objection</td>
+<td>/grade/objection</td>
 <td>POST</td>
-<td>이의신청 전송</td>
+<td>이의신청 전송(학생 전용)</td>
 </tr>
 
 <tr>
-<td>/grades/objection-list</td>
+<td>/grade/readObjection/{gradeId}</td>
 <td>GET</td>
-<td>성적 이의신청 목록 창 가져오기(교수님 전용)</td>
+<td>이의신청한 학생 글 가져오기(교수님 전용)</td>
 </tr>
 
 <tr>
-<td>/grades/objection-list</td>
-<td>POST</td>
-<td>자신이 개설한 강의를 선택하면 해당 강의 이의신청 목록 띄우기</td>
-</tr>
-
-<tr>
-<td>/grades/objection-list/{id}</td>
-<td>GET</td>
-<td>선택한 이의신청 창 가져오기(교수님 전용)</td>
-</tr>
-
-<tr>
-<td>/grades/objection-list/{id}</td>
+<td>/grade/readObjection/{gradeId}</td>
 <td>POST</td>
 <td>이의신청 결과 반환(승인여부, 성적)</td>
 </tr>
+
+<tr>
+<td>/grade/objectionList</td>
+<td>GET</td>
+<td>성적 이의신청 목록 창 가져오기(교수님 전용)</td>
+</tr>
+	
+<tr>
+<td>/grade/objectionList/{lectureId}</td>
+<td>GET</td>
+<td>자신이 개설하 강의를 선택하면 해당 강으 이의신청 목록 띄움(교수님 전용)</td>
+</tr>
+	
+<tr>
+<td>/grade/giveGrade</td>
+<td>GET</td>
+<td>강의 선택 후 강의 수강중인 학생 리스트 가져오기(교수님 전용)</td>
+</tr>
+	
+<tr>
+<td>/grade/giveGrade</td>
+<td>POST</td>
+<td>수강중인 학생에게 부여한 성적 반환(교수님 전용)</td>
+</tr>
+	
 </table>
 
 <iframe width="600" height="336" src="https://www.erdcloud.com/p/76xbxG7Thnh8F6YhK" frameborder="0" allowfullscreen></iframe>
