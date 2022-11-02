@@ -231,7 +231,7 @@ Lombok, Thymeleaf, Spring Web, Spring Data JPA, Validation, MySQL Driver
 <tr>
 <td>/grade/objectionList/{lectureId}</td>
 <td>GET</td>
-<td>자신이 개설하 강의를 선택하면 해당 강으 이의신청 목록 띄움(교수님 전용)</td>
+<td>자신이 개설한 강의를 선택하면 해당 강의 이의신청 목록 띄움(교수님 전용)</td>
 </tr>
 	
 <tr>
