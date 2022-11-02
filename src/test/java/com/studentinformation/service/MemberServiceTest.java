@@ -2,27 +2,26 @@ package com.studentinformation.service;
 
 
 import com.studentinformation.domain.*;
+import com.studentinformation.web.form.member.ChangePasswordForm;
 import com.sun.jdi.request.DuplicateRequestException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 
-/**
- * @author sim
- * https://tecoble.techcourse.co.kr/post/2020-09-15-test-isolation/
- * https://hudi.blog/isolated-test/
- * Service에서는 격리수준을 transactional로 해도 될듯
- * 아니면 실제 controller에서 사용한다고 가정하며는 transactional걷어내고 다른 방법 쓰면 될듯
- */
+import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
 public class MemberServiceTest {
 
     @Autowired private MemberService memberService;
+    @Autowired private BCryptPasswordEncoder passwordEncoder;
 
     @Test
     public void 멤버추가테스트() throws Exception {
@@ -31,7 +30,7 @@ public class MemberServiceTest {
 
         Member saveMember = memberService.addMember(test);
 
-        Assertions.assertThat(test).isEqualTo(saveMember);
+        assertThat(test).isEqualTo(saveMember);
     }
 
     @Test
@@ -39,24 +38,30 @@ public class MemberServiceTest {
         //given
         Member test = makeTestMember();
 
-        Member changeMember = new Member(test.getStudentNum(),"change",test.getMemberName(),
-                                test.getState(),test.getCollegeName());
+        String newPassword = "change";
+        String newCollegeName = "newCollegeName";
+        Member changeMember = new Member(test.getStudentNum(),newPassword,test.getMemberName(),
+                                test.getState(), newCollegeName);
         //when
         memberService.update(test.getId(), changeMember);
 
-        Member changedMember = memberService.findById(test.getId());
         //then
-        Assertions.assertThat("change").isEqualTo(changedMember.getPassword());
+        assertThat(passwordEncoder.matches(newPassword, test.getPassword())).isTrue();
+        assertThat(test.getCollegeName()).isEqualTo(newCollegeName);
     }
 
     @Test
     public void 비밀번호변경() throws Exception {
         //given
         Member test = makeTestMember();
+
         //when
-        memberService.updatePassword(test.getId(), "change");
+        String newPassword = "change";
+        ChangePasswordForm form = new ChangePasswordForm("test", "change", "change");
+        memberService.updatePassword(memberService.findById(test.getId()), form);
+
         //then
-        Assertions.assertThat("change").isEqualTo(test.getPassword());
+        assertThat(passwordEncoder.matches(newPassword, test.getPassword())).isTrue();
     }
 
     @Test
@@ -64,14 +69,14 @@ public class MemberServiceTest {
     public void 비밀번호변경_예외처리() throws Exception {
         //given
         Member test = makeTestMember();
+        ChangePasswordForm form = new ChangePasswordForm("test", "test", "change");
         //when
         //then
-        Assertions.assertThatThrownBy(
-                ()->memberService.updatePassword(test.getId(),"test"))
+        assertThatThrownBy(
+                () -> memberService.updatePassword(test, form))
                 .isInstanceOf(DuplicateRequestException.class)
                 .hasMessage("newPassword is duplicated oldPassword");
     }
-
 
     @Test
     public void 아이디찾기() throws Exception {
@@ -80,12 +85,13 @@ public class MemberServiceTest {
         //when
         String studentNum = memberService.findStudentNum(test.getMemberName());
         //then
-        Assertions.assertThat(studentNum).isEqualTo(test.getStudentNum());
+        assertThat(studentNum).isEqualTo(test.getStudentNum());
     }
+
     @Test
     @DisplayName("학번에 해당하는 맴버가 없을 경우 예외처리")
     public void 아이디찾기_예외처리() throws Exception {
-        Assertions.assertThatThrownBy(
+        assertThatThrownBy(
                 ()->memberService.findStudentNum("123"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("not found memberName data");
@@ -98,7 +104,7 @@ public class MemberServiceTest {
         //when
         String findPassword = memberService.findPassword(test.getMemberName(),test.getStudentNum());
         //then
-        Assertions.assertThat(test.getPassword()).isEqualTo(findPassword);
+        assertThat(test.getPassword()).isEqualTo(findPassword);
     }
 
     @Test
@@ -108,12 +114,12 @@ public class MemberServiceTest {
         //given
         Member test = makeTestMember();
         //then
-        Assertions.assertThatThrownBy(
+        assertThatThrownBy(
                 ()->memberService.findPassword("not_match_id",test.getStudentNum()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("not match memberName with studentNum data");
 
-        Assertions.assertThatThrownBy(
+        assertThatThrownBy(
                         ()->memberService.findPassword("not_exist_name", "not_exist_num"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("not found studentNum data");

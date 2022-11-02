@@ -3,6 +3,7 @@ package com.studentinformation.service;
 
 import com.studentinformation.domain.Member;
 import com.studentinformation.repository.MemberRepository;
+import com.studentinformation.web.form.member.ChangePasswordForm;
 import com.sun.jdi.request.DuplicateRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ public class MemberService {
     // 비밀번호 암호화 해야함
     @Transactional
     public Member addMember(Member member){
-        member.encodePassword(bCryptPasswordEncoder);
+        member.encodePassword(member.getPassword(), bCryptPasswordEncoder);
         memberRepository.save(member);
         log.info("addMember = {}",member);
         return member;
@@ -45,16 +46,18 @@ public class MemberService {
 
     //비밀번호 변경
     @Transactional
-    public Member updatePassword(Long oldMemberId,String newPassword){
-        Member findMember = findById(oldMemberId);
-
-        if(findMember.getPassword().equals(newPassword))
-            throw new DuplicateRequestException("newPassword is duplicated oldPassword");
-        else{
-            log.info("changePassword = {}, oldPassword= {}",newPassword,findMember.getPassword());
-            findMember.changePassword(newPassword,bCryptPasswordEncoder);
-            return findMember;
+    public Member updatePassword(Member member, ChangePasswordForm form){
+        if (!bCryptPasswordEncoder.matches(form.getPrePassword(), member.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호 오류");
         }
+
+        if (bCryptPasswordEncoder.matches(form.getNewPassword(), member.getPassword())) {
+            throw new DuplicateRequestException("newPassword is duplicated oldPassword");
+        }
+
+        log.info("changePassword = {}, oldPassword= {}",form.getNewPassword() ,form.getPrePassword());
+        member.changePassword(form.getNewPassword(), bCryptPasswordEncoder);
+        return member;
     }
 
     //아이디 찾을 때 사용

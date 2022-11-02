@@ -2,7 +2,6 @@ package com.studentinformation.web.initDB;
 
 
 import com.studentinformation.domain.*;
-import com.studentinformation.repository.MemberRepository;
 import com.studentinformation.service.ApplicationService;
 import com.studentinformation.service.GradeService;
 import com.studentinformation.service.LectureService;
@@ -11,19 +10,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 
-@Component
+//@Component
 @Slf4j
 @RequiredArgsConstructor
-public class GradeControllerTestCase {
+public class InitLocalDB {
 
-    private final GradeService gradeService;
-    private final LectureService lectureService;
     private final MemberService memberService;
+    private final LectureService lectureService;
     private final ApplicationService applicationService;
+    private final GradeService gradeService;
 
     @EventListener(ApplicationReadyEvent.class)
     @Transactional

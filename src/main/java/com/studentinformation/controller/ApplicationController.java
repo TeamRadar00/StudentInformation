@@ -37,11 +37,6 @@ public class ApplicationController {
 
     @GetMapping("/applications")
     public String goApplicationPage(@Login Member member, RedirectAttributes ra, Pageable pageable, Model model) {
-        if (member.getState() == MemberState.professor) {
-            ra.addFlashAttribute("msg", "권한이 없습니다!");
-            return "redirect:/home";
-        }
-
         Page<Lecture> remainLecture = lectureService.findRemainLecture(member, pageable);
         Page<LectureForm> lectureFormList = remainLecture.map(LectureForm::of);
         model.addAttribute("lectureList", lectureFormList);
@@ -50,11 +45,6 @@ public class ApplicationController {
 
     @GetMapping("/applications/{lectureId}/new")
     public String application(@Login Member member, RedirectAttributes ra, @PathVariable Long lectureId) {
-        if (member.getState() == MemberState.professor) {
-            ra.addFlashAttribute("msg", "권한이 없습니다!");
-            return "redirect:/home";
-        }
-
         Member findMember = memberService.findById(member.getId());
         Lecture selectLecture = lectureService.findByLectureId(lectureId);
         if (selectLecture == null) {

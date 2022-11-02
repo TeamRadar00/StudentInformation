@@ -9,10 +9,9 @@ import com.studentinformation.web.form.member.MemberForm;
 import com.studentinformation.service.MemberService;
 import com.studentinformation.web.argumentResolver.Login;
 import com.studentinformation.web.session.SessionConst;
+import com.sun.jdi.request.DuplicateRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -21,7 +20,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,37 +37,15 @@ public class MemberController {
 
     @GetMapping("/members/login")
     public String goLogin(@ModelAttribute LoginMemberForm form) {
-
         return "members/login";
     }
 
-//    @PostMapping("/members/login")
-//    public String login(@Validated @ModelAttribute LoginMemberForm form, BindingResult bindingResult,
-//                        @RequestParam(defaultValue = "/")String redirectURL,
-//                        HttpServletRequest request) {
-//
-//        if (bindingResult.hasErrors()) {
-//            return "members/login";
-//        }
-//
-//        Member loginMember = memberService.login(form.getStudentNum(), form.getPassword());
-//
-//        if (loginMember == null) {
-//            bindingResult.reject("loginFail", "학번 또는 비밀번호가 맞지 않습니다.");
-//            return "members/login";
-//        }
-//
-//        HttpSession session = request.getSession();
-//        session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
-//        return "redirect:" + redirectURL;
-//    }
 
     @GetMapping("/members/password")
     public String goPassword(@ModelAttribute ChangePasswordForm form) {
         return "members/password";
     }
 
-    //validation 추가해야됨
     @PostMapping("/members/password")
     public String changePassword(@Login Member member, @Validated @ModelAttribute ChangePasswordForm form,
                                  BindingResult bindingResult, RedirectAttributes ra) {
@@ -81,14 +57,18 @@ public class MemberController {
             return "members/password";
         }
 
-        if (memberService.findPassword(member.getMemberName(), member.getStudentNum()).equals(form.getPrePassword())) {
-            memberService.updatePassword(member.getId(), form.getNewPassword());
-            ra.addFlashAttribute("msg", "비밀번호 변경이 완료됐습니다!");
-            return "redirect:/home";
-        } else {
-            bindingResult.rejectValue("prePassword","passwordError","현재 비밀번호가 틀렸습니다.");
+        try {
+            //프록시 내부호출 문제가 발생할 수 있기에 외부에서 호출해 안에 넣어줌.
+            memberService.updatePassword(memberService.findById(member.getId()), form);
+        } catch (IllegalArgumentException e) {
+            bindingResult.rejectValue("prePassword", "passwordError", "현재 비밀번호가 틀렸습니다.");
+            return "members/password";
+        } catch (DuplicateRequestException e) {
+            bindingResult.rejectValue("prePassword", "passwordError", "현재 비밀번호와 바꿀 비밀번호가 동일합니다.");
             return "members/password";
         }
+        ra.addFlashAttribute("msg", "비밀번호 변경이 완료됐습니다!");
+        return "redirect:/home";
     }
 
     @GetMapping("/members/find-member")
@@ -171,13 +151,13 @@ public class MemberController {
         return "redirect:/members/login";
     }
 
-    @GetMapping("/members/logout")
-    public String logout(HttpServletRequest request, RedirectAttributes ra) {
-        HttpSession session = request.getSession();
-        session.removeAttribute(SessionConst.LOGIN_MEMBER);
-        ra.addFlashAttribute("msg", "로그아웃 되었습니다!");
-        return "redirect:/home";
-    }
+//    @GetMapping("/members/logout")
+//    public String logout(HttpServletRequest request, RedirectAttributes ra) {
+//        HttpSession session = request.getSession();
+//        session.removeAttribute(SessionConst.LOGIN_MEMBER);
+//        ra.addFlashAttribute("msg", "로그아웃 되었습니다!");
+//        return "redirect:/home";
+//    }
 
     private boolean validateRegister(MemberForm form, BindingResult bindingResult) {
         if (!StringUtils.hasText(form.getStudentNum())) {

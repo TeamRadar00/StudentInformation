@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PrincipalDetailsService implements UserDetailsService {
 
+    private static final long serialVersionUID = 9031014487545979674L;
     private final MemberRepository memberRepository;
 
     /**
