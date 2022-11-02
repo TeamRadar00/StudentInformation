@@ -6,29 +6,20 @@ public class BasicSecurityUrl {
     private static final String LECTURE_URL = "/lectures";
     private static final String APPLICATION_URL = "/applications";
 
-    public static final String[] AUTH_WHITELIST = {
-            "/members/login**",
-
-
-
+    protected static final String[] AUTH_WHITELIST = {
+            "/members/find-**",
+            "/members/login",
 
             "/assets/**",
             "/css/**",
             "/js/**"
     };
 
-    public static final String[] ADMIN_ACCESS = {
-            "/admin",
-
-            LECTURE_URL,
-            LECTURE_URL+"/new",
-            LECTURE_URL+"/{lectureId}/edit",
-
-            APPLICATION_URL,
-            APPLICATION_URL+"/{lectureId}/new"
+    protected static final String[] ADMIN_ACCESS = {
+            "/admin"
     };
 
-    public static final String[] PROFESSOR_ACCESS = {
+    protected static final String[] PROFESSOR_ACCESS = {
             GRADE_URL+"/readObjection/**",
             GRADE_URL+"/objectionList/**",
             GRADE_URL+"/giveGrade",
@@ -38,7 +29,7 @@ public class BasicSecurityUrl {
             LECTURE_URL+"/{lectureId}/edit"
     };
 
-    public static final String[] STUDENT_ACCESS = {
+    protected static final String[] STUDENT_ACCESS = {
             GRADE_URL+"/myGrade",
             GRADE_URL+"/objection",
 

@@ -5,16 +5,12 @@ import com.studentinformation.domain.*;
 import com.studentinformation.repository.GradeRepository;
 import com.studentinformation.repository.LectureRepository;
 import com.studentinformation.repository.MemberRepository;
+import com.studentinformation.util.WithCustomMember;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
 
@@ -23,14 +19,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Transactional
-@SpringBootTest
-public class GradeControllerTest {
+public class GradeControllerTest extends ControllerTestSetup{
 
     static final String BASE_URL = "/grade";
-
-    static final String TEST_STUDENT_NUM = "student";
-    static final String TEST_PROFESSOR_NUM = "professor";
-
 
     @Autowired
     private GradeRepository gradeRepository;
@@ -38,19 +29,15 @@ public class GradeControllerTest {
     private MemberRepository memberRepository;
     @Autowired
     private LectureRepository lectureRepository;
-    @Autowired
-    WebApplicationContext was;
 
-
-    private MockMvc mock;
     private List<Grade> gradeList;
     private Long lectureId;
 
 
-
+    @Override
     @BeforeEach
     public void init(){
-        mock = MockMvcBuilders.webAppContextSetup(was).build();
+        super.init();
         Member student = memberRepository.findByStudentNum(TEST_STUDENT_NUM).get();
         Member professor = memberRepository.findByStudentNum(TEST_PROFESSOR_NUM).get();
         gradeList = gradeRepository.findByStudentId(student.getId());
@@ -58,7 +45,7 @@ public class GradeControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = TEST_STUDENT_NUM)
+    @WithCustomMember(TEST_STUDENT_NUM)
     public void getGoMyGradeTest() throws Exception {
         //given
         MockHttpServletRequestBuilder builder = get(BASE_URL + "/myGrade");
@@ -72,7 +59,7 @@ public class GradeControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = TEST_STUDENT_NUM)
+    @WithCustomMember(TEST_STUDENT_NUM)
     public void getGoObjectionTest() throws Exception {
         //given
         MockHttpServletRequestBuilder builder = get(BASE_URL + "/objection");
@@ -86,7 +73,7 @@ public class GradeControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = TEST_STUDENT_NUM)
+    @WithCustomMember(TEST_STUDENT_NUM)
     public void postGoObjectionTest() throws Exception {
         //given
         MockHttpServletRequestBuilder builder = post(BASE_URL + "/objection");
@@ -105,7 +92,7 @@ public class GradeControllerTest {
 
 
     @Test
-    @WithUserDetails(value = TEST_PROFESSOR_NUM)
+    @WithCustomMember(TEST_PROFESSOR_NUM)
     public void getReadObjectionTest() throws Exception {
         //given
         MockHttpServletRequestBuilder builder = get(BASE_URL + "/readObjection/{gradeId}", Long.toString(gradeList.get(0).getId()));
@@ -121,7 +108,7 @@ public class GradeControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = TEST_PROFESSOR_NUM)
+    @WithCustomMember(TEST_PROFESSOR_NUM)
     public void postEditScoreThroughObjectionListTest() throws Exception {
         //given
         MockHttpServletRequestBuilder builder = post(BASE_URL + "/readObjection/{gradeId}", Long.toString(gradeList.get(0).getId()));
@@ -138,7 +125,7 @@ public class GradeControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = TEST_PROFESSOR_NUM)
+    @WithCustomMember(TEST_PROFESSOR_NUM)
     public void getGoObjectionListTest() throws Exception {
         //given
         MockHttpServletRequestBuilder builderWithLectureId = get(BASE_URL + "/objectionList");
@@ -164,7 +151,7 @@ public class GradeControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = TEST_PROFESSOR_NUM)
+    @WithCustomMember(TEST_PROFESSOR_NUM)
     public void getGetObjectionList() throws Exception {
         //given
         MockHttpServletRequestBuilder builderWithGradeId = get(BASE_URL + "/objectionList/{lectureId}", lectureId);
@@ -202,7 +189,7 @@ public class GradeControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = TEST_PROFESSOR_NUM)
+    @WithCustomMember(TEST_PROFESSOR_NUM)
     public void getGoGiveGradeTest() throws Exception {
         //given
         MockHttpServletRequestBuilder builder = get(BASE_URL + "/giveGrade");
@@ -220,16 +207,14 @@ public class GradeControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = TEST_PROFESSOR_NUM)
+    @WithCustomMember(TEST_PROFESSOR_NUM)
     public void postSubmitGiveGradeTest() throws Exception {
         //given
         MockHttpServletRequestBuilder builder = post(BASE_URL + "/giveGrade");
         builder.param("gradeScore","IN")
                 .param("lectureId",Long.toString(lectureId));
 
-
         //when
-
         //then
         mock.perform(builder)
                 .andExpect(handler().handlerType(GradeController.class))

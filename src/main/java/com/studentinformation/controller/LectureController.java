@@ -142,11 +142,10 @@ public class LectureController {
     }
 
     @PostMapping("/lectures/{lectureId}/edit")
-    public String editLecture(@PathVariable long lectureId, RedirectAttributes ra,
+    public String editLecture(@Login Member professor, @PathVariable long lectureId, RedirectAttributes ra,
                               @Validated @ModelAttribute("editLectureForm") CRUDLectureForm form,
                               BindingResult bindingResult, Authentication authentication) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        Member professor = principal.getMember();
+
 
         if (professor.getState() != MemberState.professor && professor.getState() != MemberState.admin) {
             ra.addFlashAttribute("msg", "권한이 없습니다!");

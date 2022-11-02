@@ -12,61 +12,56 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*;
 
 @SpringBootTest
 public class ApplicationControllerTest {
+
+    static final String BASE_URL = "/applications";
+
+    static final String TEST_STUDENT_NUM = "student";
+    static final String TEST_PROFESSOR_NUM = "professor";
 
     @Autowired WebApplicationContext wac;
     @Autowired MemberRepository memberRepository;
     @Autowired LectureRepository lectureRepository;
     private MockMvc mock;
-    private static Member student;
-    private static Member professor;
-    private static Lecture lecture;
-
-    @BeforeAll
-    static void createTestData() {
-        student = new Member("ACT_member", "ACT_member", "ACT_member",
-                MemberState.inSchool, "ACT_member");
-        professor = new Member("ACT_professor", "ACT_professor", "ACT_professor",
-                MemberState.professor, "ACT_professor");
-        lecture = new Lecture("ACT_lecture", professor, "202202", "~/12:00~13:50/~/13:00~14:50/~/~/~/", 1);
-    }
 
     @BeforeEach
     void getMockObject() {
-        mock = MockMvcBuilders.webAppContextSetup(wac).build();
-        memberRepository.save(student);
-        memberRepository.save(professor);
-        lectureRepository.save(lecture);
+        mock = MockMvcBuilders.webAppContextSetup(wac).apply(springSecurity()).build();
     }
 
     @Test
-    void goApplicationPage_test() throws Exception {
+    @WithUserDetails(TEST_PROFESSOR_NUM)
+    void goApplicationPage_fail_test() throws Exception {
         //given
-        String url = "/applications";
-        MockHttpServletRequestBuilder noSession = get(url);
-        MockHttpServletRequestBuilder professorSession = get(url);
-        MockHttpServletRequestBuilder studentSession = get(url);
+        MockHttpServletRequestBuilder professorSession = get(BASE_URL);
 
         //when
-        professorSession.session(createSession(professor));
-        studentSession.session(createSession(student));
-
         //then
-        ifNoSessionThenRedirect(noSession,url);
         mock.perform(professorSession)
-                .andExpect(handler().handlerType(ApplicationController.class))
-                .andExpect(handler().methodName("goApplicationPage"))
-                .andExpect(flash().attributeExists("msg"))
-                .andExpect(redirectedUrl("/home"));
+                .andExpect(status().isForbidden())
+                .andExpect(forwardedUrl("/home"));
+    }
+
+    @Test
+    @WithUserDetails(TEST_STUDENT_NUM)
+    void goApplicationPage_test() throws Exception {
+        //given
+        MockHttpServletRequestBuilder studentSession = get(BASE_URL);
+
+        //when
+        //then
         mock.perform(studentSession)
                 .andExpect(handler().handlerType(ApplicationController.class))
                 .andExpect(handler().methodName("goApplicationPage"))
@@ -75,26 +70,18 @@ public class ApplicationControllerTest {
     }
 
     @Test
+    @Transactional
+    @WithUserDetails(TEST_STUDENT_NUM)
     void application_test() throws Exception {
         //given
-        String url = "/applications/" + lecture.getId() + "/new";
-        MockHttpServletRequestBuilder noSession = get(url);
-        MockHttpServletRequestBuilder professorSession = get(url);
-        MockHttpServletRequestBuilder notExistLecture = get("/applications/9875467/new");
+        Member professor = memberRepository.findByMemberName("professor").get();
+        Lecture lecture = lectureRepository.findLecturesByProfessor(professor).get(0);
+        String url = BASE_URL + "/" + lecture.getId() + "/new";
+        MockHttpServletRequestBuilder notExistLecture = get(BASE_URL + "/9875467/new");
         MockHttpServletRequestBuilder application = get(url);
 
         //when
-        professorSession.session(createSession(professor));
-        notExistLecture.session(createSession(student));
-        application.session(createSession(student));
-
         //then
-        ifNoSessionThenRedirect(noSession, url);
-        mock.perform(professorSession)
-                .andExpect(handler().handlerType(ApplicationController.class))
-                .andExpect(handler().methodName("application"))
-                .andExpect(flash().attributeExists("msg"))
-                .andExpect(redirectedUrl("/home"));
         mock.perform(notExistLecture)
                 .andExpect(handler().handlerType(ApplicationController.class))
                 .andExpect(handler().methodName("application"))
@@ -107,13 +94,4 @@ public class ApplicationControllerTest {
                 .andExpect(redirectedUrl("/applications"));
     }
 
-    private void ifNoSessionThenRedirect(MockHttpServletRequestBuilder noSession, String url) throws Exception {
-        mock.perform(noSession)
-                .andExpect(redirectedUrl("/members/login?redirectURL="+url));
-    }
-    private MockHttpSession createSession(Member member) {
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute(SessionConst.LOGIN_MEMBER, member);
-        return session;
-    }
 }

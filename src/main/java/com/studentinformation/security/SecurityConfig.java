@@ -49,10 +49,8 @@ public class SecurityConfig extends BasicSecurityUrl {
         http.csrf().disable()
                 .authorizeHttpRequests((authorize) -> authorize
                                 .antMatchers(ADMIN_ACCESS).hasRole("ADMIN")
-                                .antMatchers(PROFESSOR_ACCESS).hasRole("PROFESSOR")
-                                // 교수님만 접근가능
-                                .antMatchers(STUDENT_ACCESS).hasAnyRole("INSCHOOL","OUTSCHOOL")
-                                // 학생만 접근 가능
+                                .antMatchers(PROFESSOR_ACCESS).hasAnyRole("PROFESSOR", "ADMIN")
+                                .antMatchers(STUDENT_ACCESS).hasAnyRole("INSCHOOL","OUTSCHOOL", "ADMIN")
                                 .antMatchers(AUTH_WHITELIST).permitAll()
                                 .anyRequest().authenticated()
                                 // 나머지 주소는 인증해야 접근 가능

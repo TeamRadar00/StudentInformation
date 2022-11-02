@@ -37,30 +37,9 @@ public class MemberController {
 
     @GetMapping("/members/login")
     public String goLogin(@ModelAttribute LoginMemberForm form) {
-
         return "members/login";
     }
 
-//    @PostMapping("/members/login")
-//    public String login(@Validated @ModelAttribute LoginMemberForm form, BindingResult bindingResult,
-//                        @RequestParam(defaultValue = "/")String redirectURL,
-//                        HttpServletRequest request) {
-//
-//        if (bindingResult.hasErrors()) {
-//            return "members/login";
-//        }
-//
-//        Member loginMember = memberService.login(form.getStudentNum(), form.getPassword());
-//
-//        if (loginMember == null) {
-//            bindingResult.reject("loginFail", "학번 또는 비밀번호가 맞지 않습니다.");
-//            return "members/login";
-//        }
-//
-//        HttpSession session = request.getSession();
-//        session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
-//        return "redirect:" + redirectURL;
-//    }
 
     @GetMapping("/members/password")
     public String goPassword(@ModelAttribute ChangePasswordForm form) {

@@ -1,47 +1,17 @@
 package com.studentinformation.controller;
 
-import com.studentinformation.domain.Grade;
-import com.studentinformation.domain.Member;
-import com.studentinformation.repository.MemberRepository;
-import org.junit.jupiter.api.BeforeEach;
+import com.studentinformation.util.WithCustomMember;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-
-import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-public class MemberControllerTest {
+public class MemberControllerTest extends ControllerTestSetup{
 
     static final String BASE_URL = "/members";
 
-    static final String TEST_STUDENT_NUM = "student";
-    static final String TEST_PROFESSOR_NUM = "professor";
-    static final String TEST_ADMIN_NUM = "admin";
-
-
-    @Autowired WebApplicationContext wac;
-    @Autowired MemberRepository memberRepository;
-
-    private MockMvc mock;
-
-
-    @BeforeEach
-    public void init(){
-        mock = MockMvcBuilders.webAppContextSetup(wac).build();
-    }
-
     @Test
-//    @WithUserDetails(value = TEST_STUDENT_NUM)
     void goLogin_test() throws Exception {
         //given
         MockHttpServletRequestBuilder builder = get(BASE_URL + "/login");
@@ -54,7 +24,7 @@ public class MemberControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = TEST_STUDENT_NUM)
+    @WithCustomMember(TEST_STUDENT_NUM)
     void goPassword_test() throws Exception {
         //given
         MockHttpServletRequestBuilder builder = get(BASE_URL + "/password");
@@ -68,7 +38,7 @@ public class MemberControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = TEST_STUDENT_NUM)
+    @WithCustomMember(TEST_STUDENT_NUM)
     void changePassword_test() throws Exception {
         //given
         String url = BASE_URL + "/password";
@@ -171,23 +141,8 @@ public class MemberControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = TEST_STUDENT_NUM)
-    void goRegister_fail_test() throws Exception {
-        //given
-        MockHttpServletRequestBuilder studentSession = get("/admin");
-
-        //when
-        //then
-        mock.perform(studentSession)
-                .andExpect(handler().handlerType(MemberController.class))
-                .andExpect(handler().methodName("goRegister"))
-                .andExpect(flash().attributeExists("msg"))
-                .andExpect(redirectedUrl("/home"));
-    }
-
-    @Test
-    @WithUserDetails(value = TEST_ADMIN_NUM)
-    void goRegister_success_test() throws Exception {
+    @WithCustomMember(TEST_ADMIN_NUM)
+    void goRegister_test() throws Exception {
         //given
         MockHttpServletRequestBuilder adminSession = get("/admin");
 
@@ -200,7 +155,7 @@ public class MemberControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = TEST_ADMIN_NUM)
+    @WithCustomMember(TEST_ADMIN_NUM)
     void register_test() throws Exception {
         //given
         String url = "/admin";
