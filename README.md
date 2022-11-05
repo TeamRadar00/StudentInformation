@@ -248,7 +248,35 @@ Lombok, Thymeleaf, Spring Web, Spring Data JPA, Validation, MySQL Driver
 	
 </table>
 
-<iframe width="600" height="336" src="https://www.erdcloud.com/p/76xbxG7Thnh8F6YhK" frameborder="0" allowfullscreen></iframe>
+<h2> 프로젝트 기술스택 </h2>
+
+<p>BackEnd</p>
+<div>
+<img src="https://img.shields.io/badge/Java 11-FC4C02?style=for-the-badge&logo=Java&logoColor=white">
+<img src="https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=Gradle&logoColor=white">
+<img src="https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=Spring&logoColor=white">
+<img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=white">
+<img src="https://img.shields.io/badge/Spring JPA-6DB33F?style=for-the-badge&logo=Spring JPA&logoColor=white">
+<img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=Spring Security&logoColor=white">
+<img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white">
+</div>
+
+<p>View Template</p>
+<div>
+<img src="https://img.shields.io/badge/Thymeleaf-005F0F?style=for-the-badge&logo=Thymeleaf&logoColor=white">
+</div>
+
+<p>Test Tool</p>
+<div>
+<img src="https://img.shields.io/badge/JUnit5-25A162?style=for-the-badge&logo=JUnit5&logoColor=white">
+<img src="https://img.shields.io/badge/Mockito-002C5F?style=for-the-badge&logo=Mockito&logoColor=white">
+</div>
+
+<p>Documentation and Project Management</p>
+<div>
+<img src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=Notion&logoColor=white">
+<img src="https://img.shields.io/badge/Gihub Project/Issue-181717?style=for-the-badge&logo=Github&logoColor=white">
+</div>
 
 
 
