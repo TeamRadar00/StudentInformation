@@ -4,7 +4,6 @@ import com.studentinformation.domain.Lecture;
 import com.studentinformation.domain.Member;
 import com.studentinformation.domain.MemberState;
 import com.studentinformation.domain.Week;
-import com.studentinformation.security.PrincipalDetails;
 import com.studentinformation.web.form.lecture.CRUDLectureForm;
 import com.studentinformation.web.form.lecture.LectureForm;
 import com.studentinformation.web.form.lecture.SearchLectureForm;
@@ -97,7 +96,7 @@ public class LectureController {
 
     @GetMapping("/lectures")
     public String goCRUDLecture(@Login Member professor, @ModelAttribute("createLectureForm") CRUDLectureForm form,
-                                Model model, RedirectAttributes ra) {
+                                Model model) {
         List<Lecture> lectures = lectureRepository.findLecturesByProfessor(professor);
         List<LectureForm> forms = lectures.stream().map(LectureForm::of).collect(Collectors.toList());
         model.addAttribute("lectureList", forms);
@@ -129,7 +128,7 @@ public class LectureController {
     }
 
     @GetMapping("/lectures/{lectureId}/edit")
-    public String getEditLecture(@PathVariable long lectureId, Model model, RedirectAttributes ra) {
+    public String goEditLecture(@PathVariable long lectureId, Model model, RedirectAttributes ra) {
 
         Lecture findLecture = lectureService.findByLectureId(lectureId);
         if (findLecture == null) {
