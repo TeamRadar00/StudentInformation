@@ -7,6 +7,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+/**
+ * 시큐리티 적용 후 Session 정책이 달라져 사용 X
+ */
+
 public class LoginCheckInterceptor implements HandlerInterceptor {
 
     @Override

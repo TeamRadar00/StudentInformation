@@ -1,15 +1,9 @@
 package com.studentinformation;
 
 import com.studentinformation.web.converter.ScoreRequestConverter;
-import com.studentinformation.web.Interceptor.LoginCheckInterceptor;
-import com.studentinformation.web.argumentResolver.LoginMemberArgumentResolver;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import java.util.List;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {

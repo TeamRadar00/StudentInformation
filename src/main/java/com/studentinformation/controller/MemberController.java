@@ -2,13 +2,11 @@ package com.studentinformation.controller;
 
 import com.studentinformation.domain.Member;
 import com.studentinformation.domain.MemberState;
-import com.studentinformation.security.PrincipalDetails;
 import com.studentinformation.web.form.member.ChangePasswordForm;
 import com.studentinformation.web.form.member.LoginMemberForm;
 import com.studentinformation.web.form.member.MemberForm;
 import com.studentinformation.service.MemberService;
 import com.studentinformation.web.argumentResolver.Login;
-import com.studentinformation.web.session.SessionConst;
 import com.sun.jdi.request.DuplicateRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,9 +19,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 @Slf4j
 @Controller

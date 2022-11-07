@@ -3,7 +3,6 @@ package com.studentinformation.service;
 
 import com.studentinformation.domain.*;
 import com.studentinformation.repository.LectureRepository;
-import com.studentinformation.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
