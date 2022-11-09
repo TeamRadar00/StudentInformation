@@ -1,7 +1,7 @@
 # Student Information program
 
 <h2>:sparkles:프로젝트 소개</h2>
-<div align="center">노션 페이지:<a href="https://www.notion.so/e0be488f18764b2aa1a0af4c7715ce41">
+<div align="center">노션 페이지:<a href="https://knowing-jester-927.notion.site/e0be488f18764b2aa1a0af4c7715ce41">
 <img src="https://img.shields.io/badge/Project Documentation-181717?style=for-the-badge&logo=Github&logoColor=white" >
 </a></div>
 
